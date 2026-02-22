@@ -136,8 +136,10 @@ header {
     color: var(--brand-blue);
 }
 
-.hero-emoji {
-    font-size: 2.5rem;
+.hero-mascot {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
 }
 
 .search-container {
@@ -425,8 +427,8 @@ footer .social-icons {
         font-size: 2rem;
     }
 
-    .hero-emoji {
-        font-size: 1.8rem;
+    .hero-mascot {
+        height: 40px;
     }
 
     .search-container {
