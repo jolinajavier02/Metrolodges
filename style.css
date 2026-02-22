@@ -129,7 +129,6 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
 }
 
 .hero-title span {
@@ -137,9 +136,13 @@ header {
 }
 
 .hero-mascot {
-    height: 60px;
+    height: 85px;
     width: auto;
     object-fit: contain;
+    margin-left: -8px;
+    /* Tucks it directly next to the 'e' */
+    transform: translateY(-5px);
+    /* Fine-tune vertical position */
 }
 
 .search-container {
@@ -428,7 +431,8 @@ footer .social-icons {
     }
 
     .hero-mascot {
-        height: 40px;
+        height: 60px;
+        margin-left: -5px;
     }
 
     .search-container {
