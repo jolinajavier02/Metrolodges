@@ -221,6 +221,120 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Calendar Logic
+    const grid1 = document.getElementById('grid1');
+    const grid2 = document.getElementById('grid2');
+    const monthLabels = document.querySelectorAll('.month-label');
+    let currentDate = new Date();
+    let startDate = null;
+    let endDate = null;
+
+    function renderMonth(grid, dateObj, labelElement) {
+        // Clear previous days
+        const days = grid.querySelectorAll('.calendar-day');
+        days.forEach(d => d.remove());
+
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth();
+
+        labelElement.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(dateObj);
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Empty slots
+        for (let i = 0; i < firstDay; i++) {
+            const empty = document.createElement('div');
+            empty.className = 'calendar-day empty';
+            grid.appendChild(empty);
+        }
+
+        // Days
+        for (let i = 1; i <= daysInMonth; i++) {
+            const day = document.createElement('div');
+            const thisDate = new Date(year, month, i);
+            day.className = 'calendar-day';
+            day.innerText = i;
+
+            // Highlight Logic
+            if (startDate && thisDate.getTime() === startDate.getTime()) {
+                day.classList.add('selected');
+            }
+            if (endDate && thisDate.getTime() === endDate.getTime()) {
+                day.classList.add('selected');
+            }
+            if (startDate && endDate && thisDate > startDate && thisDate < endDate) {
+                day.classList.add('in-range');
+            }
+
+            day.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!startDate || (startDate && endDate)) {
+                    startDate = thisDate;
+                    endDate = null;
+                } else if (thisDate < startDate) {
+                    startDate = thisDate;
+                } else if (thisDate.getTime() === startDate.getTime()) {
+                    startDate = null;
+                } else {
+                    endDate = thisDate;
+                    // Format and show result
+                    const startStr = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const endStr = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    document.getElementById('whenInput').value = `${startStr} – ${endStr}`;
+
+                    // Don't close immediately to let user see selection
+                    setTimeout(() => {
+                        document.getElementById('whenDropdown').classList.remove('active');
+                        searchItems.forEach(si => si.classList.remove('active'));
+                    }, 500);
+                }
+                renderCalendar();
+            });
+            grid.appendChild(day);
+        }
+    }
+
+    function renderCalendar() {
+        const nextDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+        renderMonth(grid1, currentDate, monthLabels[0]);
+        renderMonth(grid2, nextDate, monthLabels[1]);
+    }
+
+    document.getElementById('prevMonth').addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar();
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar();
+    });
+
+    renderCalendar();
+
+    // Calendar Tabs
+    const calendarTabs = document.querySelectorAll('.calendar-tab');
+    calendarTabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.stopPropagation();
+            calendarTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+        });
+    });
+
+    // Flexibility Buttons
+    const flexBtns = document.querySelectorAll('.flex-btn');
+    flexBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            flexBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
     // Close dropdowns on click outside
     document.addEventListener('click', () => {
         searchItems.forEach(si => si.classList.remove('active'));

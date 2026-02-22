@@ -197,8 +197,9 @@ header {
     right: 0;
     top: 25%;
     height: 50%;
-    width: 1px;
-    background: #DDDDDD;
+    width: 1.5px;
+    /* Slightly thicker for visibility */
+    background: var(--brand-blue);
 }
 
 .search-item:last-of-type::after,
@@ -208,12 +209,13 @@ header {
 }
 
 .search-item:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: #ebebeb;
 }
 
 .search-item.active {
     background: white !important;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    z-index: 3;
 }
 
 .search-item label {
@@ -246,7 +248,7 @@ header {
     font-weight: 600;
 }
 
-/* Dropdowns */
+/* All dropdowns use smooth slide */
 .dropdown-menu {
     position: absolute;
     top: calc(100% + 12px);
@@ -254,18 +256,73 @@ header {
     border-radius: 32px;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.12);
     padding: 24px;
-    display: none;
     z-index: 2000;
     width: 450px;
+    opacity: 0;
+    transform: translateY(16px);
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Calendar Dropdown */
+.dropdown-menu.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.where-dropdown {
+    left: 0;
+}
+
 .calendar-dropdown {
-    width: 600px;
-    /* Double width for two-month view if needed */
+    width: 850px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(16px);
     padding: 32px;
+}
+
+.calendar-dropdown.active {
+    transform: translateX(-50%) translateY(0);
+}
+
+.who-dropdown {
+    right: 0;
+    width: 400px;
+}
+
+.calendar-tabs {
+    display: flex;
+    justify-content: center;
+    background: #ebebeb;
+    padding: 4px;
+    border-radius: 30px;
+    margin: 0 auto 32px;
+    width: fit-content;
+}
+
+.calendar-tab {
+    padding: 8px 24px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.calendar-tab.active {
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-months-container {
+    display: flex;
+    gap: 48px;
+    justify-content: center;
+}
+
+.calendar-month {
+    flex: 1;
 }
 
 .calendar-header {
@@ -273,17 +330,33 @@ header {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    position: relative;
 }
 
 .calendar-header h3 {
     font-size: 1rem;
     font-weight: 700;
+    width: 100%;
+    text-align: center;
+}
+
+.calendar-header .control-btn {
+    position: absolute;
+    top: -4px;
+    z-index: 10;
+}
+
+#prevMonth {
+    left: -10px;
+}
+
+#nextMonth {
+    right: -10px;
 }
 
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
     text-align: center;
 }
 
@@ -291,63 +364,71 @@ header {
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-light);
-    padding-bottom: 8px;
+    padding-bottom: 12px;
 }
 
 .calendar-day {
-    padding: 12px 0;
+    padding: 14px 0;
     font-size: 0.9rem;
     cursor: pointer;
     border-radius: 50%;
-    transition: background 0.2s;
-}
-
-.calendar-day:hover:not(.empty) {
-    background: #f7f7f7;
-    box-shadow: inset 0 0 0 1px #222;
-}
-
-.calendar-day.active {
-    background: #222 !important;
-    color: white !important;
+    transition: all 0.2s;
+    position: relative;
+    z-index: 1;
 }
 
 .calendar-day.empty {
     cursor: default;
 }
 
-/* Animations */
-@keyframes fadeInSlide {
-    from {
-        opacity: 0;
-        transform: translate(-50%, 20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
+.calendar-day:not(.empty):hover {
+    box-shadow: inset 0 0 0 1px var(--brand-blue);
 }
 
-.dropdown-menu.active {
-    display: block;
-    animation: fadeInSlide 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+.calendar-day.selected {
+    background: var(--brand-blue) !important;
+    color: white !important;
 }
 
-.where-dropdown.active {
-    transform: none;
-    animation: fadeIn 0.3s ease;
+.calendar-day.in-range {
+    background: rgba(113, 183, 225, 0.15) !important;
+    /* Soft brand blue */
+    border-radius: 0;
 }
 
-.who-dropdown.active {
-    transform: none;
-    animation: fadeIn 0.3s ease;
+/* Flexibility Buttons */
+.flexibility-options {
+    display: flex;
+    gap: 8px;
+    margin-top: 32px;
+    justify-content: center;
+    overflow-x: auto;
+    padding-bottom: 8px;
 }
 
-/* Categories */
-.where-dropdown {
-    left: 0;
+.flex-btn {
+    padding: 10px 20px;
+    border: 1px solid #DDDDDD;
+    border-radius: 24px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    background: white;
+    white-space: nowrap;
+    transition: all 0.2s;
 }
+
+.flex-btn:hover {
+    border-color: var(--brand-blue);
+    color: var(--brand-blue);
+}
+
+.flex-btn.active {
+    border: 2px solid var(--brand-blue);
+    padding: 9px 19px;
+    background: rgba(113, 183, 225, 0.05);
+}
+
+
 
 .suggested-title {
     font-size: 0.75rem;
@@ -397,11 +478,7 @@ header {
     color: var(--text-light);
 }
 
-/* Who Dropdown */
-.who-dropdown {
-    right: 0;
-    width: 400px;
-}
+
 
 .guest-row {
     display: flex;
@@ -447,8 +524,8 @@ header {
 }
 
 .control-btn:hover:not(:disabled) {
-    border-color: var(--text-color);
-    color: var(--text-color);
+    border-color: var(--brand-blue);
+    color: var(--brand-blue);
 }
 
 .control-btn:disabled {

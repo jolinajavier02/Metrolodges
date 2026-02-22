@@ -76,26 +76,61 @@
                     </div>
                 </div>
             </div>
-            <div class="search-item" style="border-left: 1px solid #ddd;" id="whenItem">
+            <div class="search-item" id="whenItem">
                 <label>When</label>
                 <input type="text" placeholder="Add dates" id="whenInput" readonly>
 
                 <!-- Calendar Dropdown -->
                 <div class="dropdown-menu calendar-dropdown" id="whenDropdown">
-                    <div class="calendar-header">
-                        <button class="control-btn" id="prevMonth"><i class="fa-solid fa-chevron-left"></i></button>
-                        <h3 id="currentMonthYear">February 2026</h3>
-                        <button class="control-btn" id="nextMonth"><i class="fa-solid fa-chevron-right"></i></button>
+                    <div class="calendar-tabs">
+                        <div class="calendar-tab active">Dates</div>
+                        <div class="calendar-tab">Months</div>
+                        <div class="calendar-tab">Flexible</div>
                     </div>
-                    <div class="calendar-grid">
-                        <div class="day-name">Su</div>
-                        <div class="day-name">Mo</div>
-                        <div class="day-name">Tu</div>
-                        <div class="day-name">We</div>
-                        <div class="day-name">Th</div>
-                        <div class="day-name">Fr</div>
-                        <div class="day-name">Sa</div>
-                        <!-- Days will be injected by JS -->
+
+                    <div class="calendar-months-container">
+                        <div class="calendar-month">
+                            <div class="calendar-header">
+                                <button class="control-btn" id="prevMonth"><i
+                                        class="fa-solid fa-chevron-left"></i></button>
+                                <h3 class="month-label">February 2026</h3>
+                            </div>
+                            <div class="calendar-grid" id="grid1">
+                                <div class="day-name">S</div>
+                                <div class="day-name">M</div>
+                                <div class="day-name">T</div>
+                                <div class="day-name">W</div>
+                                <div class="day-name">T</div>
+                                <div class="day-name">F</div>
+                                <div class="day-name">S</div>
+                                <!-- Days injected by JS -->
+                            </div>
+                        </div>
+                        <div class="calendar-month">
+                            <div class="calendar-header">
+                                <h3 class="month-label">March 2026</h3>
+                                <button class="control-btn" id="nextMonth"><i
+                                        class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                            <div class="calendar-grid" id="grid2">
+                                <div class="day-name">S</div>
+                                <div class="day-name">M</div>
+                                <div class="day-name">T</div>
+                                <div class="day-name">W</div>
+                                <div class="day-name">T</div>
+                                <div class="day-name">F</div>
+                                <div class="day-name">S</div>
+                                <!-- Days injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flexibility-options">
+                        <button class="flex-btn active">Exact dates</button>
+                        <button class="flex-btn">± 1 day</button>
+                        <button class="flex-btn">± 2 days</button>
+                        <button class="flex-btn">± 3 days</button>
+                        <button class="flex-btn">± 7 days</button>
                     </div>
                 </div>
             </div>
