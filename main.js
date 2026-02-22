@@ -64,6 +64,7 @@ const listings = [
         price: 3424,
         rating: 4.97,
         nights: 2,
+        category: "Homes",
         image: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=600",
         location: "South Ridge"
     },
@@ -74,8 +75,19 @@ const listings = [
         rating: 4.96,
         nights: 2,
         badge: "Guest favorite",
+        category: "Homes",
         image: "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&q=80&w=600",
         location: "West End"
+    },
+    {
+        id: 9,
+        title: "Sky View Suite",
+        price: 8500,
+        rating: 4.99,
+        nights: 1,
+        category: "Iconic Cities",
+        image: "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&q=80&w=600",
+        location: "Downtown"
     }
 ];
 
@@ -100,23 +112,25 @@ function createListingHTML(listing) {
     `;
 }
 
-function renderListings() {
+function renderListings(filter = 'Homes') {
     const grid = document.getElementById('listingGrid');
     const weekendGrid = document.getElementById('weekendGrid');
-    
+
+    // Filter listings based on category if not 'Homes' (which we use as default all)
+    const filtered = filter === 'Homes' ? listings : listings.filter(l => l.category === filter);
+
     if (grid) {
-        grid.innerHTML = listings.map(createListingHTML).join('');
+        grid.innerHTML = (filtered.length > 0 ? filtered : listings.slice(0, 4)).map(createListingHTML).join('');
     }
-    
+
     if (weekendGrid) {
-        // Reverse listings for variety in the second grid
-        weekendGrid.innerHTML = [...listings].reverse().map(createListingHTML).join('');
+        weekendGrid.innerHTML = [...listings].reverse().slice(0, 4).map(createListingHTML).join('');
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     renderListings();
-    
+
     // Add simple hover effect for heart icons
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('heart-icon')) {
@@ -130,8 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const categories = document.querySelectorAll('.category-item');
     categories.forEach(cat => {
         cat.addEventListener('click', () => {
+            const categoryName = cat.querySelector('span').innerText;
             categories.forEach(c => c.classList.remove('active'));
             cat.classList.add('active');
+            renderListings(categoryName);
         });
     });
 });
