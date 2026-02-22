@@ -68,7 +68,7 @@ header {
 .logo-name {
     font-size: 1.6rem;
     font-weight: 800;
-    color: var(--primary-color);
+    color: var(--brand-blue);
     letter-spacing: -0.5px;
 }
 
