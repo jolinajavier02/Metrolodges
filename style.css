@@ -2,8 +2,8 @@
 
 :root {
     --primary-color: #1A1A1A;
-    --brand-blue: #0066FF;
-    /* High-end brand blue */
+    --brand-blue: #71b7e1;
+    /* Updated Metrolodges brand blue */
     --secondary-color: var(--brand-blue);
     --accent-color: #00A699;
     --text-color: #222222;
@@ -46,14 +46,36 @@ header {
     border-bottom: 1px solid var(--border-color);
 }
 
-.logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--secondary-color);
-    text-decoration: none;
+.logo-container {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 42px;
+    width: auto;
+    border-radius: 8px;
+}
+
+.logo-text-group {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.logo-name {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    letter-spacing: -0.5px;
+}
+
+.logo-tagline {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 500;
 }
 
 .nav-links {
@@ -326,41 +348,48 @@ header {
 
 /* Footer */
 footer {
-    background: var(--brand-blue) !important;
-    color: white !important;
+    background: #FFFFFF !important;
+    color: var(--text-color) !important;
     padding: 4rem 5%;
     margin-top: 4rem;
+    border-top: 1px solid var(--border-color);
 }
 
 footer a {
-    color: rgba(255, 255, 255, 0.8) !important;
+    color: var(--text-light) !important;
     text-decoration: none;
     transition: var(--transition);
+    font-size: 0.9rem;
 }
 
 footer a:hover {
-    color: white !important;
-    text-decoration: underline;
+    color: var(--brand-blue) !important;
+    text-decoration: none;
 }
 
 footer h4 {
-    color: white;
+    color: var(--brand-blue);
     margin-bottom: 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 footer .footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid var(--border-color);
     margin-top: 3rem;
     padding-top: 2rem;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    color: var(--text-light);
+    font-size: 0.85rem;
 }
 
 footer .social-icons {
     display: flex;
     gap: 1.5rem;
     font-size: 1.2rem;
+    color: var(--brand-blue);
 }
 
 /* Responsive */
