@@ -131,7 +131,103 @@ function renderListings(filter = 'Homes') {
 document.addEventListener('DOMContentLoaded', () => {
     renderListings();
 
-    // Add simple hover effect for heart icons
+    // Search Bar Elements
+    const searchItems = document.querySelectorAll('.search-item');
+    const whereItem = document.getElementById('whereItem');
+    const whoItem = document.getElementById('whoItem');
+    const whereDropdown = document.getElementById('whereDropdown');
+    const whoDropdown = document.getElementById('whoDropdown');
+    const whereInput = document.getElementById('whereInput');
+    const whoInput = document.getElementById('whoInput');
+
+    // Toggle Dropdowns
+    searchItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            searchItems.forEach(si => si.classList.remove('active'));
+            document.querySelectorAll('.dropdown-menu').forEach(dm => dm.classList.remove('active'));
+
+            item.classList.add('active');
+            const dropdown = item.querySelector('.dropdown-menu');
+            if (dropdown) dropdown.classList.add('active');
+
+            // Focus input if any
+            const input = item.querySelector('input');
+            if (input && input.id !== 'whoInput') input.focus();
+        });
+    });
+
+    // Handle Destination Selection
+    const destItems = document.querySelectorAll('.destination-item');
+    destItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const value = item.getAttribute('data-value');
+            whereInput.value = value;
+            whereDropdown.classList.remove('active');
+            whereItem.classList.remove('active');
+        });
+    });
+
+    // Handle Guest Counts
+    const guestCounts = {
+        adults: 0,
+        children: 0,
+        infants: 0,
+        pets: 0
+    };
+
+    function updateWhoInput() {
+        const total = guestCounts.adults + guestCounts.children;
+        const infants = guestCounts.infants;
+        const pets = guestCounts.pets;
+
+        let parts = [];
+        if (total > 0) parts.push(`${total} guest${total > 1 ? 's' : ''}`);
+        if (infants > 0) parts.push(`${infants} infant${infants > 1 ? 's' : ''}`);
+        if (pets > 0) parts.push(`${pets} pet${pets > 1 ? 's' : ''}`);
+
+        whoInput.value = parts.length > 0 ? parts.join(', ') : 'Add guests';
+    }
+
+    const plusBtns = document.querySelectorAll('.control-btn.plus');
+    const minusBtns = document.querySelectorAll('.control-btn.minus');
+
+    plusBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const type = btn.getAttribute('data-type');
+            guestCounts[type]++;
+            if (type !== 'infants' && type !== 'pets' && guestCounts.adults === 0) {
+                guestCounts.adults = 1; // Auto-add adult if child added
+                document.getElementById('count-adults').innerText = guestCounts.adults;
+            }
+            document.getElementById(`count-${type}`).innerText = guestCounts[type];
+            btn.parentElement.querySelector('.minus').disabled = false;
+            updateWhoInput();
+        });
+    });
+
+    minusBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const type = btn.getAttribute('data-type');
+            if (guestCounts[type] > 0) {
+                guestCounts[type]--;
+                document.getElementById(`count-${type}`).innerText = guestCounts[type];
+                if (guestCounts[type] === 0) btn.disabled = true;
+                updateWhoInput();
+            }
+        });
+    });
+
+    // Close dropdowns on click outside
+    document.addEventListener('click', () => {
+        searchItems.forEach(si => si.classList.remove('active'));
+        document.querySelectorAll('.dropdown-menu').forEach(dm => dm.classList.remove('active'));
+    });
+
+    // Heart icons
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('heart-icon')) {
             e.target.classList.toggle('fa-regular');
@@ -140,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle Category clicks
+    // Categories
     const categories = document.querySelectorAll('.category-item');
     categories.forEach(cat => {
         cat.addEventListener('click', () => {
