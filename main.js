@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sentinel) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                // When sentinel leaves the top (not intersecting), we scrolled down
+                // When sentinel leaves the top area (not intersecting with top 80px), we show mini bar
                 if (entry.isIntersecting) {
                     header.classList.remove('scrolled');
                     header.classList.remove('expanded');
@@ -109,7 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     header.classList.add('scrolled');
                 }
             });
-        }, { threshold: 0 });
+        }, {
+            threshold: 0,
+            rootMargin: '-80px 0px 0px 0px' // Offset the trigger point
+        });
 
         observer.observe(sentinel);
     }

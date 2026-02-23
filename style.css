@@ -35,8 +35,7 @@ body {
 
 #scrollSentinel {
     position: absolute;
-    top: 60px;
-    /* Trigger point */
+    top: 0;
     left: 0;
     width: 100%;
     height: 1px;
@@ -104,6 +103,7 @@ header.expanded {
     align-items: center;
     gap: 12px;
     text-decoration: none;
+    flex-shrink: 0;
 }
 
 .logo-img {
@@ -111,6 +111,7 @@ header.expanded {
     width: auto;
     object-fit: contain;
     border-radius: 8px;
+    flex-shrink: 0;
 }
 
 .logo-text-group {
@@ -183,6 +184,7 @@ header.expanded {
     transition: box-shadow 0.2s;
     height: 48px;
     margin: 0 auto;
+    flex-shrink: 0;
 }
 
 /* Show mini search bar only when header has scrolled class */
@@ -356,8 +358,8 @@ header.expanded .mini-search-bar {
 }
 
 .search-item.active {
-    background: white !important;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    background: #f0f7ff !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     z-index: 3;
 }
 
@@ -389,6 +391,17 @@ header.expanded .mini-search-bar {
     cursor: pointer;
     margin: 8px;
     font-weight: 600;
+    transition: var(--transition);
+}
+
+.search-btn:hover {
+    background: #005bb5;
+    /* Darker blue */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.search-btn:active {
+    transform: scale(0.95);
 }
 
 /* All dropdowns use smooth slide */
