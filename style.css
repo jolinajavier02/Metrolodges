@@ -33,6 +33,17 @@ body {
     line-height: 1.5;
 }
 
+#scrollSentinel {
+    position: absolute;
+    top: 60px;
+    /* Trigger point */
+    left: 0;
+    width: 100%;
+    height: 1px;
+    pointer-events: none;
+    z-index: -1;
+}
+
 /* Header & Nav */
 header {
     background: white;
@@ -98,6 +109,7 @@ header.expanded {
 .logo-img {
     height: 42px;
     width: auto;
+    object-fit: contain;
     border-radius: 8px;
 }
 
@@ -170,6 +182,7 @@ header.expanded {
     cursor: pointer;
     transition: box-shadow 0.2s;
     height: 48px;
+    margin: 0 auto;
 }
 
 /* Show mini search bar only when header has scrolled class */
@@ -675,7 +688,7 @@ header.expanded .mini-search-bar {
     justify-content: flex-start;
     gap: 2.5rem;
     padding: 0.5rem 5%;
-    margin-top: 3.5rem;
+    margin-top: 4.5rem;
     background: white;
     overflow-x: auto;
     scrollbar-width: hide;
