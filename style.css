@@ -654,18 +654,23 @@ header.scrolled .mini-search-bar {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    color: var(--text-light);
+    color: #b3d4ff;
     cursor: pointer;
     transition: var(--transition);
     border-bottom: 2px solid transparent;
     padding: 1rem 0;
     min-width: fit-content;
+    font-size: 0.85rem;
+}
+
+.category-item i {
+    font-size: 1.5rem;
 }
 
 .category-item:hover,
 .category-item.active {
-    color: var(--text-color);
-    border-bottom-color: var(--text-color);
+    color: var(--brand-blue);
+    border-bottom-color: var(--brand-blue);
 }
 
 /* Main Content - Grid */
