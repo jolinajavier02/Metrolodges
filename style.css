@@ -681,16 +681,16 @@ header.scrolled .mini-search-bar {
 
 .listing-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
 }
 
 .listing-card {
     cursor: pointer;
     transition: var(--transition);
-    padding: 10px;
+    padding: 8px;
     border: 2px solid transparent;
-    border-radius: 16px;
+    border-radius: 14px;
 }
 
 .listing-card:hover {
@@ -700,10 +700,10 @@ header.scrolled .mini-search-bar {
 
 .listing-image-container {
     position: relative;
-    aspect-ratio: 1/1;
-    border-radius: 12px;
+    aspect-ratio: 4/3;
+    border-radius: 10px;
     overflow: hidden;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .listing-image-container img {
@@ -745,7 +745,7 @@ header.scrolled .mini-search-bar {
 
 .listing-title {
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.88rem;
 }
 
 .listing-rating {
@@ -757,7 +757,7 @@ header.scrolled .mini-search-bar {
 
 .listing-meta {
     color: var(--text-light);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
 
 .listing-price {

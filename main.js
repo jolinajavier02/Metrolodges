@@ -1,97 +1,63 @@
-const listings = [
-    {
-        id: 1,
-        title: "Guest suite in Camp Allen",
-        price: 1689,
-        rating: 4.95,
-        nights: 2,
-        badge: "Guest favorite",
-        image: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=600",
-        location: "Legarda-Burnham-Kisad"
-    },
-    {
-        id: 2,
-        title: "Apartment in Session Road Area",
-        price: 5706,
-        rating: 4.91,
-        nights: 2,
-        badge: "Guest favorite",
-        image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600",
-        location: "Baguio City"
-    },
-    {
-        id: 3,
-        title: "Apartment in Holy Ghost Extension",
-        price: 4930,
-        rating: 4.98,
-        nights: 2,
-        badge: "Guest favorite",
-        image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=600",
-        location: "Highland Greens"
-    },
-    {
-        id: 4,
-        title: "Room in General Luna Upper",
-        price: 4200,
-        rating: 4.88,
-        nights: 2,
-        badge: "Guest favorite",
-        image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=600",
-        location: "Downtown Plaza"
-    },
-    {
-        id: 5,
-        title: "Apartment in City Camp Proper",
-        price: 3995,
-        rating: 4.94,
-        nights: 2,
-        image: "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=600",
-        location: "Metro Heights"
-    },
-    {
-        id: 6,
-        title: "Condo in Engineers' Hill",
-        price: 4170,
-        rating: 4.94,
-        nights: 2,
-        badge: "Guest favorite",
-        image: "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&q=80&w=600",
-        location: "Green View"
-    },
-    {
-        id: 7,
-        title: "Apartment in Camp 7",
-        price: 3424,
-        rating: 4.97,
-        nights: 2,
-        category: "Homes",
-        image: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=600",
-        location: "South Ridge"
-    },
-    {
-        id: 8,
-        title: "Room in Maitim 2nd West",
-        price: 5362,
-        rating: 4.96,
-        nights: 2,
-        badge: "Guest favorite",
-        category: "Homes",
-        image: "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&q=80&w=600",
-        location: "West End"
-    },
-    {
-        id: 9,
-        title: "Sky View Suite",
-        price: 8500,
-        rating: 4.99,
-        nights: 1,
-        category: "Iconic Cities",
-        image: "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&q=80&w=600",
-        location: "Downtown"
-    }
+// ── Philippines Listings ──
+const philippineListings = [
+    { id: 101, title: "QBEE Hostel Manila", price: 550, rating: 4.7, nights: 1, badge: "Popular", image: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=600", location: "Makati, Manila", city: "Manila" },
+    { id: 102, title: "Z Hostel Rooftop", price: 780, rating: 4.8, nights: 1, badge: "Guest favorite", image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=600", location: "Poblacion, Makati", city: "Manila" },
+    { id: 103, title: "Lub d Makati", price: 890, rating: 4.6, nights: 1, image: "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=600", location: "Makati Ave, Manila", city: "Manila" },
+    { id: 104, title: "Our Melting Pot Hostel", price: 480, rating: 4.5, nights: 1, image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&q=80&w=600", location: "Ermita, Manila", city: "Manila" },
+    { id: 105, title: "Red Planet Ermita", price: 1200, rating: 4.4, nights: 1, image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&q=80&w=600", location: "Ermita, Manila", city: "Manila" },
+    { id: 106, title: "Selah Pods Hotel", price: 950, rating: 4.7, nights: 1, badge: "New", image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=600", location: "Pasay, Manila", city: "Manila" },
+    { id: 107, title: "QBEE Hostel Baguio", price: 450, rating: 4.6, nights: 1, badge: "Popular", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=600", location: "Session Road, Baguio", city: "Baguio" },
+    { id: 108, title: "Camp Allen Suite", price: 1689, rating: 4.95, nights: 2, badge: "Guest favorite", image: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=600", location: "Legarda-Burnham-Kisad", city: "Baguio" },
+    { id: 109, title: "Pine Breeze Hostel", price: 520, rating: 4.5, nights: 1, image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600", location: "Burnham Park, Baguio", city: "Baguio" },
+    { id: 110, title: "Sky View Apartment", price: 3424, rating: 4.97, nights: 2, badge: "Guest favorite", image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80&w=600", location: "Camp 7, Baguio", city: "Baguio" },
+    { id: 111, title: "MadHouse Cebu Hostel", price: 420, rating: 4.6, nights: 1, image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=600", location: "IT Park, Cebu City", city: "Cebu" },
+    { id: 112, title: "Sugbo Mercado Lodge", price: 750, rating: 4.5, nights: 1, image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=600", location: "Fuente Osmeña, Cebu", city: "Cebu" },
+    { id: 113, title: "Beachfront Cabana Mactan", price: 2800, rating: 4.8, nights: 1, badge: "Superhost", image: "https://images.unsplash.com/photo-1499793983394-12decfcbb846?auto=format&fit=crop&q=80&w=600", location: "Mactan, Cebu", city: "Cebu" },
+    { id: 114, title: "iCove Hostel", price: 380, rating: 4.3, nights: 1, image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600", location: "Mango Ave, Cebu", city: "Cebu" },
+    { id: 115, title: "Spin Designer Hostel El Nido", price: 650, rating: 4.7, nights: 1, badge: "Guest favorite", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=600", location: "Hama St, El Nido", city: "El Nido" },
+    { id: 116, title: "Island Front Cottage", price: 3200, rating: 4.9, nights: 1, badge: "Superhost", image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&q=80&w=600", location: "Corong-Corong, El Nido", city: "El Nido" },
+    { id: 117, title: "Nacpan Beach Glamping", price: 2100, rating: 4.8, nights: 1, badge: "New", image: "https://images.unsplash.com/photo-1520483601560-389dff434fdf?auto=format&fit=crop&q=80&w=600", location: "Nacpan, El Nido", city: "El Nido" },
+    { id: 118, title: "Puerto Princesa Backpackers", price: 390, rating: 4.4, nights: 1, image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=600", location: "Rizal Ave, Puerto Princesa", city: "Palawan" },
+    { id: 119, title: "Bravo Beach Resort Siargao", price: 1800, rating: 4.7, nights: 1, badge: "Guest favorite", image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=600", location: "General Luna, Siargao", city: "Siargao" },
+    { id: 120, title: "Harana Surf Hostel", price: 600, rating: 4.6, nights: 1, image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=600", location: "Cloud 9, Siargao", city: "Siargao" },
+    { id: 121, title: "Boracay Backpackers", price: 550, rating: 4.5, nights: 1, image: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&q=80&w=600", location: "Station 2, Boracay", city: "Boracay" },
+    { id: 122, title: "White Beach Villa Boracay", price: 4500, rating: 4.9, nights: 1, badge: "Superhost", image: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&q=80&w=600", location: "Station 1, Boracay", city: "Boracay" },
+    { id: 123, title: "Tagaytay Wind Residences", price: 2200, rating: 4.6, nights: 1, image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=600", location: "Tagaytay City", city: "Tagaytay" },
+    { id: 124, title: "SMDC Cool Suites", price: 1800, rating: 4.5, nights: 1, image: "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&q=80&w=600", location: "Tagaytay Rotunda", city: "Tagaytay" },
 ];
 
+// ── India Listings ──
+const indiaListings = [
+    { id: 201, title: "Zostel Mumbai", price: 599, rating: 4.5, nights: 1, badge: "Popular", image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&q=80&w=600", location: "Colaba, Mumbai", city: "Mumbai", currency: "₹" },
+    { id: 202, title: "Backpacker Panda Colaba", price: 750, rating: 4.6, nights: 1, image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=600", location: "Colaba, Mumbai", city: "Mumbai", currency: "₹" },
+    { id: 203, title: "Bombay Backpackers", price: 650, rating: 4.4, nights: 1, image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600", location: "Fort, Mumbai", city: "Mumbai", currency: "₹" },
+    { id: 204, title: "Sea-view Apartment Bandra", price: 4500, rating: 4.8, nights: 1, badge: "Superhost", image: "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&q=80&w=600", location: "Bandra West, Mumbai", city: "Mumbai", currency: "₹" },
+    { id: 205, title: "Zostel Delhi", price: 549, rating: 4.5, nights: 1, badge: "Popular", image: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=600", location: "Paharganj, New Delhi", city: "Delhi", currency: "₹" },
+    { id: 206, title: "Moustache Hostel Delhi", price: 499, rating: 4.6, nights: 1, badge: "Guest favorite", image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=600", location: "Old Delhi", city: "Delhi", currency: "₹" },
+    { id: 207, title: "Madpackers New Delhi", price: 699, rating: 4.7, nights: 1, image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=600", location: "Connaught Place, Delhi", city: "Delhi", currency: "₹" },
+    { id: 208, title: "Luxury Stay Near India Gate", price: 5200, rating: 4.9, nights: 1, badge: "Superhost", image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&q=80&w=600", location: "Central Delhi", city: "Delhi", currency: "₹" },
+    { id: 209, title: "Zostel Bangalore", price: 549, rating: 4.4, nights: 1, badge: "Popular", image: "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=600", location: "Koramangala, Bangalore", city: "Bangalore", currency: "₹" },
+    { id: 210, title: "Social Rehab Hostel", price: 450, rating: 4.3, nights: 1, image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&q=80&w=600", location: "Indiranagar, Bangalore", city: "Bangalore", currency: "₹" },
+    { id: 211, title: "Cozy Villa Whitefield", price: 3800, rating: 4.7, nights: 1, badge: "Superhost", image: "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=600", location: "Whitefield, Bangalore", city: "Bangalore", currency: "₹" },
+    { id: 212, title: "GoStops Bangalore", price: 599, rating: 4.5, nights: 1, image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=600", location: "MG Road, Bangalore", city: "Bangalore", currency: "₹" },
+    { id: 213, title: "Zostel Goa Anjuna", price: 799, rating: 4.7, nights: 1, badge: "Guest favorite", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=600", location: "Anjuna, Goa", city: "Goa", currency: "₹" },
+    { id: 214, title: "The Hostel Crowd Goa", price: 650, rating: 4.5, nights: 1, image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&q=80&w=600", location: "Baga, Goa", city: "Goa", currency: "₹" },
+    { id: 215, title: "Palolem Beach Cottage", price: 2200, rating: 4.8, nights: 1, badge: "Superhost", image: "https://images.unsplash.com/photo-1520483601560-389dff434fdf?auto=format&fit=crop&q=80&w=600", location: "Palolem, Goa", city: "Goa", currency: "₹" },
+    { id: 216, title: "Jungle Hostel Arambol", price: 450, rating: 4.4, nights: 1, image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=600", location: "Arambol, Goa", city: "Goa", currency: "₹" },
+    { id: 217, title: "Zostel Jaipur", price: 499, rating: 4.6, nights: 1, badge: "Popular", image: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&q=80&w=600", location: "MI Road, Jaipur", city: "Jaipur", currency: "₹" },
+    { id: 218, title: "Moustache Jaipur", price: 599, rating: 4.7, nights: 1, badge: "Guest favorite", image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=600", location: "Old City, Jaipur", city: "Jaipur", currency: "₹" },
+    { id: 219, title: "Haveli Heritage Stay", price: 3500, rating: 4.9, nights: 1, badge: "Superhost", image: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&q=80&w=600", location: "Hawa Mahal, Jaipur", city: "Jaipur", currency: "₹" },
+    { id: 220, title: "Backpacker Panda Jaipur", price: 450, rating: 4.3, nights: 1, image: "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&q=80&w=600", location: "C-Scheme, Jaipur", city: "Jaipur", currency: "₹" },
+    { id: 221, title: "Zostel Varanasi", price: 449, rating: 4.5, nights: 1, badge: "Popular", image: "https://images.unsplash.com/photo-1499793983394-12decfcbb846?auto=format&fit=crop&q=80&w=600", location: "Assi Ghat, Varanasi", city: "Varanasi", currency: "₹" },
+    { id: 222, title: "BunkStop Varanasi", price: 399, rating: 4.4, nights: 1, image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=600", location: "Dashashwamedh, Varanasi", city: "Varanasi", currency: "₹" },
+    { id: 223, title: "Ganges View Apartment", price: 2800, rating: 4.8, nights: 1, badge: "Superhost", image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=600", location: "Meer Ghat, Varanasi", city: "Varanasi", currency: "₹" },
+    { id: 224, title: "Moustache Varanasi", price: 549, rating: 4.6, nights: 1, image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&q=80&w=600", location: "Lanka, Varanasi", city: "Varanasi", currency: "₹" },
+];
+
+const allListings = [...philippineListings, ...indiaListings];
+
 function createListingHTML(listing) {
+    const currencySymbol = listing.currency || '₱';
     return `
         <div class="listing-card">
             <div class="listing-image-container">
@@ -107,26 +73,23 @@ function createListingHTML(listing) {
                 </div>
             </div>
             <div class="listing-meta">${listing.location}</div>
-            <div class="listing-price">₱${listing.price.toLocaleString()} <span>per night</span></div>
+            <div class="listing-price">${currencySymbol}${listing.price.toLocaleString()} <span>per night</span></div>
         </div>
     `;
 }
 
-function renderListings(filter = 'Homes') {
-    const grid = document.getElementById('listingGrid');
-    const weekendGrid = document.getElementById('weekendGrid');
+function renderListings() {
+    const phGrid = document.getElementById('listingGrid');
+    const indiaGrid = document.getElementById('indiaGrid');
 
-    // Filter listings based on category if not 'Homes' (which we use as default all)
-    const filtered = filter === 'Homes' ? listings : listings.filter(l => l.category === filter);
-
-    if (grid) {
-        grid.innerHTML = (filtered.length > 0 ? filtered : listings.slice(0, 4)).map(createListingHTML).join('');
+    if (phGrid) {
+        phGrid.innerHTML = philippineListings.map(createListingHTML).join('');
     }
-
-    if (weekendGrid) {
-        weekendGrid.innerHTML = [...listings].reverse().slice(0, 4).map(createListingHTML).join('');
+    if (indiaGrid) {
+        indiaGrid.innerHTML = indiaListings.map(createListingHTML).join('');
     }
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     renderListings();
@@ -387,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const categoryName = cat.querySelector('span').innerText;
             categories.forEach(c => c.classList.remove('active'));
             cat.classList.add('active');
-            renderListings(categoryName);
+            renderListings();
         });
     });
 });
