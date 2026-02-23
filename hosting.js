@@ -65,6 +65,23 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCalculations();
     });
 
+    // FAQ Accordion Logic
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    faqQuestions.forEach(question => {
+        question.addEventListener('click', () => {
+            const item = question.parentElement;
+
+            // Close other items (optional, but usually preferred for cleaner UX)
+            document.querySelectorAll('.faq-item').forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                }
+            });
+
+            item.classList.toggle('active');
+        });
+    });
+
     // Initial calculation
     updateCalculations();
 });
