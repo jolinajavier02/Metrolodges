@@ -39,7 +39,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 1000;
-    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
     transition: all 0.3s ease;
 }
 
@@ -339,7 +339,7 @@ header.expanded .mini-search-bar {
 }
 
 .search-item:hover {
-    background: #ebebeb;
+    background: #f0f7ff;
 }
 
 .search-item.active {
@@ -675,7 +675,7 @@ header.expanded .mini-search-bar {
     justify-content: flex-start;
     gap: 2.5rem;
     padding: 0.5rem 5%;
-    border-bottom: 1px solid var(--border-color);
+    margin-top: 3.5rem;
     background: white;
     overflow-x: auto;
     scrollbar-width: hide;

@@ -96,14 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Scroll: show mini search bar when user scrolls past the top section
     const header = document.getElementById('mainHeader');
-    const categoriesContainer = document.querySelector('.categories');
+    const sentinel = document.getElementById('scrollSentinel');
 
-    if (categoriesContainer) {
+    if (sentinel) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                // If categories is at the top or visible, we show the full header
-                // Note: threshold 0 and watching entry.isIntersecting
-                // When categories is NOT intersecting (scrolled past), we show mini bar
+                // When sentinel leaves the top (not intersecting), we scrolled down
                 if (entry.isIntersecting) {
                     header.classList.remove('scrolled');
                     header.classList.remove('expanded');
@@ -113,20 +111,50 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }, { threshold: 0 });
 
-        observer.observe(categoriesContainer);
+        observer.observe(sentinel);
     }
 
-    // Mini search bar → expand header to show full search bar
+    // Mini search bar → expand header and open specific dropdown
     const miniSearchBar = document.getElementById('miniSearchBar');
+    const miniItems = {
+        'miniWhere': 'whereItem',
+        'miniWhen': 'whenItem',
+        'miniWho': 'whoItem'
+    };
+
+    Object.keys(miniItems).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                header.classList.add('expanded');
+                // Trigger click on the main search item to open its dropdown
+                const targetItem = document.getElementById(miniItems[id]);
+                if (targetItem) targetItem.click();
+            });
+        }
+    });
+
+    // Main mini search bar container click (fallback)
     miniSearchBar.addEventListener('click', (e) => {
-        e.stopPropagation();
-        header.classList.toggle('expanded');
+        if (e.target === miniSearchBar || e.target.classList.contains('mini-search-btn')) {
+            e.stopPropagation();
+            header.classList.add('expanded');
+            document.getElementById('whereItem').click();
+        }
     });
 
     // Close expanded header when clicking outside
     document.addEventListener('click', (e) => {
         if (header.classList.contains('expanded') && !header.contains(e.target)) {
             header.classList.remove('expanded');
+            // Also deactivate any active search items
+            document.querySelectorAll('.search-item.active').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                menu.classList.remove('show');
+            });
         }
     });
 
