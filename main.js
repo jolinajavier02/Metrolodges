@@ -131,6 +131,28 @@ function renderListings(filter = 'Homes') {
 document.addEventListener('DOMContentLoaded', () => {
     renderListings();
 
+    // Scroll: show mini search bar when hero is out of view
+    const header = document.querySelector('header');
+    const heroSearch = document.querySelector('.hero-search');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                header.classList.remove('scrolled');
+            } else {
+                header.classList.add('scrolled');
+            }
+        });
+    }, { threshold: 0 });
+
+    observer.observe(heroSearch);
+
+    // Mini search bar → scroll to full search on click
+    const miniSearchBar = document.getElementById('miniSearchBar');
+    miniSearchBar.addEventListener('click', () => {
+        heroSearch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
     // Search Bar Elements
     const searchItems = document.querySelectorAll('.search-item');
     const whereItem = document.getElementById('whereItem');
@@ -166,6 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
             whereInput.value = value;
             whereDropdown.classList.remove('active');
             whereItem.classList.remove('active');
+            // Sync mini bar
+            document.getElementById('miniWhere').innerText = value || 'Anywhere';
         });
     });
 
@@ -187,7 +211,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (infants > 0) parts.push(`${infants} infant${infants > 1 ? 's' : ''}`);
         if (pets > 0) parts.push(`${pets} pet${pets > 1 ? 's' : ''}`);
 
-        whoInput.value = parts.length > 0 ? parts.join(', ') : 'Add guests';
+        const text = parts.length > 0 ? parts.join(', ') : 'Add guests';
+        whoInput.value = text;
+        // Sync mini bar
+        document.getElementById('miniWho').innerText = text;
     }
 
     const plusBtns = document.querySelectorAll('.control-btn.plus');
@@ -281,7 +308,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Format and show result
                     const startStr = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     const endStr = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    document.getElementById('whenInput').value = `${startStr} – ${endStr}`;
+                    const dateLabel = `${startStr} – ${endStr}`;
+                    document.getElementById('whenInput').value = dateLabel;
+                    // Sync mini bar
+                    document.getElementById('miniWhen').innerText = dateLabel;
 
                     // Don't close immediately to let user see selection
                     setTimeout(() => {

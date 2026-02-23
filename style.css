@@ -78,20 +78,26 @@ header {
     font-weight: 500;
 }
 
-.nav-links {
+/* Header Right (Become a host + user menu) */
+.header-right {
     display: flex;
-    gap: 2rem;
+    align-items: center;
+    gap: 1rem;
 }
 
-.nav-links a {
+.become-host {
     text-decoration: none;
     color: var(--text-color);
-    font-weight: 500;
-    transition: var(--transition);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 10px 16px;
+    border-radius: 20px;
+    transition: background 0.2s;
+    white-space: nowrap;
 }
 
-.nav-links a:hover {
-    color: var(--secondary-color);
+.become-host:hover {
+    background: #f7f7f7;
 }
 
 .user-menu {
@@ -109,10 +115,97 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Mini Search Bar (hidden by default, shown on scroll) */
+.mini-search-bar {
+    display: none;
+    align-items: center;
+    background: white;
+    border: 1px solid #DDDDDD;
+    border-radius: 40px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    height: 48px;
+}
+
+/* Show mini search bar only when header has scrolled class */
+header.scrolled .mini-search-bar {
+    display: flex;
+    animation: miniSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes miniSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85) translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.mini-search-bar:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.mini-search-item {
+    background: none;
+    border: none;
+    padding: 14px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+
+.mini-search-item:hover {
+    background: #f0f0f0;
+}
+
+.mini-search-item.mini-guests {
+    font-weight: 400;
+    color: var(--text-light);
+}
+
+.mini-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--brand-blue);
+    flex-shrink: 0;
+}
+
+.mini-search-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--brand-blue);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 6px 0 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    transition: transform 0.15s, background 0.15s;
+}
+
+.mini-search-btn:hover {
+    transform: scale(1.05);
+    background: #0055dd;
+}
+
 /* Search Bar Section */
 .hero-search {
     padding: 4rem 5%;
-    background: #f7f7f7;
+    background: #FFFFFF;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -222,7 +315,7 @@ header {
     display: block;
     font-size: 0.75rem;
     font-weight: 700;
-    text-transform: uppercase;
+    text-transform: none;
 }
 
 .search-item input {
@@ -696,40 +789,40 @@ header {
 
 /* Footer */
 footer {
-    background: #FFFFFF !important;
-    color: var(--text-color) !important;
+    background: var(--brand-blue) !important;
+    color: #FFFFFF !important;
     padding: 4rem 5%;
     margin-top: 4rem;
-    border-top: 1px solid var(--border-color);
+    border-top: none;
 }
 
 footer a {
-    color: var(--text-light) !important;
+    color: rgba(255, 255, 255, 0.75) !important;
     text-decoration: none;
     transition: var(--transition);
     font-size: 0.9rem;
 }
 
 footer a:hover {
-    color: var(--brand-blue) !important;
+    color: #FFFFFF !important;
     text-decoration: none;
 }
 
 footer h4 {
-    color: var(--brand-blue);
+    color: #FFFFFF;
     margin-bottom: 1.5rem;
     font-size: 1rem;
     font-weight: 600;
 }
 
 footer .footer-bottom {
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
     margin-top: 3rem;
     padding-top: 2rem;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.75);
     font-size: 0.85rem;
 }
 
@@ -737,7 +830,49 @@ footer .social-icons {
     display: flex;
     gap: 1.5rem;
     font-size: 1.2rem;
-    color: var(--brand-blue);
+    color: #FFFFFF;
+    align-items: center;
+}
+
+/* Header Icon Button */
+.header-icon-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-icon-btn:hover {
+    background: #f7f7f7;
+}
+
+/* Footer Locale */
+.footer-divider {
+    width: 1px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.footer-locale {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.2s;
+}
+
+.footer-locale:hover {
+    text-decoration: underline;
 }
 
 /* Responsive */
