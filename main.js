@@ -94,26 +94,40 @@ function renderListings() {
 document.addEventListener('DOMContentLoaded', () => {
     renderListings();
 
-    // Scroll: show mini search bar when hero is out of view
-    const header = document.querySelector('header');
-    const heroSearch = document.querySelector('.hero-search');
+    // Scroll: show mini search bar when user scrolls past the top section
+    const header = document.getElementById('mainHeader');
+    const categoriesContainer = document.querySelector('.categories');
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                header.classList.remove('scrolled');
-            } else {
-                header.classList.add('scrolled');
-            }
-        });
-    }, { threshold: 0 });
+    if (categoriesContainer) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                // If categories is at the top or visible, we show the full header
+                // Note: threshold 0 and watching entry.isIntersecting
+                // When categories is NOT intersecting (scrolled past), we show mini bar
+                if (entry.isIntersecting) {
+                    header.classList.remove('scrolled');
+                    header.classList.remove('expanded');
+                } else {
+                    header.classList.add('scrolled');
+                }
+            });
+        }, { threshold: 0 });
 
-    observer.observe(heroSearch);
+        observer.observe(categoriesContainer);
+    }
 
-    // Mini search bar → scroll to full search on click
+    // Mini search bar → expand header to show full search bar
     const miniSearchBar = document.getElementById('miniSearchBar');
-    miniSearchBar.addEventListener('click', () => {
-        heroSearch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    miniSearchBar.addEventListener('click', (e) => {
+        e.stopPropagation();
+        header.classList.toggle('expanded');
+    });
+
+    // Close expanded header when clicking outside
+    document.addEventListener('click', (e) => {
+        if (header.classList.contains('expanded') && !header.contains(e.target)) {
+            header.classList.remove('expanded');
+        }
     });
 
     // Search Bar Elements

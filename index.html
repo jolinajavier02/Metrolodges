@@ -11,186 +11,191 @@
 </head>
 
 <body>
-    <header>
-        <a href="#" class="logo-container">
-            <img src="images/metrolodges.png" alt="Metrolodges Logo" class="logo-img">
-            <div class="logo-text-group">
-                <span class="logo-name">Metrolodges</span>
-                <span class="logo-tagline">Your Gateway to Great Stays</span>
-            </div>
-        </a>
+    <header id="mainHeader">
+        <!-- Row 1: Logo + Mini/Compact bar + Right menu -->
+        <div class="header-row-1">
+            <a href="#" class="logo-container">
+                <img src="images/metrolodges.png" alt="Metrolodges Logo" class="logo-img">
+                <div class="logo-text-group">
+                    <span class="logo-name">Metrolodges</span>
+                    <span class="logo-tagline">Your Gateway to Great Stays</span>
+                </div>
+            </a>
 
-        <!-- Mini Search Bar (center of header) -->
-        <div class="mini-search-bar" id="miniSearchBar">
-            <button class="mini-search-item" id="miniWhere">Anywhere</button>
-            <span class="mini-divider"></span>
-            <button class="mini-search-item" id="miniWhen">Anytime</button>
-            <span class="mini-divider"></span>
-            <button class="mini-search-item mini-guests" id="miniWho">Add guests</button>
-            <button class="mini-search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <!-- Mini Search Bar (visible on scroll) -->
+            <div class="mini-search-bar" id="miniSearchBar">
+                <button class="mini-search-item" id="miniWhere">Anywhere</button>
+                <span class="mini-divider"></span>
+                <button class="mini-search-item" id="miniWhen">Anytime</button>
+                <span class="mini-divider"></span>
+                <button class="mini-search-item mini-guests" id="miniWho">Add guests</button>
+                <button class="mini-search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+
+            <div class="header-right">
+                <a href="#" class="become-host">Become a host</a>
+                <button class="header-icon-btn"><i class="fa-solid fa-globe"></i></button>
+                <div class="user-menu">
+                    <i class="fa-solid fa-bars"></i>
+                    <i class="fa-solid fa-circle-user" style="font-size: 1.8rem;"></i>
+                </div>
+            </div>
         </div>
 
-        <div class="header-right">
-            <a href="#" class="become-host">Become a host</a>
-            <button class="header-icon-btn"><i class="fa-solid fa-globe"></i></button>
-            <div class="user-menu">
-                <i class="fa-solid fa-bars"></i>
-                <i class="fa-solid fa-circle-user" style="font-size: 1.8rem;"></i>
+        <!-- Row 2: Full Search Bar (visible by default, hidden on scroll) -->
+        <div class="header-search-row" id="headerSearchRow">
+            <h1 class="hero-title">
+                Book Anywhere, <span>Stay Anywhere</span><img src="images/emoji.png" alt="Metrolodges Mascot"
+                    class="hero-mascot">
+            </h1>
+            <div class="search-container">
+                <div class="search-item" id="whereItem">
+                    <label>Where</label>
+                    <input type="text" placeholder="Search destinations" id="whereInput" autocomplete="off">
+
+                    <!-- Where Dropdown -->
+                    <div class="dropdown-menu where-dropdown" id="whereDropdown">
+                        <p class="suggested-title">Suggested destinations</p>
+                        <div class="destination-list">
+                            <div class="destination-item" data-value="Nearby">
+                                <div class="dest-icon"><i class="fa-solid fa-location-crosshairs"></i></div>
+                                <div class="dest-info"><b>Nearby</b><span>Find what's around you</span></div>
+                            </div>
+                            <div class="destination-item" data-value="Baguio, Philippines">
+                                <div class="dest-icon"><i class="fa-solid fa-mountain-city"></i></div>
+                                <div class="dest-info"><b>Baguio, Philippines</b><span>Great for a weekend
+                                        getaway</span></div>
+                            </div>
+                            <div class="destination-item" data-value="Tagaytay, Philippines">
+                                <div class="dest-icon"><i class="fa-solid fa-volcano"></i></div>
+                                <div class="dest-info"><b>Tagaytay, Philippines</b><span>For nature-lovers</span></div>
+                            </div>
+                            <div class="destination-item" data-value="Makati, Philippines">
+                                <div class="dest-icon"><i class="fa-solid fa-city"></i></div>
+                                <div class="dest-info"><b>Makati, Philippines</b><span>For business and leisure</span>
+                                </div>
+                            </div>
+                            <div class="destination-item" data-value="Mumbai, India">
+                                <div class="dest-icon"><i class="fa-solid fa-umbrella-beach"></i></div>
+                                <div class="dest-info"><b>Mumbai, India</b><span>City of Dreams</span></div>
+                            </div>
+                            <div class="destination-item" data-value="Delhi, India">
+                                <div class="dest-icon"><i class="fa-solid fa-fort-awesome"></i></div>
+                                <div class="dest-info"><b>Delhi, India</b><span>Historic capital</span></div>
+                            </div>
+                            <div class="destination-item" data-value="Bangalore, India">
+                                <div class="dest-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                                <div class="dest-info"><b>Bangalore, India</b><span>Garden City</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-item" id="whenItem">
+                    <label>When</label>
+                    <input type="text" placeholder="Add dates" id="whenInput" readonly>
+
+                    <!-- Calendar Dropdown -->
+                    <div class="dropdown-menu calendar-dropdown" id="whenDropdown">
+                        <div class="calendar-tabs">
+                            <div class="calendar-tab active">Dates</div>
+                            <div class="calendar-tab">Months</div>
+                            <div class="calendar-tab">Flexible</div>
+                        </div>
+
+                        <div class="calendar-months-container">
+                            <div class="calendar-month">
+                                <div class="calendar-header">
+                                    <button class="control-btn" id="prevMonth"><i
+                                            class="fa-solid fa-chevron-left"></i></button>
+                                    <h3 class="month-label">February 2026</h3>
+                                </div>
+                                <div class="calendar-grid" id="grid1">
+                                    <div class="day-name">S</div>
+                                    <div class="day-name">M</div>
+                                    <div class="day-name">T</div>
+                                    <div class="day-name">W</div>
+                                    <div class="day-name">T</div>
+                                    <div class="day-name">F</div>
+                                    <div class="day-name">S</div>
+                                </div>
+                            </div>
+                            <div class="calendar-month">
+                                <div class="calendar-header">
+                                    <h3 class="month-label">March 2026</h3>
+                                    <button class="control-btn" id="nextMonth"><i
+                                            class="fa-solid fa-chevron-right"></i></button>
+                                </div>
+                                <div class="calendar-grid" id="grid2">
+                                    <div class="day-name">S</div>
+                                    <div class="day-name">M</div>
+                                    <div class="day-name">T</div>
+                                    <div class="day-name">W</div>
+                                    <div class="day-name">T</div>
+                                    <div class="day-name">F</div>
+                                    <div class="day-name">S</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flexibility-options">
+                            <button class="flex-btn active">Exact dates</button>
+                            <button class="flex-btn">± 1 day</button>
+                            <button class="flex-btn">± 2 days</button>
+                            <button class="flex-btn">± 3 days</button>
+                            <button class="flex-btn">± 7 days</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-item" id="whoItem">
+                    <label>Who</label>
+                    <input type="text" placeholder="Add guests" readonly id="whoInput">
+
+                    <!-- Who Dropdown -->
+                    <div class="dropdown-menu who-dropdown" id="whoDropdown">
+                        <div class="guest-row">
+                            <div class="guest-info"><b>Adults</b><span>Ages 13 or above</span></div>
+                            <div class="guest-controls">
+                                <button class="control-btn minus" data-type="adults" disabled>-</button>
+                                <span class="guest-count" id="count-adults">0</span>
+                                <button class="control-btn plus" data-type="adults">+</button>
+                            </div>
+                        </div>
+                        <div class="guest-row">
+                            <div class="guest-info"><b>Children</b><span>Ages 2 – 12</span></div>
+                            <div class="guest-controls">
+                                <button class="control-btn minus" data-type="children" disabled>-</button>
+                                <span class="guest-count" id="count-children">0</span>
+                                <button class="control-btn plus" data-type="children">+</button>
+                            </div>
+                        </div>
+                        <div class="guest-row">
+                            <div class="guest-info"><b>Infants</b><span>Under 2</span></div>
+                            <div class="guest-controls">
+                                <button class="control-btn minus" data-type="infants" disabled>-</button>
+                                <span class="guest-count" id="count-infants">0</span>
+                                <button class="control-btn plus" data-type="infants">+</button>
+                            </div>
+                        </div>
+                        <div class="guest-row">
+                            <div class="guest-info"><b>Pets</b><a href="#"
+                                    style="font-size: 0.8rem; color: #717171;">Bringing a service animal?</a></div>
+                            <div class="guest-controls">
+                                <button class="control-btn minus" data-type="pets" disabled>-</button>
+                                <span class="guest-count" id="count-pets">0</span>
+                                <button class="control-btn plus" data-type="pets">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="search-btn">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Search
+                </button>
             </div>
         </div>
     </header>
 
-    <section class="hero-search">
-        <h1 class="hero-title">
-            Book Anywhere, <span>Stay Anywhere</span><img src="images/emoji.png" alt="Metrolodges Mascot"
-                class="hero-mascot">
-        </h1>
-        <div class="search-container">
-            <div class="search-item" id="whereItem">
-                <label>Where</label>
-                <input type="text" placeholder="Search destinations" id="whereInput" autocomplete="off">
 
-                <!-- Where Dropdown -->
-                <div class="dropdown-menu where-dropdown" id="whereDropdown">
-                    <p class="suggested-title">Suggested destinations</p>
-                    <div class="destination-list">
-                        <div class="destination-item" data-value="Nearby">
-                            <div class="dest-icon"><i class="fa-solid fa-location-crosshairs"></i></div>
-                            <div class="dest-info"><b>Nearby</b><span>Find what's around you</span></div>
-                        </div>
-                        <div class="destination-item" data-value="Baguio, Philippines">
-                            <div class="dest-icon"><i class="fa-solid fa-mountain-city"></i></div>
-                            <div class="dest-info"><b>Baguio, Philippines</b><span>Great for a weekend getaway</span>
-                            </div>
-                        </div>
-                        <div class="destination-item" data-value="Tagaytay, Philippines">
-                            <div class="dest-icon"><i class="fa-solid fa-volcano"></i></div>
-                            <div class="dest-info"><b>Tagaytay, Philippines</b><span>For nature-lovers</span></div>
-                        </div>
-                        <div class="destination-item" data-value="Makati, Philippines">
-                            <div class="dest-icon"><i class="fa-solid fa-city"></i></div>
-                            <div class="dest-info"><b>Makati, Philippines</b><span>For business and leisure</span></div>
-                        </div>
-                        <div class="destination-item" data-value="Mumbai, India">
-                            <div class="dest-icon"><i class="fa-solid fa-umbrella-beach"></i></div>
-                            <div class="dest-info"><b>Mumbai, India</b><span>City of Dreams</span></div>
-                        </div>
-                        <div class="destination-item" data-value="Delhi, India">
-                            <div class="dest-icon"><i class="fa-solid fa-fort-awesome"></i></div>
-                            <div class="dest-info"><b>Delhi, India</b><span>Historic capital</span></div>
-                        </div>
-                        <div class="destination-item" data-value="Bangalore, India">
-                            <div class="dest-icon"><i class="fa-solid fa-laptop-code"></i></div>
-                            <div class="dest-info"><b>Bangalore, India</b><span>Garden City</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="search-item" id="whenItem">
-                <label>When</label>
-                <input type="text" placeholder="Add dates" id="whenInput" readonly>
-
-                <!-- Calendar Dropdown -->
-                <div class="dropdown-menu calendar-dropdown" id="whenDropdown">
-                    <div class="calendar-tabs">
-                        <div class="calendar-tab active">Dates</div>
-                        <div class="calendar-tab">Months</div>
-                        <div class="calendar-tab">Flexible</div>
-                    </div>
-
-                    <div class="calendar-months-container">
-                        <div class="calendar-month">
-                            <div class="calendar-header">
-                                <button class="control-btn" id="prevMonth"><i
-                                        class="fa-solid fa-chevron-left"></i></button>
-                                <h3 class="month-label">February 2026</h3>
-                            </div>
-                            <div class="calendar-grid" id="grid1">
-                                <div class="day-name">S</div>
-                                <div class="day-name">M</div>
-                                <div class="day-name">T</div>
-                                <div class="day-name">W</div>
-                                <div class="day-name">T</div>
-                                <div class="day-name">F</div>
-                                <div class="day-name">S</div>
-                                <!-- Days injected by JS -->
-                            </div>
-                        </div>
-                        <div class="calendar-month">
-                            <div class="calendar-header">
-                                <h3 class="month-label">March 2026</h3>
-                                <button class="control-btn" id="nextMonth"><i
-                                        class="fa-solid fa-chevron-right"></i></button>
-                            </div>
-                            <div class="calendar-grid" id="grid2">
-                                <div class="day-name">S</div>
-                                <div class="day-name">M</div>
-                                <div class="day-name">T</div>
-                                <div class="day-name">W</div>
-                                <div class="day-name">T</div>
-                                <div class="day-name">F</div>
-                                <div class="day-name">S</div>
-                                <!-- Days injected by JS -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flexibility-options">
-                        <button class="flex-btn active">Exact dates</button>
-                        <button class="flex-btn">± 1 day</button>
-                        <button class="flex-btn">± 2 days</button>
-                        <button class="flex-btn">± 3 days</button>
-                        <button class="flex-btn">± 7 days</button>
-                    </div>
-                </div>
-            </div>
-            <div class="search-item" id="whoItem">
-                <label>Who</label>
-                <input type="text" placeholder="Add guests" readonly id="whoInput">
-
-                <!-- Who Dropdown -->
-                <div class="dropdown-menu who-dropdown" id="whoDropdown">
-                    <div class="guest-row">
-                        <div class="guest-info"><b>Adults</b><span>Ages 13 or above</span></div>
-                        <div class="guest-controls">
-                            <button class="control-btn minus" data-type="adults" disabled>-</button>
-                            <span class="guest-count" id="count-adults">0</span>
-                            <button class="control-btn plus" data-type="adults">+</button>
-                        </div>
-                    </div>
-                    <div class="guest-row">
-                        <div class="guest-info"><b>Children</b><span>Ages 2 – 12</span></div>
-                        <div class="guest-controls">
-                            <button class="control-btn minus" data-type="children" disabled>-</button>
-                            <span class="guest-count" id="count-children">0</span>
-                            <button class="control-btn plus" data-type="children">+</button>
-                        </div>
-                    </div>
-                    <div class="guest-row">
-                        <div class="guest-info"><b>Infants</b><span>Under 2</span></div>
-                        <div class="guest-controls">
-                            <button class="control-btn minus" data-type="infants" disabled>-</button>
-                            <span class="guest-count" id="count-infants">0</span>
-                            <button class="control-btn plus" data-type="infants">+</button>
-                        </div>
-                    </div>
-                    <div class="guest-row">
-                        <div class="guest-info"><b>Pets</b><a href="#"
-                                style="font-size: 0.8rem; color: #717171;">Bringing a service animal?</a></div>
-                        <div class="guest-controls">
-                            <button class="control-btn minus" data-type="pets" disabled>-</button>
-                            <span class="guest-count" id="count-pets">0</span>
-                            <button class="control-btn plus" data-type="pets">+</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <button class="search-btn">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                Search
-            </button>
-        </div>
-    </section>
 
     <div class="categories">
         <div class="category-item active">

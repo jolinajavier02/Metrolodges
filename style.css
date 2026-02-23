@@ -36,15 +36,57 @@ body {
 /* Header & Nav */
 header {
     background: white;
-    padding: 1rem 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 1px solid var(--border-color);
+    z-index: 1000;
+    transition: all 0.3s ease;
 }
+
+.header-row-1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+}
+
+/* Row 2: Full Search Bar in Header */
+.header-search-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 5% 1.25rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 250px;
+    opacity: 1;
+    overflow: visible;
+}
+
+/* When scrolled: hide search row */
+header.scrolled .header-search-row {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* When expanded (clicked mini bar): show search row again */
+header.expanded .header-search-row {
+    max-height: 250px;
+    opacity: 1;
+    padding-bottom: 1.25rem;
+    overflow: visible;
+    pointer-events: all;
+}
+
+header.expanded {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+
 
 .logo-container {
     display: flex;
@@ -136,6 +178,11 @@ header.scrolled .mini-search-bar {
     animation: miniSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Hide mini bar when header is expanded */
+header.expanded .mini-search-bar {
+    display: none;
+}
+
 @keyframes miniSlideIn {
     from {
         opacity: 0;
@@ -202,23 +249,15 @@ header.scrolled .mini-search-bar {
     background: #0055dd;
 }
 
-/* Search Bar Section */
-.hero-search {
-    padding: 4rem 5%;
-    background: #FFFFFF;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-}
+
 
 .hero-title {
-    font-size: 3rem;
-    font-weight: 800;
+    font-size: 2rem;
+    font-weight: 700;
     color: var(--primary-color);
     text-align: center;
-    margin-bottom: 0.5rem;
-    letter-spacing: -1px;
+    margin-bottom: 0;
+    letter-spacing: -0.5px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -229,13 +268,11 @@ header.scrolled .mini-search-bar {
 }
 
 .hero-mascot {
-    height: 85px;
+    height: 60px;
     width: auto;
     object-fit: contain;
-    margin-left: -8px;
-    /* Tucks it directly next to the 'e' */
-    transform: translateY(-5px);
-    /* Fine-tune vertical position */
+    margin-left: 5px;
+    transform: translateY(-2px);
 }
 
 .search-container {
@@ -244,7 +281,7 @@ header.scrolled .mini-search-bar {
     border-radius: 40px;
     display: flex;
     width: 95%;
-    max-width: 950px;
+    max-width: 750px;
     /* Expanded size */
     margin: 0 auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
@@ -258,7 +295,7 @@ header.scrolled .mini-search-bar {
 
 .search-container:has(.search-item.active) {
     background: #f7f7f7;
-    max-width: 1000px;
+    max-width: 800px;
     /* Slightly expand on active */
 }
 
@@ -269,7 +306,7 @@ header.scrolled .mini-search-bar {
 .search-item {
     flex: 1.2;
     /* Give more space */
-    padding: 1.25rem 2.5rem;
+    padding: 0.6rem 1.5rem;
     /* Larger padding to avoid collision */
     cursor: pointer;
     border-radius: 40px;
@@ -331,7 +368,7 @@ header.scrolled .mini-search-bar {
     background: var(--brand-blue);
     color: white;
     border: none;
-    padding: 14px 24px;
+    padding: 10px 18px;
     border-radius: 30px;
     display: flex;
     align-items: center;
@@ -657,7 +694,6 @@ header.scrolled .mini-search-bar {
     color: #b3d4ff;
     cursor: pointer;
     transition: var(--transition);
-    border-bottom: 2px solid transparent;
     padding: 1rem 0;
     min-width: fit-content;
     font-size: 0.85rem;
@@ -670,7 +706,6 @@ header.scrolled .mini-search-bar {
 .category-item:hover,
 .category-item.active {
     color: var(--brand-blue);
-    border-bottom-color: var(--brand-blue);
 }
 
 /* Main Content - Grid */
