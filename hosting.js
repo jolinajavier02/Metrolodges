@@ -82,6 +82,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Close user dropdown on click outside
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.dropdown-menu').forEach(dm => {
+            dm.classList.remove('show');
+        });
+    });
+
+    // User Menu Dropdown Toggle
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+
+    if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+    }
+
     // Initial calculation
     updateCalculations();
 });

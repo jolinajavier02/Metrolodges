@@ -376,8 +376,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close dropdowns on click outside
     document.addEventListener('click', () => {
         searchItems.forEach(si => si.classList.remove('active'));
-        document.querySelectorAll('.dropdown-menu').forEach(dm => dm.classList.remove('active'));
+        document.querySelectorAll('.dropdown-menu').forEach(dm => {
+            dm.classList.remove('active');
+            dm.classList.remove('show');
+        });
     });
+
+    // User Menu Dropdown Toggle
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+
+    if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isShowing = userDropdown.classList.contains('show');
+
+            // Close everything first
+            document.querySelectorAll('.dropdown-menu').forEach(dm => {
+                dm.classList.remove('active');
+                dm.classList.remove('show');
+            });
+            searchItems.forEach(si => si.classList.remove('active'));
+
+            if (!isShowing) {
+                userDropdown.classList.add('show');
+            }
+        });
+    }
 
     // Heart icons
     document.addEventListener('click', (e) => {
