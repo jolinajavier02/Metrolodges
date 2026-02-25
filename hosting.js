@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('metrolodges_loggedin') === 'true' && authMenuBtn) {
 
         authMenuBtn.classList.add('logged-in-menu');
+        authMenuBtn.classList.remove('logged-out-menu');
         authMenuBtn.innerHTML = `
             <div class="user-avatar-btn">N</div>
             <div class="user-burger-btn"><i class="fa-solid fa-bars"></i></div>

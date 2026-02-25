@@ -162,19 +162,31 @@ header.expanded {
 .user-menu {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    padding: 0;
+    justify-content: space-between;
+    padding: 5px 5px 5px 12px;
+    gap: 12px;
     border: 1px solid #DDDDDD;
     background: white;
-    border-radius: 50%;
+    border-radius: 24px;
     cursor: pointer;
     transition: var(--transition);
 }
 
 .user-menu:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.user-menu.logged-out-menu .fa-bars {
+    color: #222222;
+    font-size: 1rem;
+}
+
+.generic-avatar {
+    color: #717171;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .dropdown-menu {
