@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }, {
             threshold: 0,
-            rootMargin: '-80px 0px 0px 0px' // Offset the trigger point
+            rootMargin: '0px'
         });
 
         observer.observe(sentinel);
@@ -452,14 +452,18 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             const isShowing = userDropdown.classList.contains('show');
 
-            // Close everything first
+            // Close everything first EXCEPT the user dropdown if we are about to toggle it open
             document.querySelectorAll('.dropdown-menu').forEach(dm => {
-                dm.classList.remove('active');
-                dm.classList.remove('show');
+                if (dm !== userDropdown) {
+                    dm.classList.remove('active');
+                    dm.classList.remove('show');
+                }
             });
             searchItems.forEach(si => si.classList.remove('active'));
 
-            if (!isShowing) {
+            if (isShowing) {
+                userDropdown.classList.remove('show');
+            } else {
                 userDropdown.classList.add('show');
             }
         });
