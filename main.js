@@ -97,40 +97,60 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check auth state
     const authMenuBtn = document.getElementById('userMenuBtn');
     if (localStorage.getItem('metrolodges_loggedin') === 'true' && authMenuBtn) {
-        // Add avatar icon
-        const avatar = document.createElement('i');
-        avatar.className = 'fa-solid fa-circle-user';
-        avatar.style.fontSize = '1.8rem';
-        avatar.style.color = '#717171';
-        authMenuBtn.appendChild(avatar);
 
-        // Adjust user menu styling to fit both icons
-        authMenuBtn.style.padding = '5px 5px 5px 12px';
-        authMenuBtn.style.width = '70px';
-        authMenuBtn.style.justifyContent = 'space-between';
-        authMenuBtn.style.gap = '8px';
+        authMenuBtn.classList.add('logged-in-menu');
+        authMenuBtn.innerHTML = `
+            <div class="user-avatar-btn">N</div>
+            <div class="user-burger-btn"><i class="fa-solid fa-bars"></i></div>
+        `;
 
         // Update dropdown menu
         const authDropdown = document.getElementById('userDropdown');
         if (authDropdown) {
-            // Find login item and replace it with account/logout
-            const items = Array.from(authDropdown.querySelectorAll('.dropdown-item'));
-            const loginLink = items.find(a => a.textContent.includes('Log in or sign up'));
-            if (loginLink) {
-                loginLink.textContent = 'Account';
-                loginLink.href = '#';
+            authDropdown.innerHTML = `
+                <a href="#" class="dropdown-item icon-item">
+                    <i class="fa-regular fa-heart"></i> Wishlists
+                </a>
+                <a href="#" class="dropdown-item icon-item">
+                    <i class="fa-brands fa-airbnb"></i> Trips
+                </a>
+                <a href="#" class="dropdown-item icon-item">
+                    <i class="fa-regular fa-message"></i> Messages
+                </a>
+                <a href="#" class="dropdown-item icon-item">
+                    <i class="fa-regular fa-circle-user"></i> Profile
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item icon-item">
+                    <i class="fa-solid fa-gear"></i> Account settings
+                </a>
+                <a href="#" class="dropdown-item icon-item">
+                    <i class="fa-solid fa-globe"></i> Languages & currency
+                </a>
+                <a href="#" class="dropdown-item icon-item">
+                    <i class="fa-regular fa-circle-question"></i> Help Centre
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="hosting.html" class="dropdown-item dropdown-host-promo">
+                    <div class="promo-text">
+                        <strong>Become a host</strong>
+                        <span>It's easy to start hosting and earn extra income.</span>
+                    </div>
+                    <img src="images/host-promo.png" alt="Host promo icon" onerror="this.style.display='none'">
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">Refer a host</a>
+                <a href="#" class="dropdown-item">Find a co-host</a>
+                <a href="#" class="dropdown-item">Gift cards</a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item" id="logoutBtn">Log out</a>
+            `;
 
-                const logoutLink = document.createElement('a');
-                logoutLink.className = 'dropdown-item';
-                logoutLink.href = '#';
-                logoutLink.textContent = 'Log out';
-                logoutLink.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.removeItem('metrolodges_loggedin');
-                    window.location.reload();
-                });
-                authDropdown.appendChild(logoutLink);
-            }
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('metrolodges_loggedin');
+                window.location.reload();
+            });
         }
     }
 

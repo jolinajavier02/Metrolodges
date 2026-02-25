@@ -1792,3 +1792,65 @@ footer .social-icons {
         padding: 3rem 1rem;
     }
 }
+
+/* --- Logged-In User Menu Styles --- */
+.user-menu.logged-in-menu {
+    border: none;
+    background: transparent;
+    width: auto;
+    padding: 0;
+    gap: 12px;
+}
+
+.user-menu.logged-in-menu:hover {
+    box-shadow: none;
+}
+
+.user-avatar-btn {
+    width: 42px;
+    height: 42px;
+    background: #222222;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.user-avatar-btn:hover {
+    opacity: 0.9;
+}
+
+.user-burger-btn {
+    width: 42px;
+    height: 42px;
+    background: #f3f3f3;
+    color: #222222;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    border: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.user-burger-btn:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.dropdown-item.icon-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.dropdown-item.icon-item i {
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #444;
+}
