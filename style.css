@@ -967,6 +967,7 @@ footer .social-icons {
         text-align: center;
     }
 }
+
 /* Hosting Page Styles */
 .hosting-page {
     background-color: #fcfbf9;
@@ -1130,12 +1131,18 @@ footer .social-icons {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
+.listings-slider {
+    accent-color: var(--brand-blue);
+}
+
 .slider-marks {
     display: flex;
     justify-content: space-between;
     padding-top: 10px;
     font-size: 0.75rem;
     color: #888;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .counter-box {
@@ -1204,7 +1211,7 @@ footer .social-icons {
 }
 
 .continue-btn {
-    background: #ff385c;
+    background: var(--brand-blue);
     color: white;
     border: none;
     padding: 1rem;
@@ -1212,11 +1219,17 @@ footer .social-icons {
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: var(--transition);
+    transition: background 0.2s;
 }
 
 .continue-btn:hover {
-    background: #e31c5f;
+    background: #0055dd;
+}
+
+.continue-btn:active,
+.continue-btn:focus {
+    background: var(--brand-blue);
+    outline: none;
 }
 
 .sync-link {
@@ -1242,7 +1255,7 @@ footer .social-icons {
 }
 
 .benefit-item i {
-    color: #ff385c;
+    color: var(--brand-blue);
     font-size: 1.2rem;
     margin-top: 3px;
 }
@@ -1267,18 +1280,44 @@ footer .social-icons {
     margin-top: 3rem;
 }
 
-.faq-item h3 {
-    font-size: 1.25rem;
-    margin-bottom: 1.25rem;
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.faq-item.active .faq-answer {
+    max-height: 600px;
+}
+
+.faq-question {
     display: flex;
     align-items: center;
     gap: 12px;
+    font-size: 1.25rem;
+    margin-bottom: 0;
+    cursor: pointer;
+    user-select: none;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
 }
 
-.faq-item h3 i {
-    color: #ff385c;
-    font-size: 0.8rem;
+.faq-item.active .faq-question {
+    border-bottom: none;
 }
+
+.faq-question i {
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    color: var(--brand-blue);
+    font-size: 0.9rem;
+}
+
+.faq-item.active .faq-question i {
+    transform: rotate(45deg);
+}
+
 
 .faq-item p,
 .faq-item ul {
