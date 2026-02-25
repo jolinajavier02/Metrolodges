@@ -100,6 +100,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Check auth state
+    const authMenuBtn = document.getElementById('userMenuBtn');
+    if (localStorage.getItem('metrolodges_loggedin') === 'true' && authMenuBtn) {
+        // Add avatar icon
+        const avatar = document.createElement('i');
+        avatar.className = 'fa-solid fa-circle-user';
+        avatar.style.fontSize = '1.8rem';
+        avatar.style.color = '#717171';
+        authMenuBtn.appendChild(avatar);
+
+        // Adjust user menu styling to fit both icons
+        authMenuBtn.style.padding = '5px 5px 5px 12px';
+        authMenuBtn.style.width = '70px';
+        authMenuBtn.style.justifyContent = 'space-between';
+        authMenuBtn.style.gap = '8px';
+
+        // Update dropdown menu
+        const authDropdown = document.getElementById('userDropdown');
+        if (authDropdown) {
+            // Find login item and replace it with account/logout
+            const items = Array.from(authDropdown.querySelectorAll('.dropdown-item'));
+            const loginLink = items.find(a => a.textContent.includes('Log in or sign up'));
+            if (loginLink) {
+                loginLink.textContent = 'Account';
+                loginLink.href = '#';
+
+                const logoutLink = document.createElement('a');
+                logoutLink.className = 'dropdown-item';
+                logoutLink.href = '#';
+                logoutLink.textContent = 'Log out';
+                logoutLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('metrolodges_loggedin');
+                    window.location.reload();
+                });
+                authDropdown.appendChild(logoutLink);
+            }
+        }
+    }
+
     // Initial calculation
     updateCalculations();
 });
