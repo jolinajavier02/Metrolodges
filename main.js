@@ -94,67 +94,6 @@ function renderListings() {
 document.addEventListener('DOMContentLoaded', () => {
     renderListings();
 
-    // Check auth state
-    const authMenuBtn = document.getElementById('userMenuBtn');
-    if (localStorage.getItem('metrolodges_loggedin') === 'true' && authMenuBtn) {
-
-        authMenuBtn.classList.add('logged-in-menu');
-        authMenuBtn.classList.remove('logged-out-menu');
-        authMenuBtn.innerHTML = `
-            <div class="user-avatar-btn">N</div>
-            <div class="user-burger-btn"><i class="fa-solid fa-bars"></i></div>
-        `;
-
-        // Update dropdown menu
-        const authDropdown = document.getElementById('userDropdown');
-        if (authDropdown) {
-            authDropdown.innerHTML = `
-                <a href="#" class="dropdown-item icon-item">
-                    <i class="fa-regular fa-heart"></i> Wishlists
-                </a>
-                <a href="#" class="dropdown-item icon-item">
-                    <i class="fa-brands fa-airbnb"></i> Trips
-                </a>
-                <a href="#" class="dropdown-item icon-item">
-                    <i class="fa-regular fa-message"></i> Messages
-                </a>
-                <a href="#" class="dropdown-item icon-item">
-                    <i class="fa-regular fa-circle-user"></i> Profile
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item icon-item">
-                    <i class="fa-solid fa-gear"></i> Account settings
-                </a>
-                <a href="#" class="dropdown-item icon-item">
-                    <i class="fa-solid fa-globe"></i> Languages & currency
-                </a>
-                <a href="#" class="dropdown-item icon-item">
-                    <i class="fa-regular fa-circle-question"></i> Help Centre
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="hosting.html" class="dropdown-item dropdown-host-promo">
-                    <div class="promo-text">
-                        <strong>Become a host</strong>
-                        <span>It's easy to start hosting and earn extra income.</span>
-                    </div>
-                    <img src="images/host-promo.png" alt="Host promo icon" onerror="this.style.display='none'">
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">Refer a host</a>
-                <a href="#" class="dropdown-item">Find a co-host</a>
-                <a href="#" class="dropdown-item">Gift cards</a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item" id="logoutBtn">Log out</a>
-            `;
-
-            document.getElementById('logoutBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                localStorage.removeItem('metrolodges_loggedin');
-                window.location.reload();
-            });
-        }
-    }
-
     // Scroll: show mini search bar when user scrolls past the top section
     const header = document.getElementById('mainHeader');
     const sentinel = document.getElementById('scrollSentinel');
@@ -162,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sentinel) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                // When sentinel leaves the top area (not intersecting with top 80px), we show mini bar
+                // When sentinel leaves the top (not intersecting), we scrolled down
                 if (entry.isIntersecting) {
                     header.classList.remove('scrolled');
                     header.classList.remove('expanded');
@@ -170,10 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     header.classList.add('scrolled');
                 }
             });
-        }, {
-            threshold: 0,
-            rootMargin: '0px'
-        });
+        }, { threshold: 0 });
 
         observer.observe(sentinel);
     }
@@ -437,37 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Close dropdowns on click outside
     document.addEventListener('click', () => {
         searchItems.forEach(si => si.classList.remove('active'));
-        document.querySelectorAll('.dropdown-menu').forEach(dm => {
-            dm.classList.remove('active');
-            dm.classList.remove('show');
-        });
+        document.querySelectorAll('.dropdown-menu').forEach(dm => dm.classList.remove('active'));
     });
-
-    // User Menu Dropdown Toggle
-    const userMenuBtn = document.getElementById('userMenuBtn');
-    const userDropdown = document.getElementById('userDropdown');
-
-    if (userMenuBtn && userDropdown) {
-        userMenuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isShowing = userDropdown.classList.contains('show');
-
-            // Close everything first EXCEPT the user dropdown if we are about to toggle it open
-            document.querySelectorAll('.dropdown-menu').forEach(dm => {
-                if (dm !== userDropdown) {
-                    dm.classList.remove('active');
-                    dm.classList.remove('show');
-                }
-            });
-            searchItems.forEach(si => si.classList.remove('active'));
-
-            if (isShowing) {
-                userDropdown.classList.remove('show');
-            } else {
-                userDropdown.classList.add('show');
-            }
-        });
-    }
 
     // Heart icons
     document.addEventListener('click', (e) => {
