@@ -1,6 +1,7 @@
 {
   "name": "metrolodges",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -13,13 +14,13 @@
     "react-router-dom": "6.14.1"
   },
   "devDependencies": {
-    "@types/react": "18.0.37",
-    "@types/react-dom": "18.0.11",
-    "@vitejs/plugin-react": "5.1.0",
-    "autoprefixer": "10.4.14",
-    "postcss": "8.4.24",
-    "tailwindcss": "3.5.4",
-    "typescript": "5.2.2",
-    "vite": "5.1.0"
+    "@types/react": "^18.0.37",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0"
   }
 }
