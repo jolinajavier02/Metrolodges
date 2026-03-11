@@ -3,6 +3,7 @@
 :root {
     --primary-color: #1A1A1A;
     --brand-blue: #71b7e1;
+    --brand-blue-light: #e1f0fd;
     /* Updated Metrolodges brand blue */
     --secondary-color: var(--brand-blue);
     --accent-color: #00A699;
@@ -145,6 +146,7 @@ header.expanded {
     font-weight: 600;
     font-size: 0.9rem;
     padding: 10px 16px;
+    background: var(--brand-blue-light);
     border-radius: 20px;
     transition: background 0.2s;
     white-space: nowrap;
@@ -159,7 +161,8 @@ header.expanded {
     align-items: center;
     gap: 1rem;
     padding: 8px 12px;
-    border: 1px solid var(--border-color);
+    background: var(--brand-blue-light);
+    border: 1px solid transparent;
     border-radius: 30px;
     cursor: pointer;
     transition: var(--transition);
@@ -551,11 +554,11 @@ header.expanded .mini-search-bar {
 
 .flex-btn {
     padding: 10px 20px;
-    border: 1px solid #DDDDDD;
+    border: none;
     border-radius: 24px;
     font-size: 0.85rem;
     cursor: pointer;
-    background: white;
+    background: var(--brand-blue-light);
     white-space: nowrap;
     transition: all 0.2s;
 }
@@ -622,7 +625,7 @@ header.expanded .mini-search-bar {
 }
 
 
-
+/* Dropdown Elements */
 .guest-row {
     display: flex;
     justify-content: space-between;
@@ -654,16 +657,15 @@ header.expanded .mini-search-bar {
 .control-btn {
     width: 32px;
     height: 32px;
-    border: 1px solid #b0b0b0;
     border-radius: 50%;
-    background: transparent;
-    cursor: pointer;
+    border: none;
+    background: var(--brand-blue-light);
+    color: var(--text-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    color: #717171;
-    transition: border-color 0.2s;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .control-btn:hover:not(:disabled) {
@@ -704,12 +706,13 @@ header.expanded .mini-search-bar {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    color: #b3d4ff;
     cursor: pointer;
+    color: var(--text-light);
     transition: var(--transition);
-    padding: 1rem 0;
-    min-width: fit-content;
-    font-size: 0.85rem;
+    min-width: max-content;
+    padding: 8px 12px;
+    background: var(--brand-blue-light);
+    border-radius: 12px;
 }
 
 .category-item i {
@@ -718,7 +721,9 @@ header.expanded .mini-search-bar {
 
 .category-item:hover,
 .category-item.active {
-    color: var(--brand-blue);
+    color: var(--primary-color);
+    background: var(--brand-blue) !important;
+    color: white;
 }
 
 /* Main Content - Grid */
@@ -842,40 +847,40 @@ header.expanded .mini-search-bar {
 
 /* Footer */
 footer {
-    background: var(--brand-blue) !important;
-    color: #FFFFFF !important;
+    background: var(--brand-blue-light) !important;
+    color: var(--text-color) !important;
     padding: 4rem 5%;
     margin-top: 4rem;
     border-top: none;
 }
 
 footer a {
-    color: rgba(255, 255, 255, 0.75) !important;
+    color: var(--text-color) !important;
     text-decoration: none;
     transition: var(--transition);
     font-size: 0.9rem;
 }
 
 footer a:hover {
-    color: #FFFFFF !important;
+    color: var(--brand-blue) !important;
     text-decoration: none;
 }
 
 footer h4 {
-    color: #FFFFFF;
+    color: var(--text-color);
     margin-bottom: 1.5rem;
     font-size: 1rem;
     font-weight: 600;
 }
 
 footer .footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid var(--border-color);
     margin-top: 3rem;
     padding-top: 2rem;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-light);
     font-size: 0.85rem;
 }
 
@@ -883,7 +888,7 @@ footer .social-icons {
     display: flex;
     gap: 1.5rem;
     font-size: 1.2rem;
-    color: #FFFFFF;
+    color: var(--text-color);
     align-items: center;
 }
 
@@ -910,7 +915,7 @@ footer .social-icons {
 .footer-divider {
     width: 1px;
     height: 18px;
-    background: rgba(255, 255, 255, 0.35);
+    background: var(--border-color);
 }
 
 .footer-locale {
@@ -967,4 +972,3 @@ footer .social-icons {
         text-align: center;
     }
 }
-

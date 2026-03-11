@@ -2,58 +2,58 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 export default function Login() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault()
-        // Mock login, redirect to home
-        console.log('Logging in with', email, password)
-        navigate('/')
-    }
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Mock login, redirect to home
+    console.log('Logging in with', email, password)
+    navigate('/')
+  }
 
-    return (
-        <div className="login-container">
-            <div className="login-card">
-                <div className="login-header">
-                    <Link to="/" className="login-logo">
-                        <img src="/logo.png" alt="Metrolodges Logo" style={{ height: '40px', objectFit: 'contain' }} />
-                        <span style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--brand-blue)' }}>Metrolodges</span>
-                    </Link>
-                    <h2>Welcome back</h2>
-                </div>
+  return (
+    <div className="login-container">
+      <div className="login-card">
+        <div className="login-header">
+          <Link to="/" className="login-logo">
+            <img src="/logo.png" alt="Metrolodges Logo" style={{ height: '40px', objectFit: 'contain' }} />
+            <span style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--brand-blue)' }}>Metrolodges</span>
+          </Link>
+          <h2>Welcome back</h2>
+        </div>
 
-                <form onSubmit={handleLogin} className="login-form">
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="login-submit-btn">Log in</button>
-                </form>
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="login-submit-btn">Log in</button>
+        </form>
 
-                <div className="login-footer">
-                    <p>Don't have an account? <a href="#">Sign up</a></p>
-                </div>
-            </div>
+        <div className="login-footer">
+          <p>Don't have an account? <a href="#">Sign up</a></p>
+        </div>
+      </div>
 
-            <style>{`
+      <style>{`
         .login-container {
           min-height: 100vh;
           display: flex;
@@ -160,6 +160,6 @@ export default function Login() {
           text-decoration: underline;
         }
       `}</style>
-        </div>
-    )
+    </div>
+  )
 }
