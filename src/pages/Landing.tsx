@@ -187,7 +187,7 @@ const Landing: React.FC = () => {
         {/* Full Search Bar */}
         <div className="header-search-row" id="headerSearchRow">
           <h1 className="hero-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-            Book Anywhere, <span>Stay Anywhere</span> <span className="hero-emoji" style={{ fontSize: '2.5rem' }}>🏠</span>
+            Book Anywhere, <span>Stay Anywhere</span> <img src="/emoji.png" alt="Emoji Mascot" className="hero-mascot" />
           </h1>
           <div className="search-container">
             {/* Where */}
