@@ -1,15 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import SimpleHeader from '../components/SimpleHeader'
 
 const About: React.FC = () => {
   return (
     <div>
-      {/* Header */}
-      <header style={{ background: 'white', position: 'sticky', top: 0, zIndex: 1000, borderBottom: '1px solid #ddd', padding: '1rem 5%' }}>
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit', fontSize: '1.6rem', fontWeight: 'bold', color: '#71b7e1' }}>
-          Metrolodges
-        </Link>
-      </header>
+      <SimpleHeader />
 
       <main style={{ maxWidth: '900px', margin: '0 auto', padding: '3rem 5%' }}>
         <h1 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>About Metrolodges</h1>

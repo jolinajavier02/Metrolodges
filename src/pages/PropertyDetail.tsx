@@ -1,6 +1,8 @@
 import React from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { allListings } from '../utils/listings'
+import SimpleHeader from '../components/SimpleHeader'
+import Footer from '../components/Footer'
 
 const PropertyDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -18,16 +20,11 @@ const PropertyDetail: React.FC = () => {
   return (
     <div>
       {/* Header */}
-      <header style={{ background: 'white', position: 'sticky', top: 0, zIndex: 1000, borderBottom: '1px solid #ddd', padding: '1rem 5%' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <span style={{ fontSize: '1.6rem', fontWeight: 'bold', color: '#71b7e1' }}>Metrolodges</span>
-          </Link>
-          <button style={{ padding: '8px 16px', borderRadius: '4px', border: '1px solid #ddd', cursor: 'pointer' }}>
-            Share
-          </button>
-        </div>
-      </header>
+      <SimpleHeader>
+        <button style={{ padding: '8px 16px', borderRadius: '4px', border: '1px solid #ddd', cursor: 'pointer', background: 'white' }}>
+          Share
+        </button>
+      </SimpleHeader>
 
       {/* Property Gallery */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
@@ -188,15 +185,11 @@ const PropertyDetail: React.FC = () => {
             </button>
           </div>
         </div>
-      </div>
+      </div >
 
       {/* Footer */}
-      <footer style={{ background: '#f9f9f9', padding: '3rem 5%', marginTop: '4rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <p>&copy; 2026 Metrolodges, Inc. &middot; Privacy &middot; Terms &middot; Sitemap</p>
-        </div>
-      </footer>
-    </div>
+      < Footer />
+    </div >
   )
 }
 

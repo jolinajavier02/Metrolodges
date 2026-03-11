@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { philippineListings, indiaListings } from '../utils/listings'
+import PropertyCard from '../components/PropertyCard'
+import Footer from '../components/Footer'
 
 const Landing: React.FC = () => {
   const [scrolled, setScrolled] = useState(false)
@@ -301,92 +303,20 @@ const Landing: React.FC = () => {
         <h2 className="section-title"><i className="fa-solid fa-location-dot" style={{ color: 'var(--brand-blue)' }}></i> Places to stay in India</h2>
         <div className="listing-grid">
           {indiaListings.map(listing => (
-            <Link key={listing.id} to={`/property/${listing.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div className="listing-card">
-                <div className="listing-image-container">
-                  <img src={listing.image} alt={listing.title} />
-                  {listing.badge && <div className="badge">{listing.badge}</div>}
-                  <i className="fa-regular fa-heart heart-icon"></i>
-                </div>
-                <div className="listing-info">
-                  <div className="listing-title">{listing.title}</div>
-                  <div className="listing-rating">
-                    <i className="fa-solid fa-star"></i>
-                    {listing.rating}
-                  </div>
-                </div>
-                <div className="listing-meta">{listing.location}</div>
-                <div className="listing-price">{listing.currency || '₹'}{listing.price.toLocaleString()} <span>per night</span></div>
-              </div>
-            </Link>
+            <PropertyCard key={listing.id} listing={listing} />
           ))}
         </div>
 
         <h2 className="section-title" style={{ marginTop: '4rem' }}><i className="fa-solid fa-location-dot" style={{ color: 'var(--brand-blue)' }}></i> Places to stay in the Philippines</h2>
         <div className="listing-grid">
           {philippineListings.map(listing => (
-            <Link key={listing.id} to={`/property/${listing.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div className="listing-card">
-                <div className="listing-image-container">
-                  <img src={listing.image} alt={listing.title} />
-                  {listing.badge && <div className="badge">{listing.badge}</div>}
-                  <i className="fa-regular fa-heart heart-icon"></i>
-                </div>
-                <div className="listing-info">
-                  <div className="listing-title">{listing.title}</div>
-                  <div className="listing-rating">
-                    <i className="fa-solid fa-star"></i>
-                    {listing.rating}
-                  </div>
-                </div>
-                <div className="listing-meta">{listing.location}</div>
-                <div className="listing-price">{listing.currency || '₱'}{listing.price.toLocaleString()} <span>per night</span></div>
-              </div>
-            </Link>
+            <PropertyCard key={listing.id} listing={listing} />
           ))}
         </div>
       </main>
 
       {/* Footer */}
-      <footer>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
-          <div>
-            <h4>Support</h4>
-            <ul style={{ listStyle: 'none' }}>
-              <li><a href="#">Help Center</a></li>
-              <li><a href="#">AirCover</a></li>
-              <li><a href="#">Supporting people with disabilities</a></li>
-              <li><a href="#">Cancellation options</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4>Hosting</h4>
-            <ul style={{ listStyle: 'none' }}>
-              <li><a href="#">Metrolodges your home</a></li>
-              <li><a href="#">AirCover for Hosts</a></li>
-              <li><a href="#">Hosting resources</a></li>
-              <li><a href="#">Community forum</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4>Metrolodges</h4>
-            <ul style={{ listStyle: 'none' }}>
-              <li><a href="#">Newsroom</a></li>
-              <li><a href="#">New features</a></li>
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">Investors</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>&copy; 2026 Metrolodges, Inc. &middot; Privacy &middot; Terms &middot; Sitemap</p>
-          <div className="social-icons">
-            <i className="fa-brands fa-facebook"></i>
-            <i className="fa-brands fa-twitter"></i>
-            <i className="fa-brands fa-instagram"></i>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       <style>{`
         .menu-dropdown {
