@@ -30,17 +30,6 @@ const Landing: React.FC = () => {
   const allListings = [...indiaListings, ...philippineListings]
   const [filteredListings, setFilteredListings] = useState(allListings)
 
-  // For horizontal scroll
-  const scrollRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
-
-  const scroll = (city: string, direction: 'left' | 'right') => {
-    const el = scrollRefs.current[city]
-    if (el) {
-      const scrollAmount = direction === 'left' ? -el.offsetWidth : el.offsetWidth
-      el.scrollBy({ left: scrollAmount, behavior: 'smooth' })
-    }
-  }
-
   // Group listings by city
   const groupedListings = filteredListings.reduce((acc, listing) => {
     const city = listing.city || 'Other'
@@ -48,6 +37,38 @@ const Landing: React.FC = () => {
     acc[city].push(listing)
     return acc
   }, {} as { [key: string]: typeof allListings })
+
+  // For horizontal scroll
+  const scrollRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+  const [scrollState, setScrollState] = useState<{ [key: string]: { start: boolean, end: boolean } }>({})
+
+  const updateScrollState = (city: string) => {
+    const el = scrollRefs.current[city]
+    if (el) {
+      const isAtStart = el.scrollLeft <= 5
+      const isAtEnd = el.scrollLeft + el.offsetWidth >= el.scrollWidth - 5
+      setScrollState(prev => ({
+        ...prev,
+        [city]: { start: isAtStart, end: isAtEnd }
+      }))
+    }
+  }
+
+  useEffect(() => {
+    // Initial state for all cities
+    Object.keys(groupedListings).forEach(city => {
+      updateScrollState(city)
+    })
+  }, [groupedListings])
+
+  const scroll = (city: string, direction: 'left' | 'right') => {
+    const el = scrollRefs.current[city]
+    if (el) {
+      // Move by 6 items (the full width of the container)
+      const scrollAmount = direction === 'left' ? -el.offsetWidth : el.offsetWidth
+      el.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+    }
+  }
 
   const handleSearch = (searchTerm: string) => {
     setActiveDropdown(null)
@@ -428,32 +449,64 @@ const Landing: React.FC = () => {
       </header>
 
       {/* Categories */}
-      <div className="categories">
-        {categories.map((cat, idx) => (
-          <div key={idx} className={idx === 0 ? 'category-item active' : 'category-item'}>
-            <i className={`fa-solid ${cat.icon}`}></i>
-            <span>{cat.name}</span>
-          </div>
-        ))}
+      <div className="categories-wrapper">
+        <div className="categories">
+          {categories.map((cat, idx) => (
+            <div key={idx} className={idx === 0 ? 'category-item active' : 'category-item'}>
+              <i className={`fa-solid ${cat.icon}`}></i>
+              <span>{cat.name}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Main Content */}
       <main className="main-content">
+        {/* We'll focus on the specific city sections as requested */}
+
         {Object.entries(groupedListings).length > 0 ? (
-          Object.entries(groupedListings).map(([city, listings]) => (
-            <section key={city} className="city-section">
-              <div className="section-header">
-                <Link to={`/category/${city}`} style={{ textDecoration: 'none' }}>
-                  <h2 className="section-title">
-                    {city === 'Other' ? 'More places to stay' : `Homes in ${city}`}
-                    <i className="fa-solid fa-chevron-right section-arrow"></i>
-                  </h2>
-                </Link>
+          Object.entries(groupedListings).map(([city, listings], idx) => {
+            const getTitle = (cityName: string, index: number) => {
+              if (cityName === 'Other') return 'More places to stay';
+              const prefixes = [
+                'Popular homes in',
+                'Available in',
+                'Places in',
+                'Stay in',
+                'Check out',
+                'Home to stay in'
+              ];
+              return `${prefixes[index % prefixes.length]} ${cityName}`;
+            };
+            
+            return (
+              <section key={city} className="city-section">
+                <div className="section-header">
+                  <Link to={`/category/${city}`} style={{ textDecoration: 'none' }}>
+                    <h2 className="section-title">
+                      {getTitle(city, idx)}
+                      <i className="fa-solid fa-chevron-right section-arrow"></i>
+                    </h2>
+                  </Link>
                 <div className="scroll-controls">
-                  <button className="scroll-btn-arrow" onClick={() => scroll(city, 'left')}>
+                  <button 
+                    className="scroll-btn-arrow" 
+                    onClick={() => scroll(city, 'left')}
+                    style={{ 
+                      opacity: scrollState[city]?.start ? 0.2 : 1,
+                      transition: 'opacity 0.2s'
+                    }}
+                  >
                     <i className="fa-solid fa-chevron-left"></i>
                   </button>
-                  <button className="scroll-btn-arrow" onClick={() => scroll(city, 'right')}>
+                  <button 
+                    className="scroll-btn-arrow" 
+                    onClick={() => scroll(city, 'right')}
+                    style={{ 
+                      opacity: scrollState[city]?.end ? 0.2 : 1,
+                      transition: 'opacity 0.2s'
+                    }}
+                  >
                     <i className="fa-solid fa-chevron-right"></i>
                   </button>
                 </div>
@@ -462,14 +515,15 @@ const Landing: React.FC = () => {
               <div 
                 className="listing-scroll-container" 
                 ref={el => scrollRefs.current[city] = el}
+                onScroll={() => updateScrollState(city)}
               >
-                {listings.map(listing => (
+                {listings.slice(0, 9).map(listing => (
                   <div key={listing.id} className="scroll-item">
                     <PropertyCard listing={listing} />
                   </div>
                 ))}
                 
-                {/* See All Card */}
+                {/* See All Card - Always show after 9 listings or if less */}
                 <div className="scroll-item see-all-card-item">
                   <Link to={`/category/${city}`} className="see-all-card">
                     <div className="see-all-content">
@@ -484,21 +538,26 @@ const Landing: React.FC = () => {
                 </div>
               </div>
             </section>
-          ))
+            );
+          })
         ) : (
-          <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-light)' }}>
-            <i className="fa-solid fa-magnifying-glass" style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.5 }}></i>
-            <h3>No places found</h3>
-            <p>Try searching for a different destination or adjusting your filters.</p>
-            <button 
-              onClick={() => { setWhereValue('Anywhere'); handleSearch('Anywhere'); }}
-              style={{ marginTop: '1rem', padding: '8px 16px', background: 'var(--brand-blue)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
-            >
-              Clear search
-            </button>
-          </div>
+           whereValue !== 'Anywhere' && (
+            <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-light)' }}>
+              <i className="fa-solid fa-magnifying-glass" style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.5 }}></i>
+              <h3>No places found</h3>
+              <p>Try searching for a different destination or adjusting your filters.</p>
+              <button 
+                onClick={() => { setWhereValue('Anywhere'); handleSearch('Anywhere'); }}
+                style={{ marginTop: '1rem', padding: '8px 16px', background: 'var(--brand-blue)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              >
+                Clear search
+              </button>
+            </div>
+           )
         )}
       </main>
+
+      {/* Map functionality removed per user request */}
 
       {/* Footer */}
       <Footer />
@@ -651,90 +710,172 @@ const Landing: React.FC = () => {
           overflow: hidden;
         }
 
+        .categories-wrapper {
+           padding: 0 80px;
+           border-bottom: 1px solid #f1f1f1;
+         }
+
+         .categories {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Move back to left */
+            gap: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 8px 0;
+            background: white;
+         }
+         
+         .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.6;
+            cursor: pointer;
+            min-width: fit-content;
+            transition: opacity 0.2s, color 0.2s;
+            font-size: 0.75rem;
+            padding-bottom: 8px;
+         }
+
+         .category-item i {
+            font-size: 1.1rem;
+         }
+
+         .category-item:hover, .category-item.active {
+            opacity: 1;
+            color: #000;
+         }
+
+         .category-item.active {
+            border-bottom: 2px solid #000;
+         }
+        .main-grid-container {
+           padding: 0 80px;
+           margin-bottom: 0;
+        }
+
+        .main-grid-title {
+           font-size: 1.5rem;
+           font-weight: 700;
+           color: #222;
+           margin-bottom: 32px;
+           letter-spacing: -0.02em;
+        }
+
+        .listing-grid {
+           display: grid;
+           grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+           gap: 40px 24px;
+        }
+
+        .section-title-main {
+           font-size: 1.5rem;
+           font-weight: 700;
+           color: #222;
+           letter-spacing: -0.02em;
+        }
+
         .city-section {
-          margin-bottom: 48px;
+          margin-bottom: 0px; /* Gap removed */
           padding: 0 80px;
         }
 
-        .section-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 24px;
-        }
+          .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: -4px; /* Slightly negative or zero to pull cards up */
+            padding-bottom: 0;
+          }
 
         .section-title {
-          font-size: 1.5rem;
+          font-size: 1.4rem;
           font-weight: 700;
           color: #222;
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 8px;
           cursor: pointer;
+          letter-spacing: -0.01em;
+          margin: 0; /* Remove default h2 margins */
         }
 
         .section-arrow {
-          font-size: 0.9rem;
-          margin-top: 4px;
+          font-size: 0.8rem;
+          width: 28px;
+          height: 28px;
+          background: #f1f1f1;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #222;
         }
 
         .scroll-controls {
           display: flex;
-          gap: 8px;
+          gap: 16px;
         }
 
         .scroll-btn-arrow {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          border: 1px solid #ddd;
-          background: white;
+          background: transparent;
           color: #222;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: transform 0.1s, box-shadow 0.1s;
-          font-size: 0.8rem;
+          border: none;
+          font-size: 1rem;
+          transition: opacity 0.2s;
+          padding: 0;
+          width: auto;
+          height: auto;
+        }
+
+        .scroll-btn-arrow:first-child {
+          border-right: none;
         }
 
         .scroll-btn-arrow:hover {
-          background: #f7f7f7;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          transform: scale(1.04);
+          opacity: 0.7;
+          background: transparent;
         }
 
         .listing-scroll-container {
           display: flex;
-          gap: 24px;
+          gap: 0px; /* No gap as requested */
           overflow-x: auto;
           scroll-snap-type: x mandatory;
-          padding-bottom: 8px;
-          scrollbar-width: none; /* Firefox */
-          -ms-overflow-style: none;  /* IE and Edge */
+          padding-top: 0px; /* Flush with header */
+          padding-bottom: 0px;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          margin-top: 0px;
         }
 
         .listing-scroll-container::-webkit-scrollbar {
-          display: none; /* Chrome, Safari, Opera */
+          display: none;
         }
 
         .scroll-item {
-          flex: 0 0 calc(100% / 6 - 20px);
+          flex: 0 0 calc(100% / 7); /* Divide evenly with no gaps */
           scroll-snap-align: start;
-          min-width: 250px;
+          min-width: 180px;
         }
 
         @media (max-width: 1400px) {
-          .scroll-item { flex: 0 0 calc(100% / 4 - 18px); }
+          .scroll-item { flex: 0 0 calc(20% - 18px); }
         }
 
         @media (max-width: 1100px) {
-          .scroll-item { flex: 0 0 calc(100% / 3 - 16px); }
+          .scroll-item { flex: 0 0 calc(25% - 16px); }
           .city-section { padding: 0 40px; }
         }
 
         @media (max-width: 768px) {
-          .scroll-item { flex: 0 0 calc(100% / 2 - 12px); }
+          .scroll-item { flex: 0 0 calc(50% - 12px); }
           .city-section { padding: 0 24px; }
         }
 
@@ -742,7 +883,7 @@ const Landing: React.FC = () => {
         .listing-card {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 4px; /* Reduced gap */
           cursor: pointer;
           width: 100%;
           min-width: 0;
@@ -768,89 +909,147 @@ const Landing: React.FC = () => {
           transform: scale(1.05);
         }
 
-        .listing-badge {
+        .listing-badge-overlay {
           position: absolute;
-          top: 12px;
-          left: 12px;
-          background: white;
+          top: 10px;
+          left: 10px;
+          background: rgba(255, 255, 255, 0.95);
           color: #222;
-          padding: 4px 12px;
-          border-radius: 20px;
-          font-size: 0.85rem;
-          font-weight: 600;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-          border: 1px solid #ddd;
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-size: 0.72rem;
+          font-weight: 700;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          z-index: 2;
         }
 
-        .heart-btn {
+        .heart-btn-overlay {
           position: absolute;
-          top: 12px;
-          right: 12px;
+          top: 10px;
+          right: 10px;
           background: none;
           border: none;
           color: white;
-          font-size: 1.25rem;
+          font-size: 1.15rem;
           cursor: pointer;
-          filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+          filter: drop-shadow(0 0 2px rgba(0,0,0,0.8));
           padding: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          z-index: 2;
           transition: transform 0.2s;
         }
 
-        .heart-btn:hover {
+        .heart-btn-overlay:hover {
           transform: scale(1.1);
         }
 
         .listing-details {
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: 0;
+          padding-top: 4px;
         }
 
-        .listing-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 10px;
-        }
-
-        .listing-title {
-          font-weight: 600;
+        .listing-title-bold {
+          font-weight: 700;
           color: #222;
-          font-size: 0.95rem;
+          font-size: 0.82rem;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          margin-bottom: 2px;
         }
 
-        .listing-rating {
+        .listing-info-summary {
           display: flex;
           align-items: center;
           gap: 4px;
-          font-size: 0.9rem;
-          color: #222;
+          color: #555;
+          font-size: 0.78rem;
         }
 
-        .listing-rating i {
-          font-size: 0.8rem;
-          color: #222;
-        }
-
-        .listing-location {
-          color: #717171;
-          font-size: 0.9rem;
+        .price-details {
           white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
         }
 
-        .listing-price-row {
+        .rating-summary {
           display: flex;
-          align-items: baseline;
-          gap: 4px;
-          margin-top: 4px;
+          align-items: center;
+          gap: 3px;
+          color: #222;
+        }
+
+        .rating-summary::before {
+          content: '·';
+          margin-right: 3px;
+          color: #717171;
+        }
+
+        .rating-summary i {
+          font-size: 0.65rem;
+          margin-top: -1px;
+        }
+
+        /* Card Carousel Overlay */
+        .img-nav-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 8px;
+          opacity: 0;
+          transition: opacity 0.2s;
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        .listing-card:hover .img-nav-overlay {
+          opacity: 1;
+        }
+
+        .nav-arrow-btn {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          border: 1px solid #ddd;
+          background: rgba(255, 255, 255, 0.9);
+          color: #222;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          font-size: 0.65rem;
+          pointer-events: all;
+          transition: transform 0.15s;
+        }
+
+        .nav-arrow-btn:hover {
+          background: white;
+          transform: scale(1.05);
+        }
+
+        .carousel-indicators-dots {
+          position: absolute;
+          bottom: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 5px;
+          z-index: 2;
+        }
+
+        .dot-indicator {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.6);
+        }
+
+        .dot-indicator.active {
+          background: white;
         }
 
         .listing-price-val {
@@ -878,7 +1077,7 @@ const Landing: React.FC = () => {
 
         .see-all-content {
           height: 100%;
-          min-height: 250px;
+          min-height: 200px;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -886,7 +1085,7 @@ const Landing: React.FC = () => {
           background: white;
           border: 1px solid #ddd;
           border-radius: 12px;
-          gap: 16px;
+          gap: 12px;
           transition: transform 0.2s, box-shadow 0.2s;
         }
 
@@ -897,14 +1096,14 @@ const Landing: React.FC = () => {
 
         .see-all-icons {
           position: relative;
-          width: 80px;
-          height: 80px;
+          width: 60px;
+          height: 60px;
         }
 
         .prev-img {
           position: absolute;
-          width: 60px;
-          height: 60px;
+          width: 45px;
+          height: 45px;
           border-radius: 8px;
           object-fit: cover;
           border: 2px solid white;
@@ -912,13 +1111,13 @@ const Landing: React.FC = () => {
         }
 
         .img-0 { transform: translate(0, 0) rotate(-10deg); z-index: 1; }
-        .img-1 { transform: translate(20px, 10px) rotate(5deg); z-index: 2; }
-        .img-2 { transform: translate(10px, 20px) rotate(0deg); z-index: 3; }
+        .img-1 { transform: translate(15px, 8px) rotate(5deg); z-index: 2; }
+        .img-2 { transform: translate(8px, 15px) rotate(0deg); z-index: 3; }
 
         .see-all-text {
           font-weight: 600;
           color: #222;
-          font-size: 0.95rem;
+          font-size: 0.85rem;
         }
       `}</style>
     </div>

@@ -10,8 +10,6 @@ const CategoryPage: React.FC = () => {
     const cityName = city || 'Everywhere'
     const listings = allListings.filter(l => l.city?.toLowerCase() === cityName.toLowerCase())
 
-    const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid')
-
     return (
         <div style={{ background: '#fff' }}>
             <SimpleHeader />
@@ -21,38 +19,15 @@ const CategoryPage: React.FC = () => {
                     <h1 style={{ fontSize: '1.25rem', fontWeight: '600' }}>
                         Over {listings.length * 10}+ homes in {cityName}
                     </h1>
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                         <button 
-                            onClick={() => setViewMode(prev => prev === 'grid' ? 'map' : 'grid')}
-                            style={{ 
-                                padding: '8px 16px', 
-                                borderRadius: '8px', 
-                                border: '1px solid #ddd', 
-                                background: '#fff', 
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                fontWeight: '500'
-                            }}
-                         >
-                            <i className={`fa-solid ${viewMode === 'grid' ? 'fa-map' : 'fa-list'}`}></i>
-                            {viewMode === 'grid' ? 'Show map' : 'Show list'}
-                         </button>
-                    </div>
                 </div>
             </div>
 
-            <main style={{ display: 'flex', minHeight: '80vh' }}>
+            <main style={{ minHeight: '80vh' }}>
                 {/* List of properties */}
-                <div style={{ 
-                    width: viewMode === 'grid' ? '100%' : '60%', 
-                    padding: '24px 80px',
-                    transition: 'width 0.3s ease'
-                }}>
+                <div style={{ padding: '24px 80px' }}>
                     <div style={{ 
                         display: 'grid', 
-                        gridTemplateColumns: viewMode === 'grid' ? 'repeat(auto-fill, minmax(280px, 1fr))' : 'repeat(auto-fill, minmax(280px, 1fr))',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
                         gap: '24px'
                     }}>
                         {listings.map(listing => (
@@ -83,66 +58,6 @@ const CategoryPage: React.FC = () => {
                          </div>
                     )}
                 </div>
-
-                {/* Map Section */}
-                {viewMode === 'map' && (
-                    <div style={{ 
-                        width: '40%', 
-                        background: '#f1f1f1', 
-                        position: 'sticky', 
-                        top: '144px', 
-                        height: 'calc(100vh - 144px)',
-                        overflow: 'hidden'
-                    }}>
-                        {/* Mock Map Image Background */}
-                        <div style={{
-                            width: '100%',
-                            height: '100%',
-                            background: `url('https://maps.googleapis.com/maps/api/staticmap?center=${cityName}&zoom=12&size=640x640&scale=2&key=')`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            position: 'relative'
-                        }}>
-                             {/* Map pins mock */}
-                             {listings.map((l, idx) => (
-                                <div 
-                                    key={l.id} 
-                                    style={{
-                                        position: 'absolute',
-                                        top: `${20 + idx * 10}%`,
-                                        left: `${30 + (idx % 3) * 15}%`,
-                                        background: 'white',
-                                        padding: '4px 8px',
-                                        borderRadius: '20px',
-                                        boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
-                                        fontWeight: '700',
-                                        fontSize: '0.85rem',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        zIndex: 10
-                                    }}
-                                >
-                                    {l.currency || '₱'}{l.price.toLocaleString()}
-                                </div>
-                             ))}
-
-                             <div style={{ 
-                                position: 'absolute', 
-                                bottom: '20px', 
-                                left: '20px', 
-                                background: 'white', 
-                                padding: '12px', 
-                                borderRadius: '8px', 
-                                boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                                fontSize: '0.8rem'
-                             }}>
-                                Terms | Report a map error
-                             </div>
-                        </div>
-                    </div>
-                )}
             </main>
 
             <Footer />

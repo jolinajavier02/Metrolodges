@@ -1,8 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Listing } from '../types' // Assuming I need to import Listing from types
+import { Listing } from '../types'
 
-// Use an inline type or import from types if it exists
 interface PropertyCardProps {
     listing: any;
 }
@@ -13,45 +12,38 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ listing }) => {
             <div className="listing-card">
                 <div className="listing-image-container">
                     <img src={listing.image} alt={listing.title} />
-                    {listing.badge && <div className="listing-badge">{listing.badge}</div>}
+                    {listing.badge && <div className="listing-badge-overlay">{listing.badge}</div>}
                     
-                    {/* Heart button */}
-                    <button className="heart-btn" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                    <button className="heart-btn-overlay" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                         <i className="fa-regular fa-heart"></i>
                     </button>
 
-                    {/* Image navigation arrows (mock) */}
-                    <div className="img-nav-arrows">
-                         <button className="img-nav-btn left" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                    <div className="img-nav-overlay">
+                         <button className="nav-arrow-btn left" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                              <i className="fa-solid fa-chevron-left"></i>
                          </button>
-                         <button className="img-nav-btn right" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                         <button className="nav-arrow-btn right" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                              <i className="fa-solid fa-chevron-right"></i>
                          </button>
                     </div>
 
-                    {/* Carousel dots (mock) */}
-                    <div className="carousel-dots">
-                        <span className="dot active"></span>
-                        <span className="dot"></span>
-                        <span className="dot"></span>
-                        <span className="dot"></span>
-                        <span className="dot"></span>
+                    <div className="carousel-indicators-dots">
+                        <span className="dot-indicator active"></span>
+                        <span className="dot-indicator"></span>
+                        <span className="dot-indicator"></span>
+                        <span className="dot-indicator"></span>
                     </div>
                 </div>
                 <div className="listing-details">
-                    <div className="listing-header">
-                        <span className="listing-location-bold">{listing.location}</span>
-                        <div className="listing-rating">
+                    <div className="listing-title-bold">{listing.title}</div>
+                    <div className="listing-info-summary">
+                        <span className="price-details">
+                            ${(listing.price * 2).toLocaleString()} NZD for 2 nights
+                        </span>
+                        <span className="rating-summary">
                             <i className="fa-solid fa-star"></i>
-                            <span>{listing.rating}</span>
-                        </div>
-                    </div>
-                    <div className="listing-secondary-info">{listing.title}</div>
-                    <div className="listing-dates-info">Available now</div>
-                    <div className="listing-price-row">
-                        <span className="listing-price-val">{listing.currency || '₹'}{listing.price.toLocaleString()}</span>
-                        <span className="listing-price-label">night</span>
+                            {listing.rating}
+                        </span>
                     </div>
                 </div>
             </div>
