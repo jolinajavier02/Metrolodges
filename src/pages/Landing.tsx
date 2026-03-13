@@ -23,6 +23,25 @@ const Landing: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
+  
+  const allListings = [...indiaListings, ...philippineListings]
+  const [filteredListings, setFilteredListings] = useState(allListings)
+
+  const handleSearch = (searchTerm: string) => {
+    setActiveDropdown(null)
+    if (!searchTerm || searchTerm === 'Nearby' || searchTerm === 'Anywhere') {
+      setFilteredListings(allListings)
+      return
+    }
+    
+    const term = searchTerm.toLowerCase()
+    const filtered = allListings.filter(listing => 
+      listing.city?.toLowerCase().includes(term) ||
+      listing.location?.toLowerCase().includes(term) ||
+      listing.title.toLowerCase().includes(term)
+    )
+    setFilteredListings(filtered)
+  }
 
   const headerRef = useRef<HTMLDivElement>(null)
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -173,8 +192,6 @@ const Landing: React.FC = () => {
     { icon: 'fa-city', name: 'Iconic Cities' },
   ]
 
-  const allListings = [...indiaListings, ...philippineListings]
-
   return (
     <div>
       <div ref={sentinelRef} id="scrollSentinel"></div>
@@ -290,7 +307,10 @@ const Landing: React.FC = () => {
                   <p className="suggested-title">Suggested destinations</p>
                   <div className="destination-list">
                     {destinations.map((dest, idx) => (
-                      <div key={idx} className="destination-item" onClick={() => { setWhereValue(dest.name); setActiveDropdown(null) }}>
+                      <div key={idx} className="destination-item" onClick={() => { 
+                        setWhereValue(dest.name); 
+                        handleSearch(dest.name);
+                      }}>
                         <div className="dest-icon"><i className={`fa-solid ${dest.icon}`}></i></div>
                         <div className="dest-info"><b>{dest.name}</b><span>{dest.desc}</span></div>
                       </div>
@@ -358,7 +378,7 @@ const Landing: React.FC = () => {
               )}
             </div>
 
-            <button className="search-btn">
+            <button className="search-btn" onClick={() => handleSearch(whereValue)}>
               <i className="fa-solid fa-magnifying-glass"></i>
               Search
             </button>
@@ -378,19 +398,32 @@ const Landing: React.FC = () => {
 
       {/* Main Content */}
       <main className="main-content">
-        <h2 className="section-title"><i className="fa-solid fa-location-dot" style={{ color: 'var(--brand-blue)' }}></i> Places to stay in India</h2>
-        <div className="listing-grid">
-          {indiaListings.map(listing => (
-            <PropertyCard key={listing.id} listing={listing} />
-          ))}
-        </div>
-
-        <h2 className="section-title" style={{ marginTop: '4rem' }}><i className="fa-solid fa-location-dot" style={{ color: 'var(--brand-blue)' }}></i> Places to stay in the Philippines</h2>
-        <div className="listing-grid">
-          {philippineListings.map(listing => (
-            <PropertyCard key={listing.id} listing={listing} />
-          ))}
-        </div>
+        <h2 className="section-title">
+          <i className="fa-solid fa-location-dot" style={{ color: 'var(--brand-blue)' }}></i> 
+          {whereValue && whereValue !== 'Nearby' && whereValue !== 'Anywhere' 
+            ? `Places to stay in ${whereValue.split(',')[0]}`
+            : 'Explore all places to stay'}
+        </h2>
+        
+        {filteredListings.length > 0 ? (
+          <div className="listing-grid">
+            {filteredListings.map(listing => (
+              <PropertyCard key={listing.id} listing={listing} />
+            ))}
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-light)' }}>
+            <i className="fa-solid fa-magnifying-glass" style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.5 }}></i>
+            <h3>No places found</h3>
+            <p>Try searching for a different destination or adjusting your filters.</p>
+            <button 
+              onClick={() => { setWhereValue('Anywhere'); handleSearch('Anywhere'); }}
+              style={{ marginTop: '1rem', padding: '8px 16px', background: 'var(--brand-blue)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+            >
+              Clear search
+            </button>
+          </div>
+        )}
       </main>
 
       {/* Footer */}
