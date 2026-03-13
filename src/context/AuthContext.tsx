@@ -4,15 +4,18 @@ export interface User {
   id: string
   name: string
   email: string
+  phone?: string
+  phoneCode?: string
   avatar?: string
   isHost?: boolean
   joinedAt: string
+  createdAt: string
 }
 
 interface AuthContextType {
   user: User | null
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
-  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  login: (name: string, identifier: string, isPhone: boolean) => Promise<{ success: boolean; error?: string }>
+  register: (name: string, email: string, phone: string, phoneCode: string, password?: string) => Promise<{ success: boolean; error?: string }>
   logout: () => void
   isLoading: boolean
 }
@@ -41,28 +44,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const getUsers = (): Record<string, { user: User; password: string }> => {
+  const getUsers = (): Array<{ user: User; password?: string }> => {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}')
+      const db = localStorage.getItem(STORAGE_KEYS.USERS)
+      if (!db) return []
+      return Array.isArray(JSON.parse(db)) ? JSON.parse(db) : Object.values(JSON.parse(db))
     } catch {
-      return {}
+      return []
     }
   }
 
-  const saveUsers = (users: Record<string, { user: User; password: string }>) => {
+  const saveUsers = (users: Array<{ user: User; password?: string }>) => {
     localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users))
   }
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (name: string, identifier: string, isPhone: boolean): Promise<{ success: boolean; error?: string }> => {
     const users = getUsers()
-    const key = email.toLowerCase()
-    const record = users[key]
+    const record = users.find(u => 
+      u.user.name.toLowerCase() === name.toLowerCase() && 
+      (isPhone ? u.user.phone === identifier : u.user.email === identifier.toLowerCase())
+    )
 
     if (!record) {
-      return { success: false, error: 'No account found with this email. Please sign up.' }
-    }
-    if (record.password !== password) {
-      return { success: false, error: 'Incorrect password. Please try again.' }
+      return { success: false, error: 'No account found with this Name and Email/Phone. Please sign up.' }
     }
 
     setUser(record.user)
@@ -70,22 +74,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: true }
   }
 
-  const register = async (name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const register = async (name: string, email: string, phone: string, phoneCode: string, password?: string): Promise<{ success: boolean; error?: string }> => {
     const users = getUsers()
-    const key = email.toLowerCase()
+    
+    // Check if user exists by email or phone
+    const exists = users.find(u => u.user.email === email.toLowerCase() || u.user.phone === phone)
 
-    if (users[key]) {
-      return { success: false, error: 'An account with this email already exists. Please log in.' }
+    if (exists) {
+      return { success: false, error: 'An account with this email/phone already exists. Please log in.' }
     }
 
     const newUser: User = {
       id: `user_${Date.now()}`,
       name: name.trim(),
       email: email.toLowerCase(),
+      phone: phone.trim(),
+      phoneCode: phoneCode,
       joinedAt: new Date().toISOString(),
+      createdAt: new Date().toLocaleDateString(),
     }
 
-    users[key] = { user: newUser, password }
+    users.push({ user: newUser, password })
     saveUsers(users)
     setUser(newUser)
     localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(newUser))

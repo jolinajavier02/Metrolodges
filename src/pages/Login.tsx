@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import loginIcon from '../assets/Loginicon.png'
 
 export default function Login() {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [inputVal, setInputVal] = useState('');
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [showOtp, setShowOtp] = useState(false);
   
+  // Form fields
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [phoneCode, setPhoneCode] = useState('+91');
+  const [loginIdentifier, setLoginIdentifier] = useState(''); // Email or Phone for login
   
   const [otp, setOtp] = useState(['', '', '', '']);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isNewUser, setIsNewUser] = useState(true);
 
   const { login, register, user } = useAuth()
   const navigate = useNavigate()
@@ -30,50 +32,63 @@ export default function Login() {
     }
   }, [user, redirect, intent, navigate])
 
-  const checkUserExists = (val: string) => {
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !loginIdentifier) {
+      setError('Please enter your Full Name and Email/Phone Number');
+      return;
+    }
+    setError('');
+    
+    // Check if user exists before sending OTP
     const stored = localStorage.getItem('metrolodges_users');
-    if (!stored) return null;
-    try {
-      const users = JSON.parse(stored);
-      return users.find((u: any) => u.email === val || u.phone === val) || null;
-    } catch {
-      return null;
+    let found = false;
+    if (stored) {
+      try {
+        const users = Array.isArray(JSON.parse(stored)) ? JSON.parse(stored) : Object.values(JSON.parse(stored));
+        const record = users.find((u: any) => 
+          u.user.name.toLowerCase() === name.trim().toLowerCase() && 
+          (u.user.email === loginIdentifier.toLowerCase() || u.user.phone === loginIdentifier)
+        );
+        if (record) found = true;
+      } catch {}
     }
+
+    if (!found) {
+      setError('No matching account found. Please check your details or Sign up.');
+      return;
+    }
+
+    setShowOtp(true);
   }
 
-  const handleStep1Submit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputVal) {
-      setError('Please enter email or phone number');
+    if (!name || !email || !phone) {
+      setError('Please fill in all required fields (Name, Email, and Phone Number).');
       return;
     }
     setError('');
     
-    const foundUser = checkUserExists(inputVal);
-    
-    if (foundUser) {
-      setIsNewUser(false);
-      setEmail(foundUser.email);
-      setStep(3);
-    } else {
-      setIsNewUser(true);
-      if (inputVal.includes('@')) {
-        setEmail(inputVal);
-      } else {
-        setPhone(inputVal);
-      }
-      setStep(2);
+    // Check if user already exists
+    const stored = localStorage.getItem('metrolodges_users');
+    let found = false;
+    if (stored) {
+      try {
+        const users = Array.isArray(JSON.parse(stored)) ? JSON.parse(stored) : Object.values(JSON.parse(stored));
+        const record = users.find((u: any) => 
+          u.user.email === email.toLowerCase() || u.user.phone === phone
+        );
+        if (record) found = true;
+      } catch {}
     }
-  }
 
-  const handleStep2Submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name || (!phone && !email)) {
-      setError('Please fill all required fields');
+    if (found) {
+      setError('An account with this Email or Phone already exists. Please Log in.');
       return;
     }
-    setError('');
-    setStep(3);
+
+    setShowOtp(true);
   }
 
   const handleOtpChange = (index: number, val: string) => {
@@ -100,25 +115,20 @@ export default function Login() {
     setError('');
     
     try {
-      if (isNewUser) {
-        // Mock password for OTP-based accounts
-        const secretPass = 'otp-verified-pass123';
-        const result = await register(name, email || `${phone}@temp.com`, secretPass);
+      if (mode === 'register') {
+        const result = await register(name, email, phone, phoneCode, 'otp-verified-pass123');
         if (!result.success) {
           setError(result.error || 'Registration failed.');
           setLoading(false);
           return;
         }
       } else {
-        // Authenticate existing user by extracting their old password
-        const foundUser = checkUserExists(inputVal);
-        if (foundUser) {
-          const result = await login(foundUser.email, foundUser.password);
-          if (!result.success) {
-            setError(result.error || 'Login failed.');
-            setLoading(false);
-            return;
-          }
+        const isPhone = !loginIdentifier.includes('@');
+        const result = await login(name, loginIdentifier, isPhone);
+        if (!result.success) {
+          setError(result.error || 'Login failed.');
+          setLoading(false);
+          return;
         }
       }
       
@@ -147,78 +157,74 @@ export default function Login() {
         <div className="otp-left-content">
           <div className="otp-brand">
             <div className="otp-brand-icon">
-              <i className="fa-solid fa-house"></i>
+              <img src="/logo.png" alt="Metrolodges Logo" style={{ height: '90px', objectFit: 'contain' }} />
             </div>
             <div className="otp-brand-text">
               <span className="otp-brand-name">Metrolodges</span>
-              <span className="otp-brand-tag">Make memories</span>
+              <span className="otp-brand-tag">Your Gateway to Great Stays.</span>
             </div>
           </div>
           
           <div className="otp-welcome-text">
-            {step === 1 && (
-              <>
-                <h1>Welcome back to Metrolodges!</h1>
-                <p>Your next adventure awaits. Log in to continue exploring unique travel experiences and memorable stays.</p>
-              </>
-            )}
-            {step === 2 && (
+            {!showOtp ? (
               <>
                 <h1>Your Privacy Matters to Us!</h1>
-                <p>We handle your personal information and address with the highest data protection standards. At Metrolodges, we prioritize your privacy, and we will never share your information with any third parties. Your trust is our top priority.</p>
+                <p>We handle your personal information and address with the highest data protection standards. At Metrolodges, we prioritize your privacy, and we will never share your information with any third parties.</p>
               </>
-            )}
-            {step === 3 && (
+            ) : (
               <>
-                <h1>Welcome back to Metrolodges!</h1>
-                <p>Congratulations on taking the first step towards discovering a world of unique travel experiences and making memories. We're excited to have you join our vibrant community of hosts and guests.</p>
+                <h1>Welcome to Metrolodges!</h1>
+                <p>Congratulations on taking the first step towards discovering a world of unique travel experiences and making memories.</p>
               </>
             )}
           </div>
           
-          {/* House Illustration (Pure CSS/Icon mock) */}
+          {/* House Illustration */}
           <div className="otp-illustration">
-             <div className="cloud cloud-1"></div>
-             <div className="cloud cloud-2"></div>
-             <div className="house-vector">
-               <div className="tree-1"></div>
-               <div className="tree-2"></div>
-               <div className="house-base">
-                 <div className="roof-1"></div>
-                 <div className="roof-2"></div>
-                 <div className="window"></div>
-                 <div className="door"></div>
-               </div>
-             </div>
+             <img src={loginIcon} alt="House Illustration" style={{ width: '100%', maxWidth: '440px', objectFit: 'contain' }} />
           </div>
         </div>
       </div>
 
       {/* Right Column */}
       <div className="otp-right-col">
-        {step === 1 && (
-          <form className="otp-form-box" onSubmit={handleStep1Submit}>
-            <h2>Sign Up / Sign In</h2>
+        {!showOtp && mode === 'login' && (
+          <form className="otp-form-box" onSubmit={handleLoginSubmit}>
+            <h2>Log In</h2>
             {error && <div className="otp-error">{error}</div>}
             
             <div className="otp-input-group">
               <input 
                 type="text" 
-                placeholder="Enter Email / Phone Number *"
-                value={inputVal}
-                onChange={e => setInputVal(e.target.value)}
+                placeholder="Full Name *"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="otp-input-group">
+              <input 
+                type="text" 
+                placeholder="Email or Phone Number *"
+                value={loginIdentifier}
+                onChange={e => setLoginIdentifier(e.target.value)}
                 required
               />
             </div>
             
             <button type="submit" className="otp-primary-btn" disabled={loading}>
-              Continue
+              Login
             </button>
+
+            <div className="otp-links">
+              <p>Don't have an account? <span onClick={() => { setMode('register'); setError(''); }} style={{color: '#71b7e1', cursor: 'pointer', fontWeight: 600}}>Sign Up here</span></p>
+            </div>
           </form>
         )}
 
-        {step === 2 && (
-          <form className="otp-form-box" onSubmit={handleStep2Submit}>
+        {!showOtp && mode === 'register' && (
+          <form className="otp-form-box" onSubmit={handleRegisterSubmit}>
             <h2>Sign Up</h2>
             {error && <div className="otp-error">{error}</div>}
             
@@ -235,26 +241,28 @@ export default function Login() {
             <div className="otp-input-group">
               <input 
                 type="email" 
-                placeholder="Email *"
+                placeholder="Email Address *"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                required={!phone}
+                required
               />
             </div>
             
             <div className="otp-phone-group">
               <select value={phoneCode} onChange={e => setPhoneCode(e.target.value)} className="phone-code-select">
-                <option value="+91">+91</option>
-                <option value="+63">+63</option>
-                <option value="+1">+1</option>
+                <option value="+91">+91 (India)</option>
+                <option value="+63">+63 (Philippines)</option>
+                <option value="+1">+1 (US)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+61">+61 (Australia)</option>
               </select>
               <input 
                 type="text" 
-                placeholder="Phone Number"
+                placeholder="Phone Number *"
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
                 className="phone-input"
-                required={!email}
+                required
               />
             </div>
             
@@ -263,22 +271,21 @@ export default function Login() {
             </button>
             
             <div className="otp-links">
-              <p>Sign up using <a href="#">{email ? 'Phone Number' : 'Email'}</a></p>
-              <p>Already have an account? <span onClick={() => setStep(1)} style={{color: '#ff3800', cursor: 'pointer', fontWeight: 600}}>Login</span></p>
+              <p>Already have an account? <span onClick={() => { setMode('login'); setError(''); }} style={{color: '#71b7e1', cursor: 'pointer', fontWeight: 600}}>Login</span></p>
               <p className="terms-text">By signing up, you agree to <Link to="/terms">Terms & Conditions</Link></p>
             </div>
           </form>
         )}
 
-        {step === 3 && (
+        {showOtp && (
           <div className="otp-form-box otp-modal-wrapper">
-             {/* Simulating the Modal overlay effect from Image 4 within the right col constraints or as a centered card */}
+             {/* Simulating the Modal overlay effect from Image 4 */}
              <div className="otp-modal">
                <div className="otp-modal-header">
                  <h3>Enter OTP</h3>
-                 <button onClick={() => setStep(1)} className="close-btn"><i className="fa-solid fa-xmark"></i></button>
+                 <button onClick={() => setShowOtp(false)} className="close-btn"><i className="fa-solid fa-xmark"></i></button>
                </div>
-               <p className="otp-modal-desc">Please enter the OTP sent to {email || phone || inputVal}</p>
+               <p className="otp-modal-desc">Please enter the OTP sent to {mode === 'login' ? loginIdentifier : phone}</p>
                
                <form onSubmit={handleOtpSubmit}>
                 {error && <div className="otp-error">{error}</div>}
@@ -295,10 +302,10 @@ export default function Login() {
                    ))}
                  </div>
                  
-                 <p className="resend-text">Resend OTP <span style={{color: '#ff3800', fontWeight: 600}}>(51 sec)</span></p>
+                 <p className="resend-text">Resend OTP <span style={{color: '#71b7e1', fontWeight: 600}}>(51 sec)</span></p>
                  
                  <button type="submit" className="otp-primary-btn" disabled={loading}>
-                   Submit
+                   {mode === 'login' ? 'Confirm & Login' : 'Verify & Register'}
                  </button>
                </form>
              </div>
@@ -313,31 +320,32 @@ export default function Login() {
           width: 100vw;
           overflow: hidden;
           font-family: 'Inter', sans-serif;
-          background: #faece5; /* The peach background */
+          background: #ffffff; /* White background to let curve show through */
         }
         
         .otp-left-col {
-          width: 40%;
+          width: 45%;
           background: #ffffff;
           padding: 40px 60px;
           display: flex;
           flex-direction: column;
           position: relative;
           z-index: 2;
-          border-right: 1px solid #faece5; /* seamless */
+          border-right: none;
         }
         
         .otp-right-col {
-          width: 60%;
-          background: #faece5;
-          border-top-left-radius: 120px;
+          width: 55%;
+          background: linear-gradient(135deg, #71b7e1 0%, #badef3 100%); /* Faded Brand Blue gradient */
+          border-top-left-radius: 240px;
+          border-bottom-left-radius: 40px;
           position: relative;
           z-index: 10;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: -10px 0 30px rgba(0,0,0,0.02);
-          margin-left: -50px;
+          box-shadow: -15px 0 40px rgba(0,0,0,0.08);
+          margin-left: -30px;
         }
 
         .otp-back {
@@ -360,8 +368,9 @@ export default function Login() {
         }
         
         .otp-brand-icon {
-          color: #ff3800;
-          font-size: 2rem;
+          color: #71b7e1;
+          display: flex;
+          align-items: center;
         }
         
         .otp-brand-text {
@@ -370,23 +379,23 @@ export default function Login() {
         }
         
         .otp-brand-name {
-          font-size: 1.5rem;
+          font-size: 2.8rem;
           font-weight: 800;
-          color: #ff3800;
+          color: #71b7e1;
           line-height: 1;
         }
         
         .otp-brand-tag {
-          font-size: 0.8rem;
-          color: #ff8a66;
-          font-family: 'Brush Script MT', cursive;
-          margin-top: 2px;
+          font-size: 1.1rem;
+          color: #3a9fd1;
+          font-weight: 600;
+          margin-top: 6px;
         }
         
         .otp-welcome-text {
           text-align: center;
-          max-width: 360px;
-          margin: 0 auto 60px;
+          max-width: 420px;
+          margin: 0 auto;
         }
         
         .otp-welcome-text h1 {
@@ -404,22 +413,24 @@ export default function Login() {
         }
         
         .otp-illustration {
-          margin-top: auto;
+          margin-top: 20px;
           position: relative;
-          height: 200px;
-          background: url('/house_illustration.png') center bottom no-repeat;
-          background-size: contain;
-          opacity: 0.8;
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
         }
         
         /* Form box on right */
         .otp-form-box {
           width: 100%;
-          max-width: 440px;
+          max-width: 460px;
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 20px;
+          padding: 40px;
+          background: #ffffff;
+          border-radius: 20px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
         
         .otp-form-box h2 {
@@ -441,14 +452,15 @@ export default function Login() {
           border-radius: 8px;
           font-size: 0.95rem;
           font-family: 'Inter', sans-serif;
-          background: #fff;
+          background: #fcfcfc;
           box-sizing: border-box;
-          transition: border-color 0.2s;
+          transition: border-color 0.2s, box-shadow 0.2s;
         }
         
         .otp-input-group input:focus, .otp-phone-group input:focus {
-          border-color: #ff3800;
+          border-color: #71b7e1;
           outline: none;
+          box-shadow: 0 0 0 3px rgba(113, 183, 225, 0.15);
         }
         
         .otp-phone-group {
@@ -463,12 +475,14 @@ export default function Login() {
           border: 1px solid #ddd;
           border-radius: 8px;
           font-size: 0.95rem;
-          background: #fff;
+          background: #fcfcfc;
           outline: none;
+          min-width: 120px;
+          cursor: pointer;
         }
         
         .otp-primary-btn {
-          background: #ff3800;
+          background: linear-gradient(135deg, #71b7e1, #3a9fd1);
           color: white;
           border: none;
           padding: 14px 40px;
@@ -477,12 +491,14 @@ export default function Login() {
           font-weight: 600;
           cursor: pointer;
           margin-top: 10px;
+          width: 100%;
+          max-width: 260px;
           transition: transform 0.2s, box-shadow 0.2s;
         }
         
         .otp-primary-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 6px 16px rgba(255, 56, 0, 0.3);
+          box-shadow: 0 6px 16px rgba(113, 183, 225, 0.4);
         }
         
         .otp-links {
@@ -494,7 +510,7 @@ export default function Login() {
         }
         
         .otp-links a {
-          color: #ff3800;
+          color: #71b7e1;
           text-decoration: none;
           font-weight: 600;
         }
@@ -523,15 +539,17 @@ export default function Login() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(0,0,0,0.4);
+          background: rgba(0,0,0,0.5);
+          backdrop-filter: blur(4px);
           z-index: 100;
           max-width: none !important;
+          border-radius: 0;
         }
         
         .otp-modal {
           background: white;
-          padding: 30px 40px;
-          border-radius: 12px;
+          padding: 40px;
+          border-radius: 20px;
           width: 440px;
           box-shadow: 0 10px 40px rgba(0,0,0,0.15);
           text-align: center;
@@ -542,56 +560,66 @@ export default function Login() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 12px;
+          margin-bottom: 16px;
         }
         
         .otp-modal-header h3 {
-          font-size: 1.25rem;
+          font-size: 1.4rem;
           margin: 0;
         }
         
         .close-btn {
-          background: transparent;
+          background: #f0f0f0;
+          border-radius: 50%;
+          width: 32px; height: 32px;
+          display: flex; align-items: center; justify-content: center;
           border: none;
-          font-size: 1.2rem;
+          font-size: 1rem;
           cursor: pointer;
-          color: #666;
+          color: #333;
+          transition: background 0.2s;
+        }
+        .close-btn:hover {
+          background: #e0e0e0;
         }
         
         .otp-modal-desc {
-          font-size: 0.9rem;
-          color: #444;
-          margin-bottom: 24px;
+          font-size: 0.95rem;
+          color: #555;
+          margin-bottom: 30px;
           line-height: 1.5;
         }
         
         .otp-boxes {
           display: flex;
-          gap: 12px;
+          gap: 16px;
           justify-content: center;
-          margin-bottom: 20px;
+          margin-bottom: 24px;
         }
         
         .otp-boxes input {
-          width: 50px;
-          height: 60px;
-          border: 1px solid #ccc;
-          border-radius: 6px;
-          font-size: 1.5rem;
+          width: 60px;
+          height: 70px;
+          border: 1px solid #ddd;
+          border-radius: 12px;
+          font-size: 1.8rem;
           text-align: center;
           color: #333;
+          background: #fcfcfc;
+          transition: all 0.2s;
         }
         
         .otp-boxes input:focus {
-          border-color: #ff3800;
+          border-color: #71b7e1;
+          background: #fff;
           outline: none;
-          box-shadow: 0 0 0 3px rgba(255, 56, 0, 0.1);
+          box-shadow: 0 0 0 3px rgba(113, 183, 225, 0.15);
         }
         
         .resend-text {
           font-size: 0.85rem;
           color: #666;
-          margin-bottom: 24px;
+          margin-bottom: 30px;
         }
       `}</style>
     </div>

@@ -4,6 +4,7 @@ import { philippineListings, indiaListings } from '../utils/listings'
 import PropertyCard from '../components/PropertyCard'
 import Footer from '../components/Footer'
 import { useAuth } from '../context/AuthContext'
+import hostIcon from '../assets/host.png'
 
 const Landing: React.FC = () => {
   const { user, logout } = useAuth()
@@ -262,7 +263,7 @@ const Landing: React.FC = () => {
                           <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>{isHostingMode ? 'Switch to travelling' : 'Switch to hosting'}</b>
                           <span style={{ fontSize: '0.85rem', color: '#717171', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>It's easy to start hosting and<br/>earn extra income.</span>
                         </div>
-                        <img src="/emoji.png" alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
+                        <img src={hostIcon} alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
                       </Link>
                       <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '8px', fontWeight: 400 }}>
                         <div style={{ width: '20px' }}></div> Refer a host
@@ -292,7 +293,7 @@ const Landing: React.FC = () => {
                           <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>Become a host</b>
                           <span style={{ fontSize: '0.85rem', color: '#717171', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>It's easy to start hosting and<br/>earn extra income.</span>
                         </div>
-                        <img src="/emoji.png" alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
+                        <img src={hostIcon} alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
                       </Link>
                       <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '8px', fontWeight: 400 }}>
                         Find a co-host
