@@ -57,7 +57,7 @@ export default function HostDashboard() {
 
         <div className="host-sidebar-footer">
           <Link to="/" className="host-nav-item">
-            <i className="fa-solid fa-arrow-left"></i> Back to Metrolodges
+            <i className="fa-solid fa-arrow-left"></i> Switch to travelling
           </Link>
           <button className="host-logout-btn" onClick={handleLogout}>
             <i className="fa-solid fa-right-from-bracket"></i> Log out

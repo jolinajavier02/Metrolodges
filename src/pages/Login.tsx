@@ -3,548 +3,596 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
-  const [tab, setTab] = useState<'login' | 'register'>('login')
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [inputVal, setInputVal] = useState('');
+  
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneCode, setPhoneCode] = useState('+91');
+  
+  const [otp, setOtp] = useState(['', '', '', '']);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(true);
 
   const { login, register, user } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
-  // Where to redirect after login
   const redirect = searchParams.get('redirect') || '/'
   const intent = searchParams.get('intent') || ''
-  const tabParam = searchParams.get('tab')
 
-  // Auto-switch tab based on URL param
-  useEffect(() => {
-    if (tabParam === 'register') setTab('register')
-  }, [tabParam])
-
-  // If already logged in, redirect immediately
   useEffect(() => {
     if (user) {
-      if (intent === 'host' || redirect === '/host') {
-        navigate('/host')
-      } else {
-        navigate(redirect)
-      }
+      if (intent === 'host') navigate('/?mode=host')
+      else navigate(redirect)
     }
   }, [user, redirect, intent, navigate])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    if (tab === 'register') {
-      if (password !== confirmPassword) {
-        setError('Passwords do not match.')
-        setLoading(false)
-        return
-      }
-      if (password.length < 6) {
-        setError('Password must be at least 6 characters.')
-        setLoading(false)
-        return
-      }
-      const result = await register(name, email, password)
-      if (!result.success) {
-        setError(result.error || 'Registration failed.')
-        setLoading(false)
-        return
-      }
-    } else {
-      const result = await login(email, password)
-      if (!result.success) {
-        setError(result.error || 'Login failed.')
-        setLoading(false)
-        return
-      }
+  const checkUserExists = (val: string) => {
+    const stored = localStorage.getItem('metrolodges_users');
+    if (!stored) return null;
+    try {
+      const users = JSON.parse(stored);
+      return users.find((u: any) => u.email === val || u.phone === val) || null;
+    } catch {
+      return null;
     }
-
-    // After success, redirect
-    if (intent === 'host' || redirect === '/host') {
-      navigate('/host')
-    } else {
-      navigate(redirect)
-    }
-    setLoading(false)
   }
 
-  const switchTab = (t: 'login' | 'register') => {
-    setTab(t)
-    setError('')
-    setName('')
-    setEmail('')
-    setPassword('')
-    setConfirmPassword('')
+  const handleStep1Submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputVal) {
+      setError('Please enter email or phone number');
+      return;
+    }
+    setError('');
+    
+    const foundUser = checkUserExists(inputVal);
+    
+    if (foundUser) {
+      setIsNewUser(false);
+      setEmail(foundUser.email);
+      setStep(3);
+    } else {
+      setIsNewUser(true);
+      if (inputVal.includes('@')) {
+        setEmail(inputVal);
+      } else {
+        setPhone(inputVal);
+      }
+      setStep(2);
+    }
+  }
+
+  const handleStep2Submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || (!phone && !email)) {
+      setError('Please fill all required fields');
+      return;
+    }
+    setError('');
+    setStep(3);
+  }
+
+  const handleOtpChange = (index: number, val: string) => {
+    if (val.length > 1) val = val.slice(-1);
+    const newOtp = [...otp];
+    newOtp[index] = val;
+    setOtp(newOtp);
+    // auto-focus next
+    if (val && index < 3) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  }
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const finalOtp = otp.join('');
+    if (finalOtp.length < 4) {
+      setError('Please enter the full 4-digit OTP');
+      return;
+    }
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      if (isNewUser) {
+        // Mock password for OTP-based accounts
+        const secretPass = 'otp-verified-pass123';
+        const result = await register(name, email || `${phone}@temp.com`, secretPass);
+        if (!result.success) {
+          setError(result.error || 'Registration failed.');
+          setLoading(false);
+          return;
+        }
+      } else {
+        // Authenticate existing user by extracting their old password
+        const foundUser = checkUserExists(inputVal);
+        if (foundUser) {
+          const result = await login(foundUser.email, foundUser.password);
+          if (!result.success) {
+            setError(result.error || 'Login failed.');
+            setLoading(false);
+            return;
+          }
+        }
+      }
+      
+      if (intent === 'host') {
+        navigate('/?mode=host');
+      } else {
+        navigate(redirect);
+      }
+    } catch (err: any) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <div className="login-page">
-      <div className="login-card">
-        {/* Header */}
-        <div className="login-card-header">
-          <Link to="/" className="login-logo">
-            <img src="/logo.png" alt="Metrolodges Logo" style={{ height: '36px', objectFit: 'contain' }} />
-            <span className="login-brand-name">Metrolodges</span>
+    <div className="otp-login-layout">
+      {/* Left Column */}
+      <div className="otp-left-col">
+        <div className="otp-back">
+          <Link to="/" style={{ textDecoration: 'none', color: '#000', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <i className="fa-solid fa-chevron-left" style={{ fontSize: '0.8rem' }}></i> Back
           </Link>
-          <p className="login-subtitle">
-            {intent === 'host'
-              ? '🏠 Create an account or log in to become a host'
-              : tab === 'login' ? 'Welcome back! Log in to continue.' : 'Join Metrolodges today — it\'s free!'}
-          </p>
         </div>
-
-        {/* Tabs */}
-        <div className="login-tabs">
-          <button
-            className={`login-tab-btn ${tab === 'login' ? 'active' : ''}`}
-            onClick={() => switchTab('login')}
-          >
-            Log in
-          </button>
-          <button
-            className={`login-tab-btn ${tab === 'register' ? 'active' : ''}`}
-            onClick={() => switchTab('register')}
-          >
-            Sign up
-          </button>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="login-form">
-          {tab === 'register' && (
-            <div className="form-group">
-              <label htmlFor="name">Full Name</label>
-              <div className="input-wrapper">
-                <i className="fa-solid fa-user input-icon"></i>
-                <input
-                  id="name"
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  required
-                  autoComplete="name"
-                />
-              </div>
+        
+        <div className="otp-left-content">
+          <div className="otp-brand">
+            <div className="otp-brand-icon">
+              <i className="fa-solid fa-house"></i>
             </div>
-          )}
+            <div className="otp-brand-text">
+              <span className="otp-brand-name">Metrolodges</span>
+              <span className="otp-brand-tag">Make memories</span>
+            </div>
+          </div>
+          
+          <div className="otp-welcome-text">
+            {step === 1 && (
+              <>
+                <h1>Welcome back to Metrolodges!</h1>
+                <p>Your next adventure awaits. Log in to continue exploring unique travel experiences and memorable stays.</p>
+              </>
+            )}
+            {step === 2 && (
+              <>
+                <h1>Your Privacy Matters to Us!</h1>
+                <p>We handle your personal information and address with the highest data protection standards. At Metrolodges, we prioritize your privacy, and we will never share your information with any third parties. Your trust is our top priority.</p>
+              </>
+            )}
+            {step === 3 && (
+              <>
+                <h1>Welcome back to Metrolodges!</h1>
+                <p>Congratulations on taking the first step towards discovering a world of unique travel experiences and making memories. We're excited to have you join our vibrant community of hosts and guests.</p>
+              </>
+            )}
+          </div>
+          
+          {/* House Illustration (Pure CSS/Icon mock) */}
+          <div className="otp-illustration">
+             <div className="cloud cloud-1"></div>
+             <div className="cloud cloud-2"></div>
+             <div className="house-vector">
+               <div className="tree-1"></div>
+               <div className="tree-2"></div>
+               <div className="house-base">
+                 <div className="roof-1"></div>
+                 <div className="roof-2"></div>
+                 <div className="window"></div>
+                 <div className="door"></div>
+               </div>
+             </div>
+          </div>
+        </div>
+      </div>
 
-          <div className="form-group">
-            <label htmlFor="email">Email address</label>
-            <div className="input-wrapper">
-              <i className="fa-solid fa-envelope input-icon"></i>
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
+      {/* Right Column */}
+      <div className="otp-right-col">
+        {step === 1 && (
+          <form className="otp-form-box" onSubmit={handleStep1Submit}>
+            <h2>Sign Up / Sign In</h2>
+            {error && <div className="otp-error">{error}</div>}
+            
+            <div className="otp-input-group">
+              <input 
+                type="text" 
+                placeholder="Enter Email / Phone Number *"
+                value={inputVal}
+                onChange={e => setInputVal(e.target.value)}
+                required
+              />
+            </div>
+            
+            <button type="submit" className="otp-primary-btn" disabled={loading}>
+              Continue
+            </button>
+          </form>
+        )}
+
+        {step === 2 && (
+          <form className="otp-form-box" onSubmit={handleStep2Submit}>
+            <h2>Sign Up</h2>
+            {error && <div className="otp-error">{error}</div>}
+            
+            <div className="otp-input-group">
+              <input 
+                type="text" 
+                placeholder="Full Name *"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                required
+              />
+            </div>
+            
+            <div className="otp-input-group">
+              <input 
+                type="email" 
+                placeholder="Email *"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                required
-                autoComplete="email"
+                required={!phone}
               />
             </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <div className="input-wrapper">
-              <i className="fa-solid fa-lock input-icon"></i>
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder={tab === 'register' ? 'Create a password (min 6 chars)' : 'Enter your password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                autoComplete={tab === 'register' ? 'new-password' : 'current-password'}
+            
+            <div className="otp-phone-group">
+              <select value={phoneCode} onChange={e => setPhoneCode(e.target.value)} className="phone-code-select">
+                <option value="+91">+91</option>
+                <option value="+63">+63</option>
+                <option value="+1">+1</option>
+              </select>
+              <input 
+                type="text" 
+                placeholder="Phone Number"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                className="phone-input"
+                required={!email}
               />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-              >
-                <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-              </button>
             </div>
+            
+            <button type="submit" className="otp-primary-btn" disabled={loading}>
+              Sign up
+            </button>
+            
+            <div className="otp-links">
+              <p>Sign up using <a href="#">{email ? 'Phone Number' : 'Email'}</a></p>
+              <p>Already have an account? <span onClick={() => setStep(1)} style={{color: '#ff3800', cursor: 'pointer', fontWeight: 600}}>Login</span></p>
+              <p className="terms-text">By signing up, you agree to <Link to="/terms">Terms & Conditions</Link></p>
+            </div>
+          </form>
+        )}
+
+        {step === 3 && (
+          <div className="otp-form-box otp-modal-wrapper">
+             {/* Simulating the Modal overlay effect from Image 4 within the right col constraints or as a centered card */}
+             <div className="otp-modal">
+               <div className="otp-modal-header">
+                 <h3>Enter OTP</h3>
+                 <button onClick={() => setStep(1)} className="close-btn"><i className="fa-solid fa-xmark"></i></button>
+               </div>
+               <p className="otp-modal-desc">Please enter the OTP sent to {email || phone || inputVal}</p>
+               
+               <form onSubmit={handleOtpSubmit}>
+                {error && <div className="otp-error">{error}</div>}
+                 <div className="otp-boxes">
+                   {otp.map((digit, i) => (
+                     <input 
+                       key={i}
+                       id={`otp-${i}`}
+                       type="text" 
+                       maxLength={1}
+                       value={digit}
+                       onChange={e => handleOtpChange(i, e.target.value)}
+                     />
+                   ))}
+                 </div>
+                 
+                 <p className="resend-text">Resend OTP <span style={{color: '#ff3800', fontWeight: 600}}>(51 sec)</span></p>
+                 
+                 <button type="submit" className="otp-primary-btn" disabled={loading}>
+                   Submit
+                 </button>
+               </form>
+             </div>
           </div>
-
-          {tab === 'register' && (
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <div className="input-wrapper">
-                <i className="fa-solid fa-lock input-icon"></i>
-                <input
-                  id="confirmPassword"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Re-enter your password"
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                />
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="login-error">
-              <i className="fa-solid fa-circle-exclamation"></i> {error}
-            </div>
-          )}
-
-          <button type="submit" className="login-submit-btn" disabled={loading}>
-            {loading
-              ? <><i className="fa-solid fa-spinner fa-spin"></i> Please wait...</>
-              : tab === 'login' ? 'Log in' : 'Create account'
-            }
-          </button>
-
-          {tab === 'login' && (
-            <p className="forgot-password"><a href="#">Forgot password?</a></p>
-          )}
-        </form>
-
-        <div className="login-divider"><span>or</span></div>
-
-        {/* Social login */}
-        <div className="social-login">
-          <button className="social-btn google-btn" type="button">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Continue with Google
-          </button>
-          <button className="social-btn facebook-btn" type="button">
-            <i className="fa-brands fa-facebook-f"></i>
-            Continue with Facebook
-          </button>
-        </div>
-
-        <p className="login-switch">
-          {tab === 'login'
-            ? <>Don't have an account? <button type="button" className="link-btn" onClick={() => switchTab('register')}>Sign up</button></>
-            : <>Already have an account? <button type="button" className="link-btn" onClick={() => switchTab('login')}>Log in</button></>
-          }
-        </p>
-
-        <p className="login-terms">
-          By continuing, you agree to Metrolodges' <Link to="/terms">Terms of Service</Link> and <Link to="/privacy">Privacy Policy</Link>.
-        </p>
+        )}
       </div>
 
       <style>{`
-        .login-page {
-          min-height: 100vh;
+        .otp-login-layout {
           display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, #e8f4fd 0%, #f0f7ff 50%, #e1f0fd 100%);
-          padding: 24px 16px;
+          height: 100vh;
+          width: 100vw;
+          overflow: hidden;
           font-family: 'Inter', sans-serif;
+          background: #faece5; /* The peach background */
         }
-
-        .login-card {
-          background: white;
-          padding: 40px 44px;
-          border-radius: 24px;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(113, 183, 225, 0.15);
-          width: 100%;
-          max-width: 480px;
-          animation: loginSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes loginSlideIn {
-          from { opacity: 0; transform: translateY(30px) scale(0.97); }
-          to   { opacity: 1; transform: translateY(0)   scale(1); }
-        }
-
-        .login-card-header {
-          text-align: center;
-          margin-bottom: 28px;
-        }
-
-        .login-logo {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          text-decoration: none;
-          margin-bottom: 14px;
-        }
-
-        .login-brand-name {
-          font-size: 1.4rem;
-          font-weight: 800;
-          color: var(--brand-blue, #71b7e1);
-          letter-spacing: -0.5px;
-        }
-
-        .login-subtitle {
-          font-size: 0.9rem;
-          color: #717171;
-          margin: 0;
-          line-height: 1.5;
-        }
-
-        /* Tabs */
-        .login-tabs {
-          display: flex;
-          background: #f5f5f5;
-          border-radius: 14px;
-          padding: 4px;
-          margin-bottom: 28px;
-          gap: 4px;
-        }
-
-        .login-tab-btn {
-          flex: 1;
-          padding: 10px 0;
-          border: none;
-          border-radius: 10px;
-          font-size: 0.95rem;
-          font-weight: 600;
-          cursor: pointer;
-          background: transparent;
-          color: #717171;
-          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .login-tab-btn.active {
-          background: white;
-          color: var(--brand-blue, #71b7e1);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        /* Form */
-        .login-form {
+        
+        .otp-left-col {
+          width: 40%;
+          background: #ffffff;
+          padding: 40px 60px;
           display: flex;
           flex-direction: column;
-          gap: 18px;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 7px;
-        }
-
-        .form-group label {
-          font-size: 0.85rem;
-          font-weight: 600;
-          color: #222;
-        }
-
-        .input-wrapper {
           position: relative;
-          display: flex;
-          align-items: center;
+          z-index: 2;
+          border-right: 1px solid #faece5; /* seamless */
         }
-
-        .input-icon {
-          position: absolute;
-          left: 14px;
-          color: #aaa;
-          font-size: 0.9rem;
-          pointer-events: none;
-        }
-
-        .input-wrapper input {
-          width: 100%;
-          padding: 13px 44px 13px 40px;
-          border: 1.5px solid #e0e0e0;
-          border-radius: 12px;
-          font-size: 0.95rem;
-          font-family: 'Inter', sans-serif;
-          outline: none;
-          transition: border-color 0.2s, box-shadow 0.2s;
-          background: #fafafa;
-          color: #222;
-          box-sizing: border-box;
-        }
-
-        .input-wrapper input:focus {
-          border-color: var(--brand-blue, #71b7e1);
-          box-shadow: 0 0 0 3px rgba(113,183,225,0.15);
-          background: white;
-        }
-
-        .password-toggle {
-          position: absolute;
-          right: 12px;
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: #aaa;
-          padding: 4px;
-          font-size: 0.9rem;
-          transition: color 0.2s;
-        }
-
-        .password-toggle:hover { color: #555; }
-
-        .login-error {
-          background: #fff3f3;
-          border: 1px solid #ffd5d5;
-          color: #e53935;
-          border-radius: 10px;
-          padding: 11px 14px;
-          font-size: 0.875rem;
-          font-weight: 500;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          animation: shake 0.3s ease;
-        }
-
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
-        }
-
-        .login-submit-btn {
-          background: linear-gradient(135deg, var(--brand-blue, #71b7e1), #3a9fd1);
-          color: white;
-          border: none;
-          padding: 14px;
-          font-size: 1rem;
-          font-weight: 700;
-          border-radius: 12px;
-          cursor: pointer;
-          margin-top: 4px;
-          transition: all 0.2s;
+        
+        .otp-right-col {
+          width: 60%;
+          background: #faece5;
+          border-top-left-radius: 120px;
+          position: relative;
+          z-index: 10;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
-          letter-spacing: 0.3px;
+          box-shadow: -10px 0 30px rgba(0,0,0,0.02);
+          margin-left: -50px;
         }
 
-        .login-submit-btn:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(113, 183, 225, 0.45);
+        .otp-back {
+          margin-bottom: 80px;
         }
-
-        .login-submit-btn:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-          transform: none;
+        
+        .otp-left-content {
+          margin-top: 20px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
         }
-
-        .forgot-password {
-          text-align: right;
-          font-size: 0.85rem;
-          margin: -8px 0 -4px;
-        }
-
-        .forgot-password a {
-          color: var(--brand-blue, #71b7e1);
-          text-decoration: none;
-          font-weight: 500;
-        }
-
-        .forgot-password a:hover { text-decoration: underline; }
-
-        /* Divider */
-        .login-divider {
+        
+        .otp-brand {
           display: flex;
           align-items: center;
           gap: 12px;
-          margin: 24px 0 20px;
-          color: #bbb;
-          font-size: 0.85rem;
-          font-weight: 500;
+          margin-bottom: 40px;
+          justify-content: center;
         }
-
-        .login-divider::before,
-        .login-divider::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: #eee;
+        
+        .otp-brand-icon {
+          color: #ff3800;
+          font-size: 2rem;
         }
-
-        /* Social */
-        .social-login {
+        
+        .otp-brand-text {
           display: flex;
           flex-direction: column;
-          gap: 10px;
-          margin-bottom: 22px;
         }
-
-        .social-btn {
+        
+        .otp-brand-name {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: #ff3800;
+          line-height: 1;
+        }
+        
+        .otp-brand-tag {
+          font-size: 0.8rem;
+          color: #ff8a66;
+          font-family: 'Brush Script MT', cursive;
+          margin-top: 2px;
+        }
+        
+        .otp-welcome-text {
+          text-align: center;
+          max-width: 360px;
+          margin: 0 auto 60px;
+        }
+        
+        .otp-welcome-text h1 {
+          font-size: 1.8rem;
+          font-weight: 800;
+          color: #1a1a1a;
+          margin-bottom: 16px;
+          line-height: 1.3;
+        }
+        
+        .otp-welcome-text p {
+          font-size: 0.95rem;
+          color: #666;
+          line-height: 1.6;
+        }
+        
+        .otp-illustration {
+          margin-top: auto;
+          position: relative;
+          height: 200px;
+          background: url('/house_illustration.png') center bottom no-repeat;
+          background-size: contain;
+          opacity: 0.8;
+        }
+        
+        /* Form box on right */
+        .otp-form-box {
+          width: 100%;
+          max-width: 440px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 20px;
+        }
+        
+        .otp-form-box h2 {
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: #1a1a1a;
+          margin-bottom: 30px;
+        }
+        
+        .otp-input-group {
+          width: 100%;
+          margin-bottom: 20px;
+        }
+        
+        .otp-input-group input, .otp-phone-group input {
+          width: 100%;
+          padding: 16px 20px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          font-family: 'Inter', sans-serif;
+          background: #fff;
+          box-sizing: border-box;
+          transition: border-color 0.2s;
+        }
+        
+        .otp-input-group input:focus, .otp-phone-group input:focus {
+          border-color: #ff3800;
+          outline: none;
+        }
+        
+        .otp-phone-group {
+          width: 100%;
+          display: flex;
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+        
+        .phone-code-select {
+          padding: 16px 12px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          background: #fff;
+          outline: none;
+        }
+        
+        .otp-primary-btn {
+          background: #ff3800;
+          color: white;
+          border: none;
+          padding: 14px 40px;
+          border-radius: 30px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 10px;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .otp-primary-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(255, 56, 0, 0.3);
+        }
+        
+        .otp-links {
+          margin-top: 24px;
+          text-align: center;
+          font-size: 0.85rem;
+          color: #444;
+          line-height: 1.8;
+        }
+        
+        .otp-links a {
+          color: #ff3800;
+          text-decoration: none;
+          font-weight: 600;
+        }
+        
+        .terms-text {
+          font-size: 0.75rem;
+          color: #888;
+          margin-top: 12px;
+        }
+        
+        .otp-error {
+          width: 100%;
+          padding: 12px;
+          background: #fff0f0;
+          color: #d32f2f;
+          border-radius: 8px;
+          margin-bottom: 16px;
+          font-size: 0.9rem;
+          text-align: center;
+        }
+        
+        /* Modal styling */
+        .otp-modal-wrapper {
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 10px;
-          padding: 12px;
-          border-radius: 12px;
-          border: 1.5px solid #e0e0e0;
+          background: rgba(0,0,0,0.4);
+          z-index: 100;
+          max-width: none !important;
+        }
+        
+        .otp-modal {
           background: white;
-          font-size: 0.9rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-          font-family: 'Inter', sans-serif;
-        }
-
-        .social-btn:hover {
-          background: #f7f7f7;
-          border-color: #ccc;
-          transform: translateY(-1px);
-        }
-
-        .facebook-btn .fa-facebook-f {
-          color: #1877f2;
-          font-size: 1rem;
-        }
-
-        /* Switch + Terms */
-        .login-switch {
+          padding: 30px 40px;
+          border-radius: 12px;
+          width: 440px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.15);
           text-align: center;
-          font-size: 0.875rem;
-          color: #717171;
-          margin-bottom: 16px;
+          position: relative;
         }
-
-        .link-btn {
-          background: none;
+        
+        .otp-modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+        }
+        
+        .otp-modal-header h3 {
+          font-size: 1.25rem;
+          margin: 0;
+        }
+        
+        .close-btn {
+          background: transparent;
           border: none;
-          color: var(--brand-blue, #71b7e1);
-          font-weight: 700;
+          font-size: 1.2rem;
           cursor: pointer;
-          font-size: 0.875rem;
-          padding: 0;
-          text-decoration: none;
+          color: #666;
         }
-
-        .link-btn:hover { text-decoration: underline; }
-
-        .login-terms {
+        
+        .otp-modal-desc {
+          font-size: 0.9rem;
+          color: #444;
+          margin-bottom: 24px;
+          line-height: 1.5;
+        }
+        
+        .otp-boxes {
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          margin-bottom: 20px;
+        }
+        
+        .otp-boxes input {
+          width: 50px;
+          height: 60px;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+          font-size: 1.5rem;
           text-align: center;
-          font-size: 0.78rem;
-          color: #aaa;
-          line-height: 1.6;
+          color: #333;
         }
-
-        .login-terms a {
-          color: #717171;
-          text-decoration: underline;
+        
+        .otp-boxes input:focus {
+          border-color: #ff3800;
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(255, 56, 0, 0.1);
         }
-
-        .login-terms a:hover { color: #222; }
+        
+        .resend-text {
+          font-size: 0.85rem;
+          color: #666;
+          margin-bottom: 24px;
+        }
       `}</style>
     </div>
   )

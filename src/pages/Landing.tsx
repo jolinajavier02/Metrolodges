@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { philippineListings, indiaListings } from '../utils/listings'
 import PropertyCard from '../components/PropertyCard'
 import Footer from '../components/Footer'
@@ -15,6 +15,8 @@ const Landing: React.FC = () => {
   const [whenValue, setWhenValue] = useState('')
   const [whoValue, setWhoValue] = useState('Add guests')
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
+  const [searchParams] = useSearchParams()
+  const [isHostingMode, setIsHostingMode] = useState(searchParams.get('mode') === 'host')
 
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -63,9 +65,9 @@ const Landing: React.FC = () => {
 
   const handleBecomeHost = () => {
     if (user) {
-      navigate('/host')
+      setIsHostingMode(!isHostingMode)
     } else {
-      navigate('/login?intent=host&redirect=/host')
+      navigate('/login?intent=host&redirect=/')
     }
   }
 
@@ -219,14 +221,12 @@ const Landing: React.FC = () => {
 
           <div className="header-right">
             <button className="become-host" onClick={handleBecomeHost}>
-              {user ? '🏠 Host dashboard' : 'Become a host'}
+              {user ? (isHostingMode ? 'Switch to travelling' : 'Switch to hosting') : 'Become a host'}
             </button>
-            <div className="user-menu" ref={menuRef} onClick={() => setShowMenuDropdown(!showMenuDropdown)}>
+            <div className={`user-menu ${!user ? 'logged-out' : ''}`} ref={menuRef} onClick={() => setShowMenuDropdown(!showMenuDropdown)}>
               <i className="fa-solid fa-bars"></i>
-              {user ? (
+              {user && (
                 <div className="user-avatar-circle">{user.name?.[0]?.toUpperCase() || 'U'}</div>
-              ) : (
-                <i className="fa-solid fa-circle-user" style={{ fontSize: '1.8rem' }}></i>
               )}
 
               {/* Dropdown Menu */}
@@ -234,54 +234,75 @@ const Landing: React.FC = () => {
                 <div className="menu-dropdown">
                   {user ? (
                     <>
-                      <div className="menu-user-info">
-                        <div className="menu-user-avatar">{user.name?.[0]?.toUpperCase() || 'U'}</div>
-                        <div>
-                          <div className="menu-user-name">{user.name}</div>
-                          <div className="menu-user-email">{user.email}</div>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-heart"></i></div> Wishlists
+                      </a>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-brands fa-airbnb"></i></div> Trips
+                      </a>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-message"></i></div> Messages
+                      </a>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-circle-user"></i></div> Profile
+                      </a>
+                      <hr />
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-solid fa-gear"></i></div> Account settings
+                      </a>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-solid fa-globe"></i></div> Languages & currency
+                      </a>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-circle-question"></i></div> Help Centre
+                      </a>
+                      <hr />
+                      <Link to="/" className="menu-host-banner" onClick={() => { setShowMenuDropdown(false); handleBecomeHost() }}>
+                        <div className="menu-host-text-group">
+                          <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>{isHostingMode ? 'Switch to travelling' : 'Switch to hosting'}</b>
+                          <span style={{ fontSize: '0.85rem', color: '#717171', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>It's easy to start hosting and<br/>earn extra income.</span>
                         </div>
-                      </div>
-                      <hr />
-                      <Link to="/host" onClick={() => setShowMenuDropdown(false)}>
-                        <i className="fa-solid fa-gauge-high"></i> Host Dashboard
+                        <img src="/emoji.png" alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
                       </Link>
-                      <Link to="/about" onClick={() => setShowMenuDropdown(false)}>
-                        <i className="fa-solid fa-circle-info"></i> About
-                      </Link>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
-                        <i className="fa-solid fa-gear"></i> Account Settings
+                      <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '8px', fontWeight: 400 }}>
+                        <div style={{ width: '20px' }}></div> Refer a host
                       </a>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
-                        <i className="fa-solid fa-circle-question"></i> Help Center
+                      <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '8px', fontWeight: 400 }}>
+                        <div style={{ width: '20px' }}></div> Find a co-host
                       </a>
-                      <hr />
-                      <button className="menu-logout" onClick={handleLogout}>
-                        <i className="fa-solid fa-right-from-bracket"></i> Log out
+                      <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '16px', fontWeight: 400 }}>
+                        <div style={{ width: '20px' }}></div> Gift cards
+                      </a>
+                      <hr style={{ margin: '0' }} />
+                      <button className="menu-logout" onClick={handleLogout} style={{ paddingTop: '16px', paddingBottom: '16px', fontWeight: 400, border: 'none', background: 'transparent', textAlign: 'left', width: '100%', cursor: 'pointer', paddingLeft: '18px', fontSize: '0.95rem' }}>
+                        Log out
                       </button>
                     </>
                   ) : (
                     <>
-                      <Link to="/login" onClick={() => setShowMenuDropdown(false)} className="menu-login-link">
-                        <i className="fa-solid fa-right-to-bracket"></i> Log in
-                      </Link>
-                      <Link to="/login?tab=register" onClick={() => setShowMenuDropdown(false)}>
-                        <i className="fa-solid fa-user-plus"></i> Sign up
-                      </Link>
-                      <hr />
-                      <Link to="/host" onClick={() => { setShowMenuDropdown(false); handleBecomeHost() }}>
-                        <i className="fa-solid fa-house-chimney"></i> Become a host
-                      </Link>
-                      <Link to="/about" onClick={() => setShowMenuDropdown(false)}>
-                        <i className="fa-solid fa-circle-info"></i> About
-                      </Link>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
-                        <i className="fa-solid fa-circle-question"></i> Help Center
+                      <a href="#" className="menu-help-item" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                           <i className="fa-regular fa-circle-question" style={{ fontSize: '1.2rem' }}></i>
+                           <b style={{ fontWeight: 500, color: '#222' }}>Help Centre</b>
+                        </div>
                       </a>
-                      <Link to="/terms" onClick={() => setShowMenuDropdown(false)}>
-                        <i className="fa-solid fa-file-contract"></i> Terms of Service
+                      <hr style={{ margin: '8px 0' }} />
+                      <Link to="/host" className="menu-host-banner" onClick={() => { setShowMenuDropdown(false); handleBecomeHost() }}>
+                        <div className="menu-host-text-group">
+                          <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>Become a host</b>
+                          <span style={{ fontSize: '0.85rem', color: '#717171', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>It's easy to start hosting and<br/>earn extra income.</span>
+                        </div>
+                        <img src="/emoji.png" alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
                       </Link>
-                      <Link to="/privacy" onClick={() => setShowMenuDropdown(false)}>
-                        <i className="fa-solid fa-shield-halved"></i> Privacy Policy
+                      <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '8px', fontWeight: 400 }}>
+                        Find a co-host
+                      </a>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '16px', fontWeight: 400 }}>
+                        Gift cards
+                      </a>
+                      <hr style={{ margin: '0' }} />
+                      <Link to="/login" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '16px', paddingBottom: '16px', fontWeight: 400 }}>
+                        Log in or sign up
                       </Link>
                     </>
                   )}
@@ -449,15 +470,14 @@ const Landing: React.FC = () => {
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         
-        .menu-dropdown a,
-        .menu-dropdown .menu-login-link {
+        .menu-dropdown a {
           display: flex;
           align-items: center;
           gap: 10px;
           padding: 12px 18px;
           text-decoration: none;
           color: #222;
-          font-size: 0.9rem;
+          font-size: 0.95rem;
           font-weight: 500;
           transition: background 0.15s;
         }
@@ -468,6 +488,23 @@ const Landing: React.FC = () => {
 
         .menu-login-link {
           font-weight: 700 !important;
+        }
+
+        .menu-dropdown a.menu-help-item {
+          border: 1px solid #222;
+          margin: 12px 16px;
+          border-radius: 8px;
+          padding: 10px 16px;
+          transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .menu-dropdown a.menu-help-item:hover {
+          background: #f7f7f7;
+        }
+
+        .menu-dropdown a.menu-host-banner {
+          justify-content: space-between;
+          padding: 16px 20px;
         }
         
         .menu-dropdown hr {
