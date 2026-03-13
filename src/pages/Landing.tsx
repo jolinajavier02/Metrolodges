@@ -30,6 +30,25 @@ const Landing: React.FC = () => {
   const allListings = [...indiaListings, ...philippineListings]
   const [filteredListings, setFilteredListings] = useState(allListings)
 
+  // For horizontal scroll
+  const scrollRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+
+  const scroll = (city: string, direction: 'left' | 'right') => {
+    const el = scrollRefs.current[city]
+    if (el) {
+      const scrollAmount = direction === 'left' ? -el.offsetWidth : el.offsetWidth
+      el.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+    }
+  }
+
+  // Group listings by city
+  const groupedListings = filteredListings.reduce((acc, listing) => {
+    const city = listing.city || 'Other'
+    if (!acc[city]) acc[city] = []
+    acc[city].push(listing)
+    return acc
+  }, {} as { [key: string]: typeof allListings })
+
   const handleSearch = (searchTerm: string) => {
     setActiveDropdown(null)
     if (!searchTerm || searchTerm === 'Nearby' || searchTerm === 'Anywhere') {
@@ -420,19 +439,52 @@ const Landing: React.FC = () => {
 
       {/* Main Content */}
       <main className="main-content">
-        <h2 className="section-title">
-          <i className="fa-solid fa-location-dot" style={{ color: 'var(--brand-blue)' }}></i> 
-          {whereValue && whereValue !== 'Nearby' && whereValue !== 'Anywhere' 
-            ? `Places to stay in ${whereValue.split(',')[0]}`
-            : 'Explore all places to stay'}
-        </h2>
-        
-        {filteredListings.length > 0 ? (
-          <div className="listing-grid">
-            {filteredListings.map(listing => (
-              <PropertyCard key={listing.id} listing={listing} />
-            ))}
-          </div>
+        {Object.entries(groupedListings).length > 0 ? (
+          Object.entries(groupedListings).map(([city, listings]) => (
+            <section key={city} className="city-section">
+              <div className="section-header">
+                <Link to={`/category/${city}`} style={{ textDecoration: 'none' }}>
+                  <h2 className="section-title">
+                    {city === 'Other' ? 'More places to stay' : `Homes in ${city}`}
+                    <i className="fa-solid fa-chevron-right section-arrow"></i>
+                  </h2>
+                </Link>
+                <div className="scroll-controls">
+                  <button className="scroll-btn-arrow" onClick={() => scroll(city, 'left')}>
+                    <i className="fa-solid fa-chevron-left"></i>
+                  </button>
+                  <button className="scroll-btn-arrow" onClick={() => scroll(city, 'right')}>
+                    <i className="fa-solid fa-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div 
+                className="listing-scroll-container" 
+                ref={el => scrollRefs.current[city] = el}
+              >
+                {listings.map(listing => (
+                  <div key={listing.id} className="scroll-item">
+                    <PropertyCard listing={listing} />
+                  </div>
+                ))}
+                
+                {/* See All Card */}
+                <div className="scroll-item see-all-card-item">
+                  <Link to={`/category/${city}`} className="see-all-card">
+                    <div className="see-all-content">
+                      <div className="see-all-icons">
+                         {listings.slice(0, 3).map((l, i) => (
+                           <img key={i} src={l.image} alt="prev" className={`prev-img img-${i}`} />
+                         ))}
+                      </div>
+                      <span className="see-all-text">See all</span>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </section>
+          ))
         ) : (
           <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-light)' }}>
             <i className="fa-solid fa-magnifying-glass" style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.5 }}></i>
@@ -597,6 +649,276 @@ const Landing: React.FC = () => {
           opacity: 0;
           pointer-events: none;
           overflow: hidden;
+        }
+
+        .city-section {
+          margin-bottom: 48px;
+          padding: 0 80px;
+        }
+
+        .section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 24px;
+        }
+
+        .section-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #222;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          cursor: pointer;
+        }
+
+        .section-arrow {
+          font-size: 0.9rem;
+          margin-top: 4px;
+        }
+
+        .scroll-controls {
+          display: flex;
+          gap: 8px;
+        }
+
+        .scroll-btn-arrow {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: 1px solid #ddd;
+          background: white;
+          color: #222;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: transform 0.1s, box-shadow 0.1s;
+          font-size: 0.8rem;
+        }
+
+        .scroll-btn-arrow:hover {
+          background: #f7f7f7;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          transform: scale(1.04);
+        }
+
+        .listing-scroll-container {
+          display: flex;
+          gap: 24px;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          padding-bottom: 8px;
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none;  /* IE and Edge */
+        }
+
+        .listing-scroll-container::-webkit-scrollbar {
+          display: none; /* Chrome, Safari, Opera */
+        }
+
+        .scroll-item {
+          flex: 0 0 calc(100% / 6 - 20px);
+          scroll-snap-align: start;
+          min-width: 250px;
+        }
+
+        @media (max-width: 1400px) {
+          .scroll-item { flex: 0 0 calc(100% / 4 - 18px); }
+        }
+
+        @media (max-width: 1100px) {
+          .scroll-item { flex: 0 0 calc(100% / 3 - 16px); }
+          .city-section { padding: 0 40px; }
+        }
+
+        @media (max-width: 768px) {
+          .scroll-item { flex: 0 0 calc(100% / 2 - 12px); }
+          .city-section { padding: 0 24px; }
+        }
+
+        /* Listing Card Styles */
+        .listing-card {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          cursor: pointer;
+          width: 100%;
+          min-width: 0;
+        }
+
+        .listing-image-container {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          border-radius: 12px;
+          overflow: hidden;
+          background: #f1f1f1;
+        }
+
+        .listing-image-container img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.4s ease;
+        }
+
+        .listing-card:hover .listing-image-container img {
+          transform: scale(1.05);
+        }
+
+        .listing-badge {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          background: white;
+          color: #222;
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          border: 1px solid #ddd;
+        }
+
+        .heart-btn {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          background: none;
+          border: none;
+          color: white;
+          font-size: 1.25rem;
+          cursor: pointer;
+          filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.2s;
+        }
+
+        .heart-btn:hover {
+          transform: scale(1.1);
+        }
+
+        .listing-details {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .listing-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .listing-title {
+          font-weight: 600;
+          color: #222;
+          font-size: 0.95rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .listing-rating {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.9rem;
+          color: #222;
+        }
+
+        .listing-rating i {
+          font-size: 0.8rem;
+          color: #222;
+        }
+
+        .listing-location {
+          color: #717171;
+          font-size: 0.9rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .listing-price-row {
+          display: flex;
+          align-items: baseline;
+          gap: 4px;
+          margin-top: 4px;
+        }
+
+        .listing-price-val {
+          font-weight: 600;
+          color: #222;
+          font-size: 0.95rem;
+        }
+
+        .listing-price-label {
+          color: #222;
+          font-size: 0.9rem;
+        }
+
+        .listing-price-label::before {
+          content: '· ';
+        }
+
+        /* See All Card */
+        .see-all-card {
+          display: block;
+          height: 100%;
+          text-decoration: none;
+          color: inherit;
+        }
+
+        .see-all-content {
+          height: 100%;
+          min-height: 250px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background: white;
+          border: 1px solid #ddd;
+          border-radius: 12px;
+          gap: 16px;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .see-all-content:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .see-all-icons {
+          position: relative;
+          width: 80px;
+          height: 80px;
+        }
+
+        .prev-img {
+          position: absolute;
+          width: 60px;
+          height: 60px;
+          border-radius: 8px;
+          object-fit: cover;
+          border: 2px solid white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .img-0 { transform: translate(0, 0) rotate(-10deg); z-index: 1; }
+        .img-1 { transform: translate(20px, 10px) rotate(5deg); z-index: 2; }
+        .img-2 { transform: translate(10px, 20px) rotate(0deg); z-index: 3; }
+
+        .see-all-text {
+          font-weight: 600;
+          color: #222;
+          font-size: 0.95rem;
         }
       `}</style>
     </div>

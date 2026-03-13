@@ -7,6 +7,7 @@ import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 import Login from './pages/Login'
 import HostDashboard from './pages/HostDashboard'
+import CategoryPage from './pages/CategoryPage'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import './styles/original.css'
 
@@ -35,6 +36,7 @@ function AppRoutes() {
           </RequireAuth>
         }
       />
+      <Route path="/category/:city" element={<CategoryPage />} />
     </Routes>
   )
 }
