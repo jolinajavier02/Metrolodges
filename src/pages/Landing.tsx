@@ -1,16 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { philippineListings, indiaListings } from '../utils/listings'
 import PropertyCard from '../components/PropertyCard'
 import Footer from '../components/Footer'
+import { useAuth } from '../context/AuthContext'
 
 const Landing: React.FC = () => {
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
   const [scrolled, setScrolled] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const [whereValue, setWhereValue] = useState('')
   const [whenValue, setWhenValue] = useState('')
   const [whoValue, setWhoValue] = useState('Add guests')
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
+
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const [guestCounts, setGuestCounts] = useState({ adults: 0, children: 0, infants: 0, pets: 0 })
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
@@ -20,6 +26,30 @@ const Landing: React.FC = () => {
 
   const headerRef = useRef<HTMLDivElement>(null)
   const sentinelRef = useRef<HTMLDivElement>(null)
+
+  // Close menu dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenuDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleBecomeHost = () => {
+    if (user) {
+      navigate('/host')
+    } else {
+      navigate('/login?intent=host&redirect=/host')
+    }
+  }
+
+  const handleLogout = () => {
+    logout()
+    setShowMenuDropdown(false)
+  }
 
   // Scroll observer for header behavior
   useEffect(() => {
@@ -144,7 +174,7 @@ const Landing: React.FC = () => {
       <div ref={sentinelRef} id="scrollSentinel"></div>
 
       {/* Header */}
-      <header ref={headerRef} id="mainHeader" className={scrolled ? 'scrolled' : ''} style={{ expanded: expanded ? 'true' : 'false' }}>
+      <header ref={headerRef} id="mainHeader" className={`${scrolled ? 'scrolled' : ''} ${expanded ? 'expanded' : ''}`}>
         <div className="header-row-1">
           <Link to="/" className="logo-container" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
             <img src="/logo.png" alt="Metrolodges Logo" style={{ objectFit: 'contain', height: '40px', width: 'auto' }} />
@@ -165,21 +195,73 @@ const Landing: React.FC = () => {
           </div>
 
           <div className="header-right">
-            <button className="become-host">Become a host</button>
-            <div className="user-menu" onClick={() => setShowMenuDropdown(!showMenuDropdown)}>
+            <button className="become-host" onClick={handleBecomeHost}>
+              {user ? '🏠 Host dashboard' : 'Become a host'}
+            </button>
+            <div className="user-menu" ref={menuRef} onClick={() => setShowMenuDropdown(!showMenuDropdown)}>
               <i className="fa-solid fa-bars"></i>
-              <i className="fa-solid fa-circle-user" style={{ fontSize: '1.8rem' }}></i>
+              {user ? (
+                <div className="user-avatar-circle">{user.name?.[0]?.toUpperCase() || 'U'}</div>
+              ) : (
+                <i className="fa-solid fa-circle-user" style={{ fontSize: '1.8rem' }}></i>
+              )}
 
               {/* Dropdown Menu */}
               {showMenuDropdown && (
                 <div className="menu-dropdown">
-                  <Link to="/about">About</Link>
-                  <Link to="/terms">Terms of Service</Link>
-                  <Link to="/privacy">Privacy Policy</Link>
-                  <hr />
-                  <a href="#">Settings</a>
-                  <a href="#">Help Center</a>
-                  <Link to="/login">Log in</Link>
+                  {user ? (
+                    <>
+                      <div className="menu-user-info">
+                        <div className="menu-user-avatar">{user.name?.[0]?.toUpperCase() || 'U'}</div>
+                        <div>
+                          <div className="menu-user-name">{user.name}</div>
+                          <div className="menu-user-email">{user.email}</div>
+                        </div>
+                      </div>
+                      <hr />
+                      <Link to="/host" onClick={() => setShowMenuDropdown(false)}>
+                        <i className="fa-solid fa-gauge-high"></i> Host Dashboard
+                      </Link>
+                      <Link to="/about" onClick={() => setShowMenuDropdown(false)}>
+                        <i className="fa-solid fa-circle-info"></i> About
+                      </Link>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <i className="fa-solid fa-gear"></i> Account Settings
+                      </a>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <i className="fa-solid fa-circle-question"></i> Help Center
+                      </a>
+                      <hr />
+                      <button className="menu-logout" onClick={handleLogout}>
+                        <i className="fa-solid fa-right-from-bracket"></i> Log out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/login" onClick={() => setShowMenuDropdown(false)} className="menu-login-link">
+                        <i className="fa-solid fa-right-to-bracket"></i> Log in
+                      </Link>
+                      <Link to="/login?tab=register" onClick={() => setShowMenuDropdown(false)}>
+                        <i className="fa-solid fa-user-plus"></i> Sign up
+                      </Link>
+                      <hr />
+                      <Link to="/host" onClick={() => { setShowMenuDropdown(false); handleBecomeHost() }}>
+                        <i className="fa-solid fa-house-chimney"></i> Become a host
+                      </Link>
+                      <Link to="/about" onClick={() => setShowMenuDropdown(false)}>
+                        <i className="fa-solid fa-circle-info"></i> About
+                      </Link>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <i className="fa-solid fa-circle-question"></i> Help Center
+                      </a>
+                      <Link to="/terms" onClick={() => setShowMenuDropdown(false)}>
+                        <i className="fa-solid fa-file-contract"></i> Terms of Service
+                      </Link>
+                      <Link to="/privacy" onClick={() => setShowMenuDropdown(false)}>
+                        <i className="fa-solid fa-shield-halved"></i> Privacy Policy
+                      </Link>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -321,34 +403,114 @@ const Landing: React.FC = () => {
       <style>{`
         .menu-dropdown {
           position: absolute;
-          top: 100%;
+          top: calc(100% + 10px);
           right: 0;
           background: white;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          min-width: 250px;
-          box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+          border: 1px solid #e8e8e8;
+          border-radius: 16px;
+          min-width: 260px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.14);
           z-index: 1001;
-          margin-top: 8px;
+          overflow: hidden;
+          animation: menuDropIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes menuDropIn {
+          from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         
-        .menu-dropdown a {
-          display: block;
-          padding: 12px 16px;
+        .menu-dropdown a,
+        .menu-dropdown .menu-login-link {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 18px;
           text-decoration: none;
           color: #222;
-          border-bottom: 1px solid #f0f0f0;
-          transition: background 0.2s;
+          font-size: 0.9rem;
+          font-weight: 500;
+          transition: background 0.15s;
         }
         
         .menu-dropdown a:hover {
           background: #f5f5f5;
+        }
+
+        .menu-login-link {
+          font-weight: 700 !important;
         }
         
         .menu-dropdown hr {
           margin: 6px 0;
           border: none;
           border-top: 1px solid #f0f0f0;
+        }
+
+        .menu-user-info {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 16px 18px;
+          background: linear-gradient(135deg, #e8f4fd, #f0f7ff);
+        }
+
+        .menu-user-avatar {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--brand-blue, #71b7e1), #3a9fd1);
+          color: white;
+          font-size: 1rem;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .menu-user-name {
+          font-size: 0.9rem;
+          font-weight: 700;
+          color: #1a1a1a;
+        }
+
+        .menu-user-email {
+          font-size: 0.78rem;
+          color: #aaa;
+        }
+
+        .menu-logout {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 18px;
+          background: none;
+          border: none;
+          color: #e53935;
+          font-size: 0.9rem;
+          font-weight: 500;
+          cursor: pointer;
+          font-family: 'Inter', sans-serif;
+          width: 100%;
+          text-align: left;
+          transition: background 0.15s;
+        }
+
+        .menu-logout:hover { background: #fff3f3; }
+
+        .user-avatar-circle {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--brand-blue, #71b7e1), #3a9fd1);
+          color: white;
+          font-size: 0.85rem;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
         }
 
         .user-menu {
