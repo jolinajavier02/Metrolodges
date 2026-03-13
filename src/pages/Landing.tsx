@@ -26,12 +26,16 @@ const Landing: React.FC = () => {
 
   const headerRef = useRef<HTMLDivElement>(null)
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLDivElement>(null)
 
   // Close menu dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setShowMenuDropdown(false)
+      }
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setActiveDropdown(null)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -104,6 +108,7 @@ const Landing: React.FC = () => {
     const selectedDate = new Date(year, month, day)
 
     if (!startDate || (startDate && endDate)) {
+      // Start fresh selection
       setStartDate(selectedDate)
       setEndDate(null)
     } else if (selectedDate < startDate) {
@@ -111,11 +116,12 @@ const Landing: React.FC = () => {
     } else if (selectedDate.getTime() === startDate.getTime()) {
       setStartDate(null)
     } else {
+      // Both dates selected — update display but keep calendar open
       setEndDate(selectedDate)
       const startStr = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       const endStr = selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       setWhenValue(`${startStr} – ${endStr}`)
-      setTimeout(() => setActiveDropdown(null), 500)
+      // Do NOT auto-close — user closes by clicking elsewhere
     }
   }
 
@@ -273,9 +279,9 @@ const Landing: React.FC = () => {
           <h1 className="hero-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
             Book Anywhere, <span>Stay Anywhere</span> <img src="/emoji.png" alt="Emoji Mascot" className="hero-mascot" />
           </h1>
-          <div className="search-container">
+          <div className={`search-container${activeDropdown ? ' search-active' : ''}`} ref={searchRef}>
             {/* Where */}
-            <div className="search-item" onClick={() => setActiveDropdown(activeDropdown === 'where' ? null : 'where')}>
+            <div className={`search-item${activeDropdown === 'where' ? ' active' : ''}`} onClick={() => setActiveDropdown('where')}>
               <label>Where</label>
               <input type="text" placeholder="Search destinations" value={whereValue} readOnly />
 
@@ -295,27 +301,22 @@ const Landing: React.FC = () => {
             </div>
 
             {/* When */}
-            <div className="search-item" onClick={() => setActiveDropdown(activeDropdown === 'when' ? null : 'when')}>
+            <div className={`search-item${activeDropdown === 'when' ? ' active' : ''}`} onClick={() => setActiveDropdown('when')}>
               <label>When</label>
               <input type="text" placeholder="Add dates" value={whenValue} readOnly />
 
               {activeDropdown === 'when' && (
-                <div className="dropdown-menu calendar-dropdown active">
-                  <div className="calendar-tabs">
-                    <div className="calendar-tab active">Dates</div>
-                    <div className="calendar-tab">Months</div>
-                    <div className="calendar-tab">Flexible</div>
-                  </div>
+                <div className="dropdown-menu calendar-dropdown active" onClick={e => e.stopPropagation()}>
 
                   <div className="calendar-months-container">
                     {[0, 1].map(offset => (
                       <div key={offset} className="calendar-month">
                         <div className="calendar-header">
-                          {offset === 0 && <button className="control-btn" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}><i className="fa-solid fa-chevron-left"></i></button>}
+                          {offset === 0 && <button className="control-btn" onClick={e => { e.stopPropagation(); setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1)) }}><i className="fa-solid fa-chevron-left"></i></button>}
                           <h3 className="month-label">
                             {new Date(currentMonth.getFullYear(), currentMonth.getMonth() + offset).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                           </h3>
-                          {offset === 1 && <button className="control-btn" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}><i className="fa-solid fa-chevron-right"></i></button>}
+                          {offset === 1 && <button className="control-btn" onClick={e => { e.stopPropagation(); setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1)) }}><i className="fa-solid fa-chevron-right"></i></button>}
                         </div>
                         <div className="calendar-grid">
                           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => <div key={idx} className="day-name">{day}</div>)}
@@ -325,24 +326,17 @@ const Landing: React.FC = () => {
                     ))}
                   </div>
 
-                  <div className="flexibility-options">
-                    <button className="flex-btn active">Exact dates</button>
-                    <button className="flex-btn">± 1 day</button>
-                    <button className="flex-btn">± 2 days</button>
-                    <button className="flex-btn">± 3 days</button>
-                    <button className="flex-btn">± 7 days</button>
-                  </div>
                 </div>
               )}
             </div>
 
             {/* Who */}
-            <div className="search-item" onClick={() => setActiveDropdown(activeDropdown === 'who' ? null : 'who')}>
+            <div className={`search-item${activeDropdown === 'who' ? ' active' : ''}`} onClick={() => setActiveDropdown('who')}>
               <label>Who</label>
               <input type="text" placeholder="Add guests" value={whoValue} readOnly />
 
               {activeDropdown === 'who' && (
-                <div className="dropdown-menu who-dropdown active">
+                <div className="dropdown-menu who-dropdown active" onClick={e => e.stopPropagation()}>
                   {[
                     { type: 'adults' as const, label: 'Adults', desc: 'Ages 13 or above' },
                     { type: 'children' as const, label: 'Children', desc: 'Ages 2 – 12' },
@@ -352,9 +346,11 @@ const Landing: React.FC = () => {
                     <div key={item.type} className="guest-row">
                       <div className="guest-info"><b>{item.label}</b><span>{item.desc}</span></div>
                       <div className="guest-controls">
-                        <button className="control-btn minus" disabled={guestCounts[item.type] === 0} onClick={() => updateGuestCounts(item.type, 'dec')}>-</button>
+                        <button className="control-btn minus" disabled={guestCounts[item.type] === 0}
+                          onClick={e => { e.stopPropagation(); updateGuestCounts(item.type, 'dec') }}>-</button>
                         <span className="guest-count">{guestCounts[item.type]}</span>
-                        <button className="control-btn plus" onClick={() => updateGuestCounts(item.type, 'inc')}>+</button>
+                        <button className="control-btn plus"
+                          onClick={e => { e.stopPropagation(); updateGuestCounts(item.type, 'inc') }}>+</button>
                       </div>
                     </div>
                   ))}
