@@ -10,6 +10,7 @@ export interface User {
   isHost?: boolean
   joinedAt: string
   createdAt: string
+  savedProperties: number[]
 }
 
 interface AuthContextType {
@@ -18,6 +19,8 @@ interface AuthContextType {
   register: (name: string, email: string, phone: string, phoneCode: string, password?: string) => Promise<{ success: boolean; error?: string }>
   logout: () => void
   isLoading: boolean
+  toggleFavorite: (propertyId: number) => void
+  isFavorite: (propertyId: number) => boolean
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -92,6 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       phoneCode: phoneCode,
       joinedAt: new Date().toISOString(),
       createdAt: new Date().toLocaleDateString(),
+      savedProperties: []
     }
 
     users.push({ user: newUser, password })
@@ -101,13 +105,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: true }
   }
 
+  const toggleFavorite = (propertyId: number) => {
+    if (!user) return
+
+    const updatedUser = { ...user }
+    if (!updatedUser.savedProperties) updatedUser.savedProperties = []
+    
+    const index = updatedUser.savedProperties.indexOf(propertyId)
+    if (index === -1) {
+      updatedUser.savedProperties.push(propertyId)
+    } else {
+      updatedUser.savedProperties.splice(index, 1)
+    }
+
+    setUser(updatedUser)
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(updatedUser))
+
+    // Also update in the global users list
+    const users = getUsers()
+    const userIndex = users.findIndex(u => u.user.id === user.id)
+    if (userIndex !== -1) {
+      users[userIndex].user = updatedUser
+      saveUsers(users)
+    }
+  }
+
+  const isFavorite = (propertyId: number) => {
+    return user?.savedProperties?.includes(propertyId) || false
+  }
+
   const logout = () => {
     setUser(null)
     localStorage.removeItem(STORAGE_KEYS.CURRENT_USER)
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isLoading, toggleFavorite, isFavorite }}>
       {children}
     </AuthContext.Provider>
   )

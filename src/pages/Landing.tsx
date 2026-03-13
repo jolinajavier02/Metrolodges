@@ -14,7 +14,7 @@ const Landing: React.FC = () => {
   const [expanded, setExpanded] = useState(false)
   const [whereValue, setWhereValue] = useState('')
   const [whenValue, setWhenValue] = useState('')
-  const [whoValue, setWhoValue] = useState('Add guests')
+  const [whoValue, setWhoValue] = useState('Add guest')
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
   const [searchParams] = useSearchParams()
   const [isHostingMode, setIsHostingMode] = useState(searchParams.get('mode') === 'host')
@@ -105,11 +105,7 @@ const Landing: React.FC = () => {
   }, [])
 
   const handleBecomeHost = () => {
-    if (user) {
-      setIsHostingMode(!isHostingMode)
-    } else {
-      navigate('/login?intent=host&redirect=/')
-    }
+    window.location.href = 'https://github.com/jolinajavier02/Metrolodges-Host-dashboard.git'
   }
 
   const handleLogout = () => {
@@ -150,7 +146,7 @@ const Landing: React.FC = () => {
       if (newCounts.infants > 0) parts.push(`${newCounts.infants} infant${newCounts.infants > 1 ? 's' : ''}`)
       if (newCounts.pets > 0) parts.push(`${newCounts.pets} pet${newCounts.pets > 1 ? 's' : ''}`)
 
-      setWhoValue(parts.length > 0 ? parts.join(', ') : 'Add guests')
+      setWhoValue(parts.length > 0 ? parts.join(', ') : 'Add guest')
       return newCounts
     })
   }
@@ -245,19 +241,26 @@ const Landing: React.FC = () => {
           <Link to="/" className="logo-container" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
             <img src="/logo.png" alt="Metrolodges Logo" style={{ objectFit: 'contain', height: '40px', width: 'auto' }} />
             <div className="logo-text-group">
-              <span className="logo-name" style={{ margin: 0 }}>Metrolodges</span>
-              <span className="logo-tagline" style={{ display: 'block', margin: 0 }}>Your Gateway to Great Stays</span>
+              <span className="logo-name" style={{ margin: 0, fontWeight: 800 }}>Metrolodges</span>
+              <span className="logo-tagline" style={{ display: 'block', margin: 0, fontWeight: 600, color: 'var(--brand-blue, #71b7e1)' }}>Your Gateway to Great Stays</span>
             </div>
           </Link>
 
-          {/* Mini Search Bar */}
-          <div className="mini-search-bar" id="miniSearchBar">
-            <button className="mini-search-item">{whereValue || 'Anywhere'}</button>
+          <div className="mini-search-bar" id="miniSearchBar" onClick={() => { setExpanded(true); setActiveDropdown('where'); }}>
+            <button className="mini-search-item" onClick={(e) => { e.stopPropagation(); setExpanded(true); setActiveDropdown('where'); }}>
+              {whereValue || 'Anywhere'}
+            </button>
             <span className="mini-divider"></span>
-            <button className="mini-search-item">{whenValue || 'Anytime'}</button>
+            <button className="mini-search-item" onClick={(e) => { e.stopPropagation(); setExpanded(true); setActiveDropdown('when'); }}>
+              {whenValue || 'When'}
+            </button>
             <span className="mini-divider"></span>
-            <button className="mini-search-item mini-guests">{whoValue}</button>
-            <button className="mini-search-btn"><i className="fa-solid fa-magnifying-glass"></i></button>
+            <button className="mini-search-item mini-guests" onClick={(e) => { e.stopPropagation(); setExpanded(true); setActiveDropdown('who'); }}>
+              {whoValue}
+            </button>
+            <button className="mini-search-btn" onClick={(e) => { e.stopPropagation(); handleSearch(whereValue); }}>
+              <i className="fa-solid fa-magnifying-glass"></i>
+            </button>
           </div>
 
           <div className="header-right">
@@ -275,9 +278,9 @@ const Landing: React.FC = () => {
                 <div className="menu-dropdown">
                   {user ? (
                     <>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
-                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-heart"></i></div> Wishlists
-                      </a>
+                      <Link to="/saved" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-heart"></i></div> Saved
+                      </Link>
                       <a href="#" onClick={() => setShowMenuDropdown(false)}>
                         <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-brands fa-airbnb"></i></div> Trips
                       </a>
@@ -298,13 +301,13 @@ const Landing: React.FC = () => {
                         <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-circle-question"></i></div> Help Centre
                       </a>
                       <hr />
-                      <Link to="/" className="menu-host-banner" onClick={() => { setShowMenuDropdown(false); handleBecomeHost() }}>
+                      <a href="https://github.com/jolinajavier02/Metrolodges-Host-dashboard.git" className="menu-host-banner" onClick={() => setShowMenuDropdown(false)}>
                         <div className="menu-host-text-group">
                           <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>{isHostingMode ? 'Switch to travelling' : 'Switch to hosting'}</b>
                           <span style={{ fontSize: '0.85rem', color: '#717171', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>It's easy to start hosting and<br/>earn extra income.</span>
                         </div>
                         <img src={hostIcon} alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
-                      </Link>
+                      </a>
                       <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '8px', fontWeight: 400 }}>
                         <div style={{ width: '20px' }}></div> Refer a host
                       </a>
@@ -328,13 +331,13 @@ const Landing: React.FC = () => {
                         </div>
                       </a>
                       <hr style={{ margin: '8px 0' }} />
-                      <Link to="/host" className="menu-host-banner" onClick={() => { setShowMenuDropdown(false); handleBecomeHost() }}>
+                      <a href="https://github.com/jolinajavier02/Metrolodges-Host-dashboard.git" className="menu-host-banner" onClick={() => setShowMenuDropdown(false)}>
                         <div className="menu-host-text-group">
                           <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>Become a host</b>
                           <span style={{ fontSize: '0.85rem', color: '#717171', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>It's easy to start hosting and<br/>earn extra income.</span>
                         </div>
                         <img src={hostIcon} alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
-                      </Link>
+                      </a>
                       <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '8px', fontWeight: 400 }}>
                         Find a co-host
                       </a>
@@ -414,8 +417,8 @@ const Landing: React.FC = () => {
 
             {/* Who */}
             <div className={`search-item${activeDropdown === 'who' ? ' active' : ''}`} onClick={() => setActiveDropdown('who')}>
-              <label>Who</label>
-              <input type="text" placeholder="Add guests" value={whoValue} readOnly />
+              <label>Add guest</label>
+              <input type="text" placeholder="Add guest" value={whoValue} readOnly />
 
               {activeDropdown === 'who' && (
                 <div className="dropdown-menu who-dropdown active" onClick={e => e.stopPropagation()}>
@@ -447,18 +450,6 @@ const Landing: React.FC = () => {
           </div>
         </div>
       </header>
-
-      {/* Categories */}
-      <div className="categories-wrapper">
-        <div className="categories">
-          {categories.map((cat, idx) => (
-            <div key={idx} className={idx === 0 ? 'category-item active' : 'category-item'}>
-              <i className={`fa-solid ${cat.icon}`}></i>
-              <span>{cat.name}</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Main Content */}
       <main className="main-content">

@@ -1,12 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Listing } from '../types'
+import { useAuth } from '../context/AuthContext'
 
 interface PropertyCardProps {
     listing: any;
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ listing }) => {
+    const { toggleFavorite, isFavorite } = useAuth()
+    const active = isFavorite(listing.id)
+
     return (
         <Link to={`/property/${listing.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="listing-card">
@@ -14,8 +17,16 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ listing }) => {
                     <img src={listing.image} alt={listing.title} />
                     {listing.badge && <div className="listing-badge-overlay">{listing.badge}</div>}
                     
-                    <button className="heart-btn-overlay" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                        <i className="fa-regular fa-heart"></i>
+                    <button 
+                        className="heart-btn-overlay" 
+                        onClick={(e) => { 
+                            e.preventDefault(); 
+                            e.stopPropagation(); 
+                            toggleFavorite(listing.id);
+                        }}
+                        style={{ color: active ? '#71b7e1' : 'white' }}
+                    >
+                        <i className={`${active ? 'fa-solid' : 'fa-regular'} fa-heart`}></i>
                     </button>
 
                     <div className="img-nav-overlay">
@@ -41,7 +52,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ listing }) => {
                             ${(listing.price * 2).toLocaleString()} NZD for 2 nights
                         </span>
                         <span className="rating-summary">
-                            <i className="fa-solid fa-star"></i>
+                            <i className="fa-solid fa-star" style={{ color: 'var(--brand-blue, #71b7e1)' }}></i>
                             {listing.rating}
                         </span>
                     </div>

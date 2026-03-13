@@ -8,6 +8,7 @@ import Privacy from './pages/Privacy'
 import Login from './pages/Login'
 import HostDashboard from './pages/HostDashboard'
 import CategoryPage from './pages/CategoryPage'
+import Saved from './pages/Saved'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import './styles/original.css'
 
@@ -37,6 +38,7 @@ function AppRoutes() {
         }
       />
       <Route path="/category/:city" element={<CategoryPage />} />
+      <Route path="/saved" element={<Saved />} />
     </Routes>
   )
 }
