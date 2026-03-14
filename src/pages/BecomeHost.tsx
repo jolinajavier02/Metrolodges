@@ -30,8 +30,34 @@ const BecomeHost: React.FC = () => {
         }
     ]
 
+    const inclusions = [
+        "Automatic calendar & dynamic pricing sync across all OTAs – prevents double bookings, auto-adjusts rates for festivals, holidays, and peak seasons (Diwali, Sinulog, etc.).",
+        "Zero commissions – keep 100% of guest payments (only standard payment gateway fees).",
+        "Direct guest connections – verified guests message you instantly via WhatsApp Business or Viber.",
+        "Track ALL bookings centrally – direct, OTA, walk-ins, and agent bookings in one dashboard.",
+        "Flexi pricing + Magic Cluster – auto-sync multiple listings/properties with smart pricing rules for weekdays, weekends, and local events.",
+        "Watch Demo Video",
+        "Exclusive agent networks – tap into 5,000+ Indian travel agents + PH tour operators for more bookings.",
+        "Total control – set INR/PHP pricing, blackout dates, minimum stays, and house rules easily.",
+        "Built-in channel manager – save ₹15,000-25,000/year (India) or ₱30,000/year (PH) vs third-party tools.",
+        "Free local payouts – instant transfers to Indian banks/UPI, PH banks/GCash/Maya with no FX fees.",
+        "Professional listing tools – AI photo enhancer, local language descriptions (Hindi, Tagalog), and SEO for more visibility.",
+        "Be your own boss – custom homestay website connected to all OTAs (launching Q2 2026).",
+        "Cancel anytime – no contracts, no lock-in, full data export.",
+        "Smart marketing – featured listings, email campaigns, and social boosts bring more guests with less effort.",
+        "24/7 local support – India/PH teams via WhatsApp/call/email + free 1:1 onboarding session.",
+        "Welcome bonus – First 10 bookings commission-free + ₹2,000/₱5,000 listing credit."
+    ]
+
     const toggleFaq = (index: number) => {
         setActiveFaq(activeFaq === index ? null : index)
+    }
+
+    // Helper for slider position percentage
+    const getSliderPercent = () => {
+        const min = 1;
+        const max = 50;
+        return ((numListings - min) / (max - min)) * 100;
     }
 
     return (
@@ -39,10 +65,10 @@ const BecomeHost: React.FC = () => {
             <MainHeader showSearch={false} />
 
             {/* Hero Section */}
-            <section style={{ padding: '80px 24px', textAlign: 'center', background: '#f8f9fa' }}>
+            <section style={{ padding: '60px 24px 20px', textAlign: 'center' }}>
                 <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
                     <h1 style={{ fontSize: '3.5rem', fontWeight: 800, marginBottom: '16px' }}>Host Like a Pro</h1>
-                    <p style={{ fontSize: '1.5rem', color: '#555', marginBottom: '32px' }}>
+                    <p style={{ fontSize: '1.5rem', color: '#555', marginBottom: '24px' }}>
                         Expert hosts, list your property in 5 minutes
                     </p>
                     <p style={{ fontSize: '1.1rem', color: '#717171', maxWidth: '800px', margin: '0 auto', lineHeight: 1.6 }}>
@@ -52,31 +78,72 @@ const BecomeHost: React.FC = () => {
             </section>
 
             {/* Subscription Section */}
-            <section style={{ padding: '80px 24px' }}>
+            <section style={{ padding: '40px 24px 20px' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: 'minmax(400px, 1fr) 1.5fr',
-                        gap: '40px',
-                        background: '#f1ede9',
+                        background: '#fff',
                         borderRadius: '24px',
-                        padding: '60px',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+                        border: '1px solid #eee',
+                        boxShadow: '0 4px 30px rgba(0,0,0,0.05)',
+                        overflow: 'hidden'
                     }}>
-                        <div style={{ textAlign: 'center' }}>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '12px' }}>All-in-One Hosting</h2>
-                            <p style={{ color: '#555', marginBottom: '40px' }}>Manage all OTAs, calendars, pricing, and bookings from a single app</p>
+                        {/* Left Side Calculator */}
+                        <div style={{ 
+                            background: '#f1ede9', 
+                            padding: '60px 40px', 
+                            textAlign: 'center',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center'
+                        }}>
+                            <h2 style={{ fontSize: '2.2rem', fontWeight: 700, marginBottom: '16px' }}>All-in-One Hosting (Subscription)</h2>
+                            <p style={{ color: '#555', marginBottom: '60px', fontSize: '1.1rem', lineHeight: 1.4 }}>Manage all OTAs, calendars, pricing, bookings, and direct bookings from a single app</p>
                             
-                            <div style={{ marginBottom: '40px' }}>
+                            <div style={{ marginBottom: '60px', position: 'relative' }}>
+                                {/* Floating Number Box */}
+                                <div style={{ 
+                                    position: 'absolute', 
+                                    left: `${getSliderPercent()}%`, 
+                                    top: '-45px', 
+                                    transform: 'translateX(-50%)',
+                                    background: '#fff',
+                                    border: '1px solid #ddd',
+                                    padding: '4px 12px',
+                                    borderRadius: '8px',
+                                    fontSize: '0.9rem',
+                                    fontWeight: 800,
+                                    color: '#222',
+                                    boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                                    pointerEvents: 'none',
+                                    zIndex: 2
+                                }}>
+                                    {numListings}
+                                </div>
+
                                 <input 
                                     type="range" 
                                     min="1" 
                                     max="50" 
                                     value={numListings} 
                                     onChange={(e) => setNumListings(parseInt(e.target.value))} 
-                                    style={{ width: '100%', accentColor: '#ff385c' }}
+                                    style={{ 
+                                        width: '100%', 
+                                        accentColor: 'var(--brand-blue, #71b7e1)',
+                                        cursor: 'pointer',
+                                        height: '8px',
+                                        borderRadius: '4px'
+                                    }}
                                 />
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#717171', marginTop: '10px' }}>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    fontSize: '0.85rem', 
+                                    color: '#717171', 
+                                    marginTop: '16px',
+                                    padding: '0 5px'
+                                }}>
                                     <span>1</span>
                                     <span>10</span>
                                     <span>20</span>
@@ -84,73 +151,79 @@ const BecomeHost: React.FC = () => {
                                     <span>40</span>
                                     <span>50+</span>
                                 </div>
+                                <div style={{ fontSize: '0.8rem', color: '#999', marginTop: '4px' }}>
+                                    Move the slider to see your discounted price based on the number of listings.
+                                </div>
                             </div>
 
-                            <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#ff385c', marginBottom: '8px' }}>
-                                ₹490 <span style={{ fontSize: '1rem', color: '#555', fontWeight: 400 }}>per month per listing</span>
+                            <div style={{ fontSize: '1.6rem', fontWeight: 600, color: '#ff385c', marginBottom: '8px' }}>
+                                ₹490 <span style={{ fontSize: '1rem', color: '#555', fontWeight: 400 }}>per month per property listing</span>
                             </div>
-                            <div style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '32px' }}>
-                                Total: ₹{(numListings * 490).toLocaleString()} <span style={{ fontSize: '1rem', color: '#555', fontWeight: 400 }}>per month</span>
+                            <div style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '40px', color: '#222' }}>
+                                Total: ₹{(numListings * 490).toLocaleString()} <span style={{ fontSize: '1.1rem', color: '#555', fontWeight: 400 }}>per month</span>
                             </div>
 
                             <button style={{
                                 width: '100%',
-                                padding: '16px',
+                                padding: '20px',
                                 background: '#ff385c',
                                 color: 'white',
                                 border: 'none',
-                                borderRadius: '12px',
-                                fontSize: '1.1rem',
-                                fontWeight: 700,
+                                borderRadius: '14px',
+                                fontSize: '1.2rem',
+                                fontWeight: 800,
                                 cursor: 'pointer',
-                                marginBottom: '16px'
+                                marginBottom: '20px',
                             }}>
                                 Continue Listing
                             </button>
-                            <p style={{ fontSize: '0.9rem', color: '#717171' }}>Try free for 14 days. Save 20% on annual plans.</p>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <p style={{ fontSize: '0.95rem', color: '#717171' }}>Try free for 14 days. Save 20% on annual plans.</p>
+                                <a href="#" style={{ color: '#222', fontSize: '1rem', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                    <i className="fa-solid fa-circle-play"></i>
+                                    Never miss a booking - sync all your OTAs
+                                </a>
+                            </div>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-                            {[
-                                "Increase revenue by 20-30% in 3-6 months.",
-                                "Perfect for professional hosts - zero commissions.",
-                                "Automatic calendar and pricing sync across all OTAs.",
-                                "Zero commissions — keep 100% of your earnings.",
-                                "Direct guest connection via WhatsApp.",
-                                "Track all your direct and manual bookings in one place.",
-                                "Multi-listing auto-sync with Magic Cluster.",
-                                "Exclusive travel agent network integration.",
-                                "Built-in channel manager saves ₹20,000/year.",
-                                "Custom website for your homestay business.",
-                                "Cancel anytime — no lock-in, no questions asked.",
-                                "Professional support whenever you need it."
-                            ].map((feature, i) => (
-                                <div key={i} style={{ display: 'flex', gap: '12px', fontSize: '0.9rem', color: '#333' }}>
-                                    <i className="fa-solid fa-circle-check" style={{ color: '#ff385c', marginTop: '3px' }}></i>
-                                    {feature}
+                        {/* Right Side Inclusions */}
+                        <div style={{ padding: '60px 50px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {inclusions.map((feature, i) => (
+                                <div key={i} style={{ display: 'flex', gap: '14px', fontSize: '0.95rem', color: '#333', lineHeight: 1.4 }}>
+                                    {feature === "Watch Demo Video" ? (
+                                        <a href="#" style={{ color: 'var(--brand-blue, #71b7e1)', fontWeight: 700, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <i className="fa-solid fa-circle-play"></i> [Watch Demo Video]
+                                        </a>
+                                    ) : (
+                                        <>
+                                            <i className="fa-solid fa-circle-check" style={{ color: 'var(--brand-blue, #71b7e1)', marginTop: '4px', fontSize: '1.1rem' }}></i>
+                                            <span style={{ fontWeight: feature.includes('Welcome bonus') || feature.includes('Zero commissions') ? 700 : 400 }}>{feature}</span>
+                                        </>
+                                    )}
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Step Procedure Section */}
-                    <div style={{ marginTop: '60px', textAlign: 'center' }}>
-                        <h3 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '40px' }}>How to get started</h3>
+                    <div style={{ marginTop: '60px', padding: '20px 0', textAlign: 'center' }}>
+                        <h3 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '40px' }}>How to get started</h3>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '30px' }}>
-                            <div style={{ padding: '32px', background: '#fff', borderRadius: '16px', border: '1px solid #eee' }}>
-                                <div style={{ width: '50px', height: '50px', background: '#e1f0fd', color: '#71b7e1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 800, margin: '0 auto 20px' }}>1</div>
-                                <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '12px' }}>List Property</h4>
-                                <p style={{ color: '#717171', lineHeight: 1.6 }}>Fill in your property details and upload high-quality photos in just 5 minutes.</p>
+                            <div style={{ padding: '40px 32px', background: '#fff', borderRadius: '24px', border: '1px solid #eee' }}>
+                                <div style={{ width: '60px', height: '60px', background: 'rgba(113, 183, 225, 0.1)', color: '#71b7e1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 900, margin: '0 auto 24px' }}>1</div>
+                                <h4 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '12px' }}>List Property</h4>
+                                <p style={{ color: '#717171', lineHeight: 1.6, fontSize: '0.95rem' }}>Fill in your property details and upload high-quality photos in just 5 minutes.</p>
                             </div>
-                            <div style={{ padding: '32px', background: '#fff', borderRadius: '16px', border: '1px solid #eee' }}>
-                                <div style={{ width: '50px', height: '50px', background: '#e1f0fd', color: '#71b7e1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 800, margin: '0 auto 20px' }}>2</div>
-                                <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '12px' }}>Sync Calendars</h4>
-                                <p style={{ color: '#717171', lineHeight: 1.6 }}>Connect your Airbnb, Booking.com, and Agoda accounts to sync availability instantly.</p>
+                            <div style={{ padding: '40px 32px', background: '#fff', borderRadius: '24px', border: '1px solid #eee' }}>
+                                <div style={{ width: '60px', height: '60px', background: 'rgba(113, 183, 225, 0.1)', color: '#71b7e1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 900, margin: '0 auto 24px' }}>2</div>
+                                <h4 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '12px' }}>Sync Calendars</h4>
+                                <p style={{ color: '#717171', lineHeight: 1.6, fontSize: '0.95rem' }}>Connect your Airbnb, Booking.com, and Agoda accounts to sync availability instantly.</p>
                             </div>
-                            <div style={{ padding: '32px', background: '#fff', borderRadius: '16px', border: '1px solid #eee' }}>
-                                <div style={{ width: '50px', height: '50px', background: '#e1f0fd', color: '#71b7e1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 800, margin: '0 auto 20px' }}>3</div>
-                                <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '12px' }}>Earn More</h4>
-                                <p style={{ color: '#717171', lineHeight: 1.6 }}>Receive direct bookings via WhatsApp and keep 100% of your earnings with 0% commission.</p>
+                            <div style={{ padding: '40px 32px', background: '#fff', borderRadius: '24px', border: '1px solid #eee' }}>
+                                <div style={{ width: '60px', height: '60px', background: 'rgba(113, 183, 225, 0.1)', color: '#71b7e1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 900, margin: '0 auto 24px' }}>3</div>
+                                <h4 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '12px' }}>Earn More</h4>
+                                <p style={{ color: '#717171', lineHeight: 1.6, fontSize: '0.95rem' }}>Receive direct bookings via WhatsApp and keep 100% of your earnings with 0% commission.</p>
                             </div>
                         </div>
                     </div>
@@ -158,9 +231,9 @@ const BecomeHost: React.FC = () => {
             </section>
 
             {/* Why Choose Metrolodges Section */}
-            <section style={{ padding: '80px 24px', background: '#f8f9fa' }}>
+            <section style={{ padding: '60px 24px 20px', background: '#fff' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-                    <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '16px' }}>Why Property Owners Love ❤️ Metrolodges</h2>
+                    <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '12px' }}>Why choose metrolodges?</h2>
                     <p style={{ color: '#717171', marginBottom: '60px', fontSize: '1.1rem' }}>The #1 choice for boutique stays and professional hosts</p>
                     
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
@@ -170,12 +243,12 @@ const BecomeHost: React.FC = () => {
                             { title: "Smart Sync", icon: "fa-rotate", desc: "Never worry about double bookings again with real-time calendar syncing." },
                             { title: "Expert Support", icon: "fa-headset", desc: "Our team of hospitality experts is here to help you grow your business." }
                         ].map((item, i) => (
-                            <div key={i} style={{ padding: '32px', background: '#fff', borderRadius: '20px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                                <div style={{ fontSize: '2.5rem', color: '#71b7e1', marginBottom: '20px' }}>
+                            <div key={i} style={{ padding: '40px 32px', background: '#fff', borderRadius: '24px', border: '1px solid #eee', boxShadow: '0 4px 15px rgba(0,0,0,0.02)' }}>
+                                <div style={{ fontSize: '2.8rem', color: 'var(--brand-blue, #71b7e1)', marginBottom: '24px' }}>
                                     <i className={`fa-solid ${item.icon}`}></i>
                                 </div>
-                                <h4 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '12px' }}>{item.title}</h4>
-                                <p style={{ color: '#717171', fontSize: '0.9rem', lineHeight: 1.6 }}>{item.desc}</p>
+                                <h4 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '12px', color: '#222' }}>{item.title}</h4>
+                                <p style={{ color: '#717171', fontSize: '0.92rem', lineHeight: 1.6 }}>{item.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -183,19 +256,19 @@ const BecomeHost: React.FC = () => {
             </section>
 
             {/* FAQ Section */}
-            <section style={{ padding: '100px 24px' }}>
-                <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                    <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '60px', textAlign: 'center' }}>Frequently Asked Questions</h2>
+            <section style={{ padding: '40px 24px 80px' }}>
+                <div style={{ maxWidth: '850px', margin: '0 auto' }}>
+                    <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '60px', textAlign: 'center' }}>Frequently Asked Questions</h2>
                     
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {faqs.map((faq, i) => (
-                            <div key={i} style={{ border: '1px solid #eee', borderRadius: '16px', overflow: 'hidden' }}>
+                            <div key={i} style={{ border: '1px solid #eee', borderRadius: '20px', overflow: 'hidden', background: activeFaq === i ? '#fcfdff' : '#fff' }}>
                                 <button
                                     onClick={() => toggleFaq(i)}
                                     style={{
                                         width: '100%',
-                                        padding: '24px',
-                                        background: activeFaq === i ? '#f8f9fa' : '#fff',
+                                        padding: '28px 32px',
+                                        background: 'transparent',
                                         border: 'none',
                                         display: 'flex',
                                         justifyContent: 'space-between',
@@ -204,11 +277,24 @@ const BecomeHost: React.FC = () => {
                                         textAlign: 'left'
                                     }}
                                 >
-                                    <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#222' }}>{faq.q}</span>
-                                    <i className={`fa-solid ${activeFaq === i ? 'fa-minus' : 'fa-plus'}`} style={{ color: '#717171' }}></i>
+                                    <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#222' }}>{faq.q}</span>
+                                    <div style={{ 
+                                        width: '32px', 
+                                        height: '32px', 
+                                        borderRadius: '50%', 
+                                        background: activeFaq === i ? 'var(--brand-blue, #71b7e1)' : '#f5f5f5',
+                                        color: activeFaq === i ? '#fff' : '#717171',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '0.8rem',
+                                        transition: 'all 0.3s'
+                                    }}>
+                                        <i className={`fa-solid ${activeFaq === i ? 'fa-minus' : 'fa-plus'}`}></i>
+                                    </div>
                                 </button>
                                 {activeFaq === i && (
-                                    <div style={{ padding: '0 24px 24px', background: '#f8f9fa', color: '#555', lineHeight: 1.6, fontSize: '1rem' }}>
+                                    <div style={{ padding: '0 32px 32px', color: '#555', lineHeight: 1.7, fontSize: '1rem' }}>
                                         {faq.a}
                                     </div>
                                 )}
