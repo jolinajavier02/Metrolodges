@@ -208,6 +208,14 @@ const MainHeader: React.FC<MainHeaderProps> = ({
                 <div className="menu-dropdown">
                   {user ? (
                     <>
+                      <div className="menu-user-info">
+                        <div className="menu-user-avatar">{user.name?.[0]?.toUpperCase() || 'U'}</div>
+                        <div className="menu-user-details">
+                          <div className="menu-user-name">{user.name}</div>
+                          <div className="menu-user-email">{user.email}</div>
+                        </div>
+                      </div>
+                      <hr style={{ margin: 0 }} />
                       <Link to="/saved" onClick={() => setShowMenuDropdown(false)}>
                         <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-heart"></i></div> Saved
                       </Link>
@@ -233,8 +241,8 @@ const MainHeader: React.FC<MainHeaderProps> = ({
                         <img src={hostIcon} alt="Host" style={{ width: '40px', height: '40px' }} />
                       </Link>
                       <hr style={{ margin: '0' }} />
-                      <button className="menu-logout" onClick={handleLogout} style={{ paddingTop: '16px', paddingBottom: '16px', border: 'none', background: 'transparent', textAlign: 'left', width: '100%', cursor: 'pointer', paddingLeft: '18px', fontSize: '0.95rem' }}>
-                        Log out
+                      <button className="menu-logout" onClick={handleLogout}>
+                         <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-solid fa-arrow-right-from-bracket"></i></div> Log out
                       </button>
                     </>
                   ) : (
