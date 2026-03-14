@@ -9,6 +9,8 @@ import Login from './pages/Login'
 import HostDashboard from './pages/HostDashboard'
 import CategoryPage from './pages/CategoryPage'
 import Saved from './pages/Saved'
+import Help from './pages/Help'
+import BecomeHost from './pages/BecomeHost'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import './styles/original.css'
 
@@ -39,6 +41,8 @@ function AppRoutes() {
       />
       <Route path="/category/:city" element={<CategoryPage />} />
       <Route path="/saved" element={<Saved />} />
+      <Route path="/help" element={<Help />} />
+      <Route path="/become-a-host" element={<BecomeHost />} />
     </Routes>
   )
 }

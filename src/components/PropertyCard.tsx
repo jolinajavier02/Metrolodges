@@ -14,7 +14,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ listing }) => {
         <Link to={`/property/${listing.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="listing-card">
                 <div className="listing-image-container">
-                    <img src={listing.image} alt={listing.title} />
+                    <img src={listing.image} alt={listing.title} onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=600' }} />
                     {listing.badge && <div className="listing-badge-overlay">{listing.badge}</div>}
                     
                     <button 

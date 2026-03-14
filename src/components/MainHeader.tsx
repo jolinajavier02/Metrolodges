@@ -28,7 +28,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
   const [whenValue, setWhenValue] = useState('')
   const [whoValue, setWhoValue] = useState('Add guest')
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
-  const [isHostingMode] = useState(searchParams.get('mode') === 'host')
+  const isHostingMode = searchParams.get('mode') === 'host'
 
   const menuRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -80,7 +80,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
   }, [showSearch, miniSearchOnly])
 
   const handleBecomeHost = () => {
-    window.location.href = 'https://github.com/jolinajavier02/Metrolodges-Host-dashboard.git'
+    navigate('/become-a-host')
   }
 
   const handleLogout = () => {
@@ -214,14 +214,24 @@ const MainHeader: React.FC<MainHeaderProps> = ({
                       <a href="#" onClick={() => setShowMenuDropdown(false)}>
                         <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-brands fa-airbnb"></i></div> Trips
                       </a>
+                      <Link to="/help" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-circle-question"></i></div> Help Center
+                      </Link>
                       <hr />
-                      <a href="https://github.com/jolinajavier02/Metrolodges-Host-dashboard.git" className="menu-host-banner" onClick={() => setShowMenuDropdown(false)}>
-                        <div className="menu-host-text-group">
-                          <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>{isHostingMode ? 'Switch to travelling' : 'Switch to hosting'}</b>
-                          <span style={{ fontSize: '0.85rem', color: '#717171', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>It's easy to start hosting and<br/>earn extra income.</span>
-                        </div>
-                        <img src={hostIcon} alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-solid fa-users-gear"></i></div> Find a co-host
                       </a>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-solid fa-gift"></i></div> Refer a host
+                      </a>
+                      <hr />
+                      <Link to="/become-a-host" className="menu-host-banner" onClick={() => setShowMenuDropdown(false)}>
+                        <div className="menu-host-text-group">
+                          <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>Become a host</b>
+                          <div style={{ fontSize: '0.85rem', color: '#717171', marginTop: '2px' }}>List your space and start earning</div>
+                        </div>
+                        <img src={hostIcon} alt="Host" style={{ width: '40px', height: '40px' }} />
+                      </Link>
                       <hr style={{ margin: '0' }} />
                       <button className="menu-logout" onClick={handleLogout} style={{ paddingTop: '16px', paddingBottom: '16px', border: 'none', background: 'transparent', textAlign: 'left', width: '100%', cursor: 'pointer', paddingLeft: '18px', fontSize: '0.95rem' }}>
                         Log out
@@ -231,13 +241,23 @@ const MainHeader: React.FC<MainHeaderProps> = ({
                     <>
                       <Link to="/login" onClick={() => setShowMenuDropdown(false)} style={{ fontWeight: 600 }}>Log in or sign up</Link>
                       <hr />
-                      <a href="https://github.com/jolinajavier02/Metrolodges-Host-dashboard.git" className="menu-host-banner" onClick={() => setShowMenuDropdown(false)}>
+                      <Link to="/help" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-circle-question"></i></div> Help Center
+                      </Link>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-solid fa-users-gear"></i></div> Find a co-host
+                      </a>
+                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
+                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-solid fa-gift"></i></div> Refer a host
+                      </a>
+                      <hr />
+                      <Link to="/become-a-host" className="menu-host-banner" onClick={() => setShowMenuDropdown(false)}>
                         <div className="menu-host-text-group">
                           <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>Become a host</b>
-                          <span style={{ fontSize: '0.85rem', color: '#717171', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>It's easy to start hosting and<br/>earn extra income.</span>
+                          <div style={{ fontSize: '0.85rem', color: '#717171', marginTop: '2px' }}>List your space and start earning</div>
                         </div>
-                        <img src={hostIcon} alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
-                      </a>
+                        <img src={hostIcon} alt="Host" style={{ width: '40px', height: '40px' }} />
+                      </Link>
                     </>
                   )}
                 </div>
