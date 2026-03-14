@@ -6,37 +6,27 @@ import Footer from '../components/Footer'
 import { useAuth } from '../context/AuthContext'
 import hostIcon from '../assets/host.png'
 
+import MainHeader from '../components/MainHeader'
+
 const Landing: React.FC = () => {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
 
-  const [scrolled, setScrolled] = useState(false)
-  const [expanded, setExpanded] = useState(false)
   const [whereValue, setWhereValue] = useState('')
-  const [whenValue, setWhenValue] = useState('')
-  const [whoValue, setWhoValue] = useState('Add guest')
-  const [showMenuDropdown, setShowMenuDropdown] = useState(false)
   const [searchParams] = useSearchParams()
-  const [isHostingMode, setIsHostingMode] = useState(searchParams.get('mode') === 'host')
-
-  const menuRef = useRef<HTMLDivElement>(null)
-
-  const [guestCounts, setGuestCounts] = useState({ adults: 0, children: 0, infants: 0, pets: 0 })
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
-  const [currentMonth, setCurrentMonth] = useState(new Date())
-  const [startDate, setStartDate] = useState<Date | null>(null)
-  const [endDate, setEndDate] = useState<Date | null>(null)
   
   const allListings = [...indiaListings, ...philippineListings]
   const [filteredListings, setFilteredListings] = useState(allListings)
 
   // Group listings by city
-  const groupedListings = filteredListings.reduce((acc, listing) => {
-    const city = listing.city || 'Other'
-    if (!acc[city]) acc[city] = []
-    acc[city].push(listing)
-    return acc
-  }, {} as { [key: string]: typeof allListings })
+  const groupedListings = React.useMemo(() => {
+    return filteredListings.reduce((acc, listing) => {
+      const city = listing.city || 'Other'
+      if (!acc[city]) acc[city] = []
+      acc[city].push(listing)
+      return acc
+    }, {} as { [key: string]: typeof allListings })
+  }, [filteredListings])
 
   // For horizontal scroll
   const scrollRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
@@ -55,7 +45,6 @@ const Landing: React.FC = () => {
   }
 
   useEffect(() => {
-    // Initial state for all cities
     Object.keys(groupedListings).forEach(city => {
       updateScrollState(city)
     })
@@ -64,14 +53,12 @@ const Landing: React.FC = () => {
   const scroll = (city: string, direction: 'left' | 'right') => {
     const el = scrollRefs.current[city]
     if (el) {
-      // Move by 6 items (the full width of the container)
       const scrollAmount = direction === 'left' ? -el.offsetWidth : el.offsetWidth
       el.scrollBy({ left: scrollAmount, behavior: 'smooth' })
     }
   }
 
   const handleSearch = (searchTerm: string) => {
-    setActiveDropdown(null)
     if (!searchTerm || searchTerm === 'Nearby' || searchTerm === 'Anywhere') {
       setFilteredListings(allListings)
       return
@@ -86,370 +73,10 @@ const Landing: React.FC = () => {
     setFilteredListings(filtered)
   }
 
-  const headerRef = useRef<HTMLDivElement>(null)
-  const sentinelRef = useRef<HTMLDivElement>(null)
-  const searchRef = useRef<HTMLDivElement>(null)
-
-  // Close menu dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setShowMenuDropdown(false)
-      }
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setActiveDropdown(null)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  const handleBecomeHost = () => {
-    window.location.href = 'https://github.com/jolinajavier02/Metrolodges-Host-dashboard.git'
-  }
-
-  const handleLogout = () => {
-    logout()
-    setShowMenuDropdown(false)
-  }
-
-  // Scroll observer for header behavior
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setScrolled(false)
-          setExpanded(false)
-        } else {
-          setScrolled(true)
-        }
-      })
-    }, { threshold: 0 })
-
-    if (sentinelRef.current) observer.observe(sentinelRef.current)
-    return () => observer.disconnect()
-  }, [])
-
-  // Update guest counts
-  const updateGuestCounts = (type: keyof typeof guestCounts, operation: 'inc' | 'dec') => {
-    setGuestCounts(prev => {
-      const newCounts = { ...prev }
-      if (operation === 'inc') {
-        newCounts[type]++
-      } else if (newCounts[type] > 0) {
-        newCounts[type]--
-      }
-
-      const total = newCounts.adults + newCounts.children
-      const parts = []
-      if (total > 0) parts.push(`${total} guest${total > 1 ? 's' : ''}`)
-      if (newCounts.infants > 0) parts.push(`${newCounts.infants} infant${newCounts.infants > 1 ? 's' : ''}`)
-      if (newCounts.pets > 0) parts.push(`${newCounts.pets} pet${newCounts.pets > 1 ? 's' : ''}`)
-
-      setWhoValue(parts.length > 0 ? parts.join(', ') : 'Add guest')
-      return newCounts
-    })
-  }
-
-  // Calendar rendering
-  const getDaysInMonth = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
-  }
-
-  const getFirstDayOfMonth = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1).getDay()
-  }
-
-  const handleDateSelect = (day: number, monthOffset: number) => {
-    const year = currentMonth.getFullYear()
-    const month = currentMonth.getMonth() + monthOffset
-    const selectedDate = new Date(year, month, day)
-
-    if (!startDate || (startDate && endDate)) {
-      // Start fresh selection
-      setStartDate(selectedDate)
-      setEndDate(null)
-    } else if (selectedDate < startDate) {
-      setStartDate(selectedDate)
-    } else if (selectedDate.getTime() === startDate.getTime()) {
-      setStartDate(null)
-    } else {
-      // Both dates selected — update display but keep calendar open
-      setEndDate(selectedDate)
-      const startStr = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      const endStr = selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      setWhenValue(`${startStr} – ${endStr}`)
-      // Do NOT auto-close — user closes by clicking elsewhere
-    }
-  }
-
-  const renderCalendarDays = (monthOffset: number) => {
-    const monthDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + monthOffset)
-    const daysInMonth = getDaysInMonth(monthDate)
-    const firstDay = getFirstDayOfMonth(monthDate)
-    const days = []
-
-    for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>)
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const thisDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), day)
-      const isSelected = (startDate?.getTime() === thisDate.getTime()) || (endDate?.getTime() === thisDate.getTime())
-      const isInRange = startDate && endDate && thisDate > startDate && thisDate < endDate
-
-      days.push(
-        <div
-          key={day}
-          className={`calendar-day ${isSelected ? 'selected' : ''} ${isInRange ? 'in-range' : ''}`}
-          onClick={() => handleDateSelect(day, monthOffset)}
-        >
-          {day}
-        </div>
-      )
-    }
-
-    return days
-  }
-
-  const destinations = [
-    { icon: 'fa-location-crosshairs', name: 'Nearby', desc: "Find what's around you" },
-    { icon: 'fa-mountain-city', name: 'Baguio, Philippines', desc: 'Great for a weekend getaway' },
-    { icon: 'fa-volcano', name: 'Tagaytay, Philippines', desc: 'For nature-lovers' },
-    { icon: 'fa-city', name: 'Makati, Philippines', desc: 'For business and leisure' },
-    { icon: 'fa-umbrella-beach', name: 'Mumbai, India', desc: 'City of Dreams' },
-    { icon: 'fa-fort-awesome', name: 'Delhi, India', desc: 'Historic capital' },
-    { icon: 'fa-laptop-code', name: 'Bangalore, India', desc: 'Garden City' },
-  ]
-
-  const categories = [
-    { icon: 'fa-house-chimney', name: 'Homes' },
-    { icon: 'fa-mountain-sun', name: 'Amazing Pools' },
-    { icon: 'fa-campground', name: 'Camping' },
-    { icon: 'fa-snowflake', name: 'Arctic' },
-    { icon: 'fa-umbrella-beach', name: 'Beachfront' },
-    { icon: 'fa-city', name: 'Iconic Cities' },
-  ]
 
   return (
     <div>
-      <div ref={sentinelRef} id="scrollSentinel"></div>
-
-      {/* Header */}
-      <header ref={headerRef} id="mainHeader" className={`${scrolled ? 'scrolled' : ''} ${expanded ? 'expanded' : ''}`}>
-        <div className="header-row-1">
-          <Link to="/" className="logo-container" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-            <img src="/logo.png" alt="Metrolodges Logo" style={{ objectFit: 'contain', height: '40px', width: 'auto' }} />
-            <div className="logo-text-group">
-              <span className="logo-name" style={{ margin: 0, fontWeight: 800 }}>Metrolodges</span>
-              <span className="logo-tagline" style={{ display: 'block', margin: 0, fontWeight: 600, color: 'var(--brand-blue, #71b7e1)' }}>Your Gateway to Great Stays</span>
-            </div>
-          </Link>
-
-          <div className="mini-search-bar" id="miniSearchBar" onClick={() => { setExpanded(true); setActiveDropdown('where'); }}>
-            <button className="mini-search-item" onClick={(e) => { e.stopPropagation(); setExpanded(true); setActiveDropdown('where'); }}>
-              {whereValue || 'Anywhere'}
-            </button>
-            <span className="mini-divider"></span>
-            <button className="mini-search-item" onClick={(e) => { e.stopPropagation(); setExpanded(true); setActiveDropdown('when'); }}>
-              {whenValue || 'When'}
-            </button>
-            <span className="mini-divider"></span>
-            <button className="mini-search-item mini-guests" onClick={(e) => { e.stopPropagation(); setExpanded(true); setActiveDropdown('who'); }}>
-              {whoValue}
-            </button>
-            <button className="mini-search-btn" onClick={(e) => { e.stopPropagation(); handleSearch(whereValue); }}>
-              <i className="fa-solid fa-magnifying-glass"></i>
-            </button>
-          </div>
-
-          <div className="header-right">
-            <button className="become-host" onClick={handleBecomeHost}>
-              {user ? (isHostingMode ? 'Switch to travelling' : 'Switch to hosting') : 'Become a host'}
-            </button>
-            <div className={`user-menu ${!user ? 'logged-out' : ''}`} ref={menuRef} onClick={() => setShowMenuDropdown(!showMenuDropdown)}>
-              <i className="fa-solid fa-bars"></i>
-              {user && (
-                <div className="user-avatar-circle">{user.name?.[0]?.toUpperCase() || 'U'}</div>
-              )}
-
-              {/* Dropdown Menu */}
-              {showMenuDropdown && (
-                <div className="menu-dropdown">
-                  {user ? (
-                    <>
-                      <Link to="/saved" onClick={() => setShowMenuDropdown(false)}>
-                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-heart"></i></div> Saved
-                      </Link>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
-                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-brands fa-airbnb"></i></div> Trips
-                      </a>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
-                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-message"></i></div> Messages
-                      </a>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
-                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-circle-user"></i></div> Profile
-                      </a>
-                      <hr />
-                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
-                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-solid fa-gear"></i></div> Account settings
-                      </a>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
-                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-solid fa-globe"></i></div> Languages & currency
-                      </a>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)}>
-                        <div style={{ width: '20px', textAlign: 'center' }}><i className="fa-regular fa-circle-question"></i></div> Help Centre
-                      </a>
-                      <hr />
-                      <a href="https://github.com/jolinajavier02/Metrolodges-Host-dashboard.git" className="menu-host-banner" onClick={() => setShowMenuDropdown(false)}>
-                        <div className="menu-host-text-group">
-                          <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>{isHostingMode ? 'Switch to travelling' : 'Switch to hosting'}</b>
-                          <span style={{ fontSize: '0.85rem', color: '#717171', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>It's easy to start hosting and<br/>earn extra income.</span>
-                        </div>
-                        <img src={hostIcon} alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
-                      </a>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '8px', fontWeight: 400 }}>
-                        <div style={{ width: '20px' }}></div> Refer a host
-                      </a>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '8px', fontWeight: 400 }}>
-                        <div style={{ width: '20px' }}></div> Find a co-host
-                      </a>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '16px', fontWeight: 400 }}>
-                        <div style={{ width: '20px' }}></div> Gift cards
-                      </a>
-                      <hr style={{ margin: '0' }} />
-                      <button className="menu-logout" onClick={handleLogout} style={{ paddingTop: '16px', paddingBottom: '16px', fontWeight: 400, border: 'none', background: 'transparent', textAlign: 'left', width: '100%', cursor: 'pointer', paddingLeft: '18px', fontSize: '0.95rem' }}>
-                        Log out
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <a href="#" className="menu-help-item" onClick={() => setShowMenuDropdown(false)}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                           <i className="fa-regular fa-circle-question" style={{ fontSize: '1.2rem' }}></i>
-                           <b style={{ fontWeight: 500, color: '#222' }}>Help Centre</b>
-                        </div>
-                      </a>
-                      <hr style={{ margin: '8px 0' }} />
-                      <a href="https://github.com/jolinajavier02/Metrolodges-Host-dashboard.git" className="menu-host-banner" onClick={() => setShowMenuDropdown(false)}>
-                        <div className="menu-host-text-group">
-                          <b style={{ fontWeight: 600, color: '#222', fontSize: '0.95rem' }}>Become a host</b>
-                          <span style={{ fontSize: '0.85rem', color: '#717171', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>It's easy to start hosting and<br/>earn extra income.</span>
-                        </div>
-                        <img src={hostIcon} alt="Mascot" style={{ height: '40px', objectFit: 'contain' }} />
-                      </a>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '8px', fontWeight: 400 }}>
-                        Find a co-host
-                      </a>
-                      <a href="#" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '8px', paddingBottom: '16px', fontWeight: 400 }}>
-                        Gift cards
-                      </a>
-                      <hr style={{ margin: '0' }} />
-                      <Link to="/login" onClick={() => setShowMenuDropdown(false)} style={{ paddingTop: '16px', paddingBottom: '16px', fontWeight: 400 }}>
-                        Log in or sign up
-                      </Link>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Full Search Bar */}
-        <div className="header-search-row" id="headerSearchRow">
-          <h1 className="hero-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-            Book Anywhere, <span>Stay Anywhere</span> <img src="/emoji.png" alt="Emoji Mascot" className="hero-mascot" />
-          </h1>
-          <div className={`search-container${activeDropdown ? ' search-active' : ''}`} ref={searchRef}>
-            {/* Where */}
-            <div className={`search-item${activeDropdown === 'where' ? ' active' : ''}`} onClick={() => setActiveDropdown('where')}>
-              <label>Where</label>
-              <input type="text" placeholder="Search destinations" value={whereValue} readOnly />
-
-              {activeDropdown === 'where' && (
-                <div className="dropdown-menu where-dropdown active">
-                  <p className="suggested-title">Suggested destinations</p>
-                  <div className="destination-list">
-                    {destinations.map((dest, idx) => (
-                      <div key={idx} className="destination-item" onClick={() => { 
-                        setWhereValue(dest.name); 
-                        handleSearch(dest.name);
-                      }}>
-                        <div className="dest-icon"><i className={`fa-solid ${dest.icon}`}></i></div>
-                        <div className="dest-info"><b>{dest.name}</b><span>{dest.desc}</span></div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* When */}
-            <div className={`search-item${activeDropdown === 'when' ? ' active' : ''}`} onClick={() => setActiveDropdown('when')}>
-              <label>When</label>
-              <input type="text" placeholder="Add dates" value={whenValue} readOnly />
-
-              {activeDropdown === 'when' && (
-                <div className="dropdown-menu calendar-dropdown active" onClick={e => e.stopPropagation()}>
-
-                  <div className="calendar-months-container">
-                    {[0, 1].map(offset => (
-                      <div key={offset} className="calendar-month">
-                        <div className="calendar-header">
-                          {offset === 0 && <button className="control-btn" onClick={e => { e.stopPropagation(); setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1)) }}><i className="fa-solid fa-chevron-left"></i></button>}
-                          <h3 className="month-label">
-                            {new Date(currentMonth.getFullYear(), currentMonth.getMonth() + offset).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                          </h3>
-                          {offset === 1 && <button className="control-btn" onClick={e => { e.stopPropagation(); setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1)) }}><i className="fa-solid fa-chevron-right"></i></button>}
-                        </div>
-                        <div className="calendar-grid">
-                          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => <div key={idx} className="day-name">{day}</div>)}
-                          {renderCalendarDays(offset)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                </div>
-              )}
-            </div>
-
-            {/* Who */}
-            <div className={`search-item${activeDropdown === 'who' ? ' active' : ''}`} onClick={() => setActiveDropdown('who')}>
-              <label>Add guest</label>
-              <input type="text" placeholder="Add guest" value={whoValue} readOnly />
-
-              {activeDropdown === 'who' && (
-                <div className="dropdown-menu who-dropdown active" onClick={e => e.stopPropagation()}>
-                  {[
-                    { type: 'adults' as const, label: 'Adults', desc: 'Ages 13 or above' },
-                    { type: 'children' as const, label: 'Children', desc: 'Ages 2 – 12' },
-                    { type: 'infants' as const, label: 'Infants', desc: 'Under 2' },
-                    { type: 'pets' as const, label: 'Pets', desc: '' },
-                  ].map(item => (
-                    <div key={item.type} className="guest-row">
-                      <div className="guest-info"><b>{item.label}</b><span>{item.desc}</span></div>
-                      <div className="guest-controls">
-                        <button className="control-btn minus" disabled={guestCounts[item.type] === 0}
-                          onClick={e => { e.stopPropagation(); updateGuestCounts(item.type, 'dec') }}>-</button>
-                        <span className="guest-count">{guestCounts[item.type]}</span>
-                        <button className="control-btn plus"
-                          onClick={e => { e.stopPropagation(); updateGuestCounts(item.type, 'inc') }}>+</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <button className="search-btn" onClick={() => handleSearch(whereValue)}>
-              <i className="fa-solid fa-magnifying-glass"></i>
-              Search
-            </button>
-          </div>
-        </div>
-      </header>
+      <MainHeader onSearch={handleSearch} />
 
       {/* Main Content */}
       <main className="main-content">
@@ -520,7 +147,13 @@ const Landing: React.FC = () => {
                     <div className="see-all-content">
                       <div className="see-all-icons">
                          {listings.slice(0, 3).map((l, i) => (
-                           <img key={i} src={l.image} alt="prev" className={`prev-img img-${i}`} />
+                           <img 
+                             key={i} 
+                             src={l.image} 
+                             alt="prev" 
+                             className={`prev-img img-${i}`}
+                             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                           />
                          ))}
                       </div>
                       <span className="see-all-text">See all</span>
@@ -688,9 +321,9 @@ const Landing: React.FC = () => {
         }
 
         .header-search-row {
-          max-height: ${expanded ? '250px' : '250px'};
-          opacity: ${scrolled && !expanded ? '0' : '1'};
-          pointer-events: ${scrolled && !expanded ? 'none' : 'all'};
+          max-height: 250px;
+          opacity: 1;
+          pointer-events: all;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 

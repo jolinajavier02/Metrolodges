@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { allListings } from '../utils/listings'
-import SimpleHeader from '../components/SimpleHeader'
+import MainHeader from '../components/MainHeader'
 import Footer from '../components/Footer'
 import PropertyCard from '../components/PropertyCard'
 import { useAuth } from '../context/AuthContext'
+import { indiaListings, philippineListings } from '../utils/listings'
 
 const PropertyDetail: React.FC = () => {
   const { toggleFavorite, isFavorite, user } = useAuth()
@@ -101,8 +102,10 @@ const PropertyDetail: React.FC = () => {
   }
 
   return (
-    <div style={{ background: '#fff' }}>
-      <SimpleHeader>
+    <div style={{ background: '#fff', paddingBottom: '100px' }}>
+      <MainHeader showSearch={false} />
+
+      <div style={{ maxWidth: '1120px', margin: '0 auto', display: 'flex', justifyContent: 'flex-end', padding: '12px 24px 0' }}>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <button 
             onClick={handleShare}
@@ -128,7 +131,7 @@ const PropertyDetail: React.FC = () => {
             <i className={`${active ? 'fa-solid' : 'fa-regular'} fa-heart`}></i> {active ? 'Saved' : 'Save'}
           </button>
         </div>
-      </SimpleHeader>
+      </div>
 
       <main style={{ maxWidth: '1120px', margin: '0 auto', padding: '24px 24px 80px' }}>
         {/* Title */}
@@ -289,81 +292,58 @@ const PropertyDetail: React.FC = () => {
                 {startDate && endDate ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}` : 'Select your dates'}
               </div>
 
-              {/* Simple Calendar Placeholder with unavailable dates logic */}
+              {/* Dynamic Calendar */}
               <div style={{ display: 'flex', gap: '40px', overflowX: 'auto' }}>
-                {/* Simplified UI for two month calendars as seen in screenshot */}
-                <div style={{ flex: 1, minWidth: '300px' }}>
-                  <div style={{ fontWeight: '600', marginBottom: '16px', textAlign: 'center' }}>March 2026</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
-                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => <div key={d} style={{ fontSize: '0.75rem', textAlign: 'center', color: '#717171', paddingBottom: '8px' }}>{d}</div>)}
-                    {/* March 1 2026 is a Sunday. If week starts Mon, we need 6 empty cells. */}
-                    {Array.from({ length: 6 }).map((_, i) => <div key={`empty-${i}`} />)}
-                    {Array.from({ length: 31 }, (_, i) => {
-                      const day = i + 1;
-                      const date = new Date(2026, 2, day);
-                      const unavailable = isDateUnavailable(date);
-                      const isSelected = (startDate && date.toDateString() === startDate.toDateString()) || (endDate && date.toDateString() === endDate.toDateString());
-                      const inRange = startDate && endDate && date > startDate && date < endDate;
-                      
-                      return (
-                        <div
-                          key={day}
-                          onClick={() => !unavailable && (startDate && !endDate ? setEndDate(date) : setStartDate(date))}
-                          style={{
-                            padding: '12px 0',
-                            textAlign: 'center',
-                            cursor: unavailable ? 'not-allowed' : 'pointer',
-                            background: isSelected ? 'var(--brand-blue, #71b7e1)' : (inRange ? 'var(--brand-blue-light, #e1f0fd)' : 'transparent'),
-                            color: isSelected ? 'white' : (unavailable ? '#ccc' : '#222'),
-                            textDecoration: unavailable ? 'line-through' : 'none',
-                            fontSize: '0.9rem',
-                            fontWeight: isSelected ? '600' : '400',
-                            borderRadius: isSelected ? '50%' : '0'
-                          }}
-                        >
-                          {day}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div style={{ flex: 1, minWidth: '300px' }}>
-                  <div style={{ fontWeight: '600', marginBottom: '16px', textAlign: 'center' }}>April 2026</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
-                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => <div key={d} style={{ fontSize: '0.75rem', textAlign: 'center', color: '#717171', paddingBottom: '8px' }}>{d}</div>)}
-                    {/* April 1 2026 is a Wednesday. If Mon start, we need 2 empty cells. */}
-                    {Array.from({ length: 2 }).map((_, i) => <div key={`empty-${i}`} />)}
-                    {Array.from({ length: 30 }, (_, i) => {
-                      const day = i + 1;
-                      const date = new Date(2026, 3, day);
-                      const unavailable = isDateUnavailable(date);
-                      const isSelected = (startDate && date.toDateString() === startDate.toDateString()) || (endDate && date.toDateString() === endDate.toDateString());
-                      const inRange = startDate && endDate && date > startDate && date < endDate;
+                {[0, 1].map(offset => {
+                  const viewDate = new Date();
+                  viewDate.setMonth(viewDate.getMonth() + offset);
+                  const year = viewDate.getFullYear();
+                  const month = viewDate.getMonth();
+                  const monthName = viewDate.toLocaleDateString('default', { month: 'long', year: 'numeric' });
+                  const daysInMonth = new Date(year, month + 1, 0).getDate();
+                  const firstDay = new Date(year, month, 1).getDay();
+                  const emptyCells = firstDay === 0 ? 6 : firstDay - 1; // Assuming Monday start
 
-                      return (
-                        <div
-                          key={day}
-                          onClick={() => !unavailable && (startDate && !endDate ? setEndDate(date) : setStartDate(date))}
-                          style={{
-                            padding: '12px 0',
-                            textAlign: 'center',
-                            cursor: unavailable ? 'not-allowed' : 'pointer',
-                            background: isSelected ? 'var(--brand-blue, #71b7e1)' : (inRange ? 'var(--brand-blue-light, #e1f0fd)' : 'transparent'),
-                            color: isSelected ? 'white' : (unavailable ? '#ccc' : '#222'),
-                            textDecoration: unavailable ? 'line-through' : 'none',
-                            fontSize: '0.9rem',
-                            fontWeight: isSelected ? '600' : '400',
-                            borderRadius: isSelected ? '50%' : '0'
-                          }}
-                        >
-                          {day}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                  return (
+                    <div key={offset} style={{ flex: 1, minWidth: '300px' }}>
+                      <div style={{ fontWeight: '600', marginBottom: '16px', textAlign: 'center' }}>{monthName}</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => <div key={d} style={{ fontSize: '0.75rem', textAlign: 'center', color: '#717171', paddingBottom: '8px' }}>{d}</div>)}
+                        {Array.from({ length: emptyCells >= 0 ? emptyCells : 0 }).map((_, i) => <div key={`empty-${i}`} />)}
+                        {Array.from({ length: daysInMonth }, (_, i) => {
+                          const day = i + 1;
+                          const date = new Date(year, month, day);
+                          const unavailable = isDateUnavailable(date) || date < new Date(new Date().setHours(0,0,0,0));
+                          const isSelected = (startDate && date.toDateString() === startDate.toDateString()) || (endDate && date.toDateString() === endDate.toDateString());
+                          const inRange = startDate && endDate && date > startDate && date < endDate;
+
+                          return (
+                            <div
+                              key={day}
+                              onClick={() => !unavailable && (startDate && !endDate ? (date < startDate ? (setStartDate(date), setEndDate(null)) : setEndDate(date)) : (setStartDate(date), setEndDate(null)))}
+                              style={{
+                                padding: '12px 0',
+                                textAlign: 'center',
+                                cursor: unavailable ? 'not-allowed' : 'pointer',
+                                background: isSelected ? 'var(--brand-blue, #71b7e1)' : (inRange ? 'var(--brand-blue-light, #e1f0fd)' : 'transparent'),
+                                color: isSelected ? 'white' : (unavailable ? '#ccc' : '#222'),
+                                textDecoration: unavailable ? 'line-through' : 'none',
+                                fontSize: '0.9rem',
+                                fontWeight: isSelected ? '600' : '400',
+                                borderRadius: isSelected ? '50%' : '0'
+                              }}
+                            >
+                              {day}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: '16px', gap: '8px' }}>
+                <i className="fa-regular fa-calendar" style={{ color: 'var(--brand-blue, #71b7e1)' }}></i>
                 <button onClick={() => { setStartDate(null); setEndDate(null); }} style={{ background: 'none', border: 'none', textDecoration: 'underline', fontWeight: '600', cursor: 'pointer' }}>Clear dates</button>
               </div>
             </div>
