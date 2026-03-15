@@ -1110,28 +1110,31 @@ const BecomeHost: React.FC = () => {
                         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                             <h1 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '48px', textAlign: 'center' }}>Which of these best describes your place?</h1>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
-                                {propertyTypes.map((type) => (
-                                    <div 
-                                        key={type.name}
-                                        onClick={() => setListingData({ ...listingData, propertyType: type.name })}
-                                        style={{
-                                            padding: '24px',
-                                            border: listingData.propertyType === type.name ? '2px solid var(--brand-blue, #71b7e1)' : '1px solid #ddd',
-                                            borderRadius: '16px',
-                                            cursor: 'pointer',
-                                            background: listingData.propertyType === type.name ? 'rgba(113, 183, 225, 0.05)' : '#fff',
-                                            transition: 'all 0.2s',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '16px'
-                                        }}
-                                        onMouseOver={(e) => !listingData.propertyType.includes(type.name) && (e.currentTarget.style.borderColor = 'var(--brand-blue, #71b7e1)')}
-                                        onMouseOut={(e) => listingData.propertyType !== type.name && (e.currentTarget.style.borderColor = '#ddd')}
-                                    >
-                                        <i className={`fa-solid ${type.icon}`} style={{ fontSize: '1.8rem', width: '32px', textAlign: 'center' }}></i>
-                                        <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>{type.name}</span>
-                                    </div>
-                                ))}
+                                 {propertyTypes.map((pType) => (
+                                     <div 
+                                         key={pType.name}
+                                         onClick={() => setListingData({ ...listingData, propertyType: pType.name })}
+                                         style={{
+                                             padding: '28px 20px',
+                                             border: listingData.propertyType === pType.name ? '2px solid #71b7e1' : '1px solid #ddd',
+                                             borderRadius: '16px',
+                                             cursor: 'pointer',
+                                             background: listingData.propertyType === pType.name ? 'rgba(113, 183, 225, 0.05)' : '#fff',
+                                             transition: 'all 0.2s',
+                                             display: 'flex',
+                                             flexDirection: 'column',
+                                             alignItems: 'center',
+                                             justifyContent: 'center',
+                                             gap: '12px',
+                                             textAlign: 'center'
+                                         }}
+                                         onMouseOver={(e) => !listingData.propertyType.includes(pType.name) && (e.currentTarget.style.borderColor = '#71b7e1')}
+                                         onMouseOut={(e) => listingData.propertyType !== pType.name && (e.currentTarget.style.borderColor = '#ddd')}
+                                     >
+                                         <i className={`fa-solid ${pType.icon}`} style={{ fontSize: '2.2rem', color: listingData.propertyType === pType.name ? '#71b7e1' : '#222' }}></i>
+                                         <span style={{ fontSize: '1rem', fontWeight: 700, color: '#222' }}>{pType.name}</span>
+                                     </div>
+                                 ))}
                             </div>
                         </div>
                     </div>
@@ -1379,6 +1382,7 @@ const BecomeHost: React.FC = () => {
                     </div>
                 </div>
             )}
+
             {step === 9 && (
                 /* Map Pin Verification View */
                 <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff' }}>
@@ -2392,27 +2396,50 @@ const BecomeHost: React.FC = () => {
                         <div>
                             <h1 style={{ fontSize: '2.8rem', fontWeight: 800, marginBottom: '60px' }}>Key details to take care of</h1>
                             
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-                                <div onClick={() => setStep(27)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                                    <div>
-                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px' }}>Verify your identity</h3>
-                                        <p style={{ color: '#717171', fontSize: '1rem', marginBottom: '8px' }}>We'll gather some information to help confirm that you're you.</p>
-                                        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#222' }}>Required</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                                {/* Verify Identity */}
+                                <div 
+                                    onClick={() => !listingData.verificationStatus.idVerified && setStep(27)}
+                                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '32px', borderBottom: '1px solid #eee', cursor: listingData.verificationStatus.idVerified ? 'default' : 'pointer' }}
+                                >
+                                    <div style={{ flex: 1 }}>
+                                        <h3 style={{ fontSize: '1.25rem', fontWeight: 500, marginBottom: '8px' }}>Verify your identity</h3>
+                                        <p style={{ color: '#717171', fontSize: '1rem', lineHeight: 1.5, marginBottom: '12px' }}>We'll gather some information to help confirm that you're you.</p>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            {listingData.verificationStatus.idVerified ? (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#008a05', fontWeight: 700 }}>
+                                                    <i className="fa-solid fa-circle-check" style={{ fontSize: '1.2rem' }}></i>
+                                                    <span>Complete</span>
+                                                </div>
+                                            ) : (
+                                                <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#222' }}>Required</span>
+                                            )}
+                                        </div>
                                     </div>
-                                    <i className="fa-solid fa-chevron-right" style={{ color: '#222' }}></i>
+                                    {!listingData.verificationStatus.idVerified && <i className="fa-solid fa-chevron-right" style={{ marginTop: '4px', fontSize: '1.2rem' }}></i>}
                                 </div>
 
-                                <div style={{ height: '1px', background: '#eee' }}></div>
-
-                                <div onClick={() => setStep(28)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                                    <div>
-                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px' }}>Confirm your phone number</h3>
-                                        <p style={{ color: '#717171', fontSize: '1rem', marginBottom: '8px' }}>We'll call or text to confirm your number. Standard messaging rates apply.</p>
-                                        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#222' }}>Required</span>
+                                {/* Confirm Phone */}
+                                <div 
+                                    onClick={() => !listingData.verificationStatus.phoneConfirmed && setStep(28)}
+                                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '32px', borderBottom: '1px solid #eee', cursor: listingData.verificationStatus.phoneConfirmed ? 'default' : 'pointer' }}
+                                >
+                                    <div style={{ flex: 1 }}>
+                                        <h3 style={{ fontSize: '1.25rem', fontWeight: 500, marginBottom: '8px' }}>Confirm your phone number</h3>
+                                        <p style={{ color: '#717171', fontSize: '1rem', lineHeight: 1.5, marginBottom: '12px' }}>We'll call or text to confirm your number. Standard messaging rates apply.</p>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            {listingData.verificationStatus.phoneConfirmed ? (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#008a05', fontWeight: 700 }}>
+                                                    <i className="fa-solid fa-circle-check" style={{ fontSize: '1.2rem' }}></i>
+                                                    <span>Complete</span>
+                                                </div>
+                                            ) : (
+                                                <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#222' }}>Required</span>
+                                            )}
+                                        </div>
                                     </div>
-                                    <i className="fa-solid fa-chevron-right" style={{ color: '#222' }}></i>
+                                    {!listingData.verificationStatus.phoneConfirmed && <i className="fa-solid fa-chevron-right" style={{ marginTop: '4px', fontSize: '1.2rem' }}></i>}
                                 </div>
-                                <div style={{ height: '1px', background: '#eee' }}></div>
                             </div>
                         </div>
 
@@ -2454,10 +2481,7 @@ const BecomeHost: React.FC = () => {
                             <i className="fa-solid fa-arrow-left"></i> Back
                          </button>
                          <button 
-                            onClick={() => {
-                                setListingData({ ...listingData, verificationStatus: { ...listingData.verificationStatus, idVerified: true } })
-                                setStep(26)
-                            }}
+                            onClick={() => setStep(29)}
                             style={{ padding: '14px 40px', background: '#222', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer' }}
                         >Add an ID</button>
                     </div>
@@ -2465,7 +2489,7 @@ const BecomeHost: React.FC = () => {
             )}
 
             {step === 28 && (
-                /* Step 28: Phone Confirmation */
+                /* Step 28: Phone Confirmation Entry */
                 <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff' }}>
                     <div style={{ flex: 1, padding: '80px 40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <div style={{ maxWidth: '750px', width: '100%' }}>
@@ -2484,22 +2508,240 @@ const BecomeHost: React.FC = () => {
                                 </div>
                                 <div style={{ padding: '16px 20px' }}>
                                     <label style={{ fontSize: '0.75rem', color: '#717171', display: 'block', marginBottom: '4px' }}>Phone number</label>
-                                    <input 
-                                        type="text" 
-                                        defaultValue="+63"
-                                        style={{ width: '100%', border: 'none', outline: 'none', fontSize: '1.15rem', color: '#222' }}
-                                    />
+                                    <input type="text" defaultValue="+63" style={{ width: '100%', border: 'none', outline: 'none', fontSize: '1.15rem', color: '#222' }} />
                                 </div>
                             </div>
                             <p style={{ marginTop: '12px', fontSize: '0.9rem', color: '#484848' }}>We'll call or text you to confirm your number. Standard message and data rates apply.</p>
                             
                             <button 
+                                onClick={() => setStep(32)}
+                                style={{ marginTop: '48px', width: '100%', padding: '16px', background: '#222', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.25rem', fontWeight: 800, cursor: 'pointer' }}
+                            >Continue</button>
+                        </div>
+                    </div>
+                    {/* Progression Footer */}
+                    <div style={{ padding: '24px 80px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                         <button onClick={() => setStep(26)} style={{ background: 'none', border: 'none', fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}>Back</button>
+                    </div>
+                </div>
+            )}
+
+            {step === 29 && (
+                /* Step 29: Govt ID Method */
+                <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff' }}>
+                    <div style={{ flex: 1, padding: '80px 40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ maxWidth: '600px', width: '100%' }}>
+                            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '40px' }}>How would you like to add your government ID?</h1>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <div onClick={() => setStep(30)} style={{ padding: '24px', border: '2px solid #222', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '4px', cursor: 'pointer' }}>
+                                    <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>Upload an existing photo</span>
+                                    <span style={{ fontSize: '1rem', color: '#717171' }}>Recommended</span>
+                                </div>
+                                <div style={{ padding: '24px', border: '1px solid #ddd', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '4px', cursor: 'pointer' }}>
+                                    <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>Take photo with webcam</span>
+                                </div>
+                                <div style={{ padding: '24px', border: '1px solid #ddd', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '4px', cursor: 'pointer' }}>
+                                    <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>Take photo with the Metrolodges mobile app</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Progression Footer */}
+                    <div style={{ padding: '24px 80px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                         <button onClick={() => setStep(27)} style={{ background: 'none', border: 'none', fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}>Back</button>
+                         <button onClick={() => setStep(30)} style={{ padding: '14px 40px', background: '#222', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer' }}>Continue</button>
+                    </div>
+                </div>
+            )}
+
+            {step === 30 && (
+                /* Step 30: Legal Name */
+                <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff' }}>
+                    <div style={{ flex: 1, padding: '80px 40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ maxWidth: '600px', width: '100%' }}>
+                            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '16px' }}>Is this your legal name?</h1>
+                            <p style={{ fontSize: '1.15rem', color: '#484848', lineHeight: 1.6, marginBottom: '32px' }}>
+                                We pulled this name from the ID you provided. If it isn't correct, you can update your name below or <span style={{ textDecoration: 'underline', fontWeight: 700, cursor: 'pointer' }}>upload a different ID</span>.
+                            </p>
+
+                            <div style={{ border: '1px solid #ddd', borderRadius: '16px', overflow: 'hidden', marginBottom: '32px' }}>
+                                <div style={{ padding: '16px 20px', borderBottom: '1px solid #ddd' }}>
+                                    <label style={{ fontSize: '0.75rem', color: '#717171', display: 'block', marginBottom: '4px' }}>First name on ID</label>
+                                    <input type="text" defaultValue="Maria" style={{ width: '100%', border: 'none', outline: 'none', fontSize: '1.15rem', color: '#222' }} />
+                                </div>
+                                <div style={{ padding: '16px 20px' }}>
+                                    <label style={{ fontSize: '0.75rem', color: '#717171', display: 'block', marginBottom: '4px' }}>Surname on ID</label>
+                                    <input type="text" defaultValue="Dela Cruz" style={{ width: '100%', border: 'none', outline: 'none', fontSize: '1.15rem', color: '#222' }} />
+                                </div>
+                            </div>
+
+                            <p style={{ fontSize: '1rem', color: '#484848', marginBottom: '32px' }}>
+                                This will be the legal name on your account. <span style={{ textDecoration: 'underline', fontWeight: 700, cursor: 'pointer' }}>Learn more</span>
+                            </p>
+
+                            <div style={{ border: '1px solid #ddd', borderRadius: '16px', padding: '16px 20px', marginBottom: '12px' }}>
+                                <input type="text" placeholder="Preferred first name (optional)" style={{ width: '100%', border: 'none', outline: 'none', fontSize: '1.15rem', color: '#222' }} />
+                            </div>
+                            <p style={{ fontSize: '0.95rem', color: '#717171' }}>This is how your first name will appear to hosts and guests.</p>
+                        </div>
+                    </div>
+                    {/* Progression Footer */}
+                    <div style={{ padding: '24px 80px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end' }}>
+                         <button 
+                            onClick={() => setStep(31)} 
+                            style={{ padding: '14px 40px', background: '#222', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer' }}
+                        >Confirm</button>
+                    </div>
+                </div>
+            )}
+
+            {step === 31 && (
+                /* Step 31: How should we match your photos? */
+                <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff' }}>
+                    <div style={{ flex: 1, padding: '80px 40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ maxWidth: '600px', width: '100%' }}>
+                            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>How should we match your photos?</h1>
+                            <p style={{ fontSize: '1.2rem', color: '#484848', lineHeight: 1.6, marginBottom: '32px' }}>
+                                We’ll compare your selfie with the ID you provided to make sure it’s really you.
+                            </p>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
+                                <div onClick={() => setStep(33)} style={{ padding: '24px', border: '2px solid var(--brand-blue, #71b7e1)', borderRadius: '16px', cursor: 'pointer', position: 'relative' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                        <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>Automatic photo match</span>
+                                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', border: '2px solid var(--brand-blue, #71b7e1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--brand-blue, #71b7e1)' }}></div>
+                                        </div>
+                                    </div>
+                                    <p style={{ color: '#717171', lineHeight: 1.5 }}>We'll use facial recognition technology to compare your photos. Usually takes less than a minute.</p>
+                                </div>
+                                
+                                <div style={{ padding: '24px', border: '1px solid #ddd', borderRadius: '16px', cursor: 'pointer' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                        <span style={{ fontSize: '1.2rem', fontWeight: 700 }}>Manual photo match</span>
+                                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', border: '2px solid #ddd' }}></div>
+                                    </div>
+                                    <p style={{ color: '#717171', lineHeight: 1.5 }}>A member of our team will compare your photos. Can take up to 24 hours.</p>
+                                </div>
+                            </div>
+                            
+                            <p style={{ fontSize: '0.9rem', color: '#717171', lineHeight: 1.5 }}>
+                                If you select 'automatic match', we'll process your facial recognition data through our partners using biometric technology. <span style={{ textDecoration: 'underline', fontWeight: 700, cursor: 'pointer', color: '#222' }}>Learn more</span>
+                            </p>
+                        </div>
+                    </div>
+                    {/* Progression Footer */}
+                    <div style={{ padding: '24px 80px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                         <button onClick={() => setStep(30)} style={{ background: 'none', border: 'none', fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}>Back</button>
+                         <button onClick={() => setStep(33)} style={{ padding: '14px 40px', background: '#222', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer' }}>Continue</button>
+                    </div>
+                </div>
+            )}
+
+            {step === 32 && (
+                /* Step 32: Phone OTP */
+                <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff' }}>
+                    <div style={{ flex: 1, padding: '80px 40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ maxWidth: '600px', width: '100%', textAlign: 'center' }}>
+                            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px', textAlign: 'left' }}>Confirm your phone number</h1>
+                            <p style={{ fontSize: '1.15rem', color: '#484848', lineHeight: 1.6, marginBottom: '60px', textAlign: 'left' }}>
+                                Enter the code we sent via SMS to +63 945 853 4190.
+                            </p>
+
+                            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginBottom: '40px' }}>
+                                {[1,2,3,4].map(i => (
+                                    <div key={i} style={{ width: '40px', height: '60px', borderBottom: '2px solid #222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: '#717171' }}>-</div>
+                                ))}
+                            </div>
+
+                            <button 
                                 onClick={() => {
                                     setListingData({ ...listingData, verificationStatus: { ...listingData.verificationStatus, phoneConfirmed: true } })
                                     setStep(26)
                                 }}
-                                style={{ marginTop: '48px', width: '100%', padding: '16px', background: '#eee', color: '#999', border: 'none', borderRadius: '12px', fontSize: '1.25rem', fontWeight: 800, cursor: 'not-allowed' }}
+                                style={{ width: '100%', maxWidth: '240px', padding: '16px', background: '#222', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer' }}
                             >Continue</button>
+
+                            <div style={{ marginTop: '40px' }}>
+                                <p style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '16px' }}>Didn't get a text? <span style={{ textDecoration: 'underline', cursor: 'pointer', color: 'var(--brand-blue, #71b7e1)' }}>Send again</span></p>
+                                <p style={{ fontSize: '1.1rem', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer' }}>Call me instead</p>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Progression Footer */}
+                    <div style={{ padding: '24px 80px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                         <button onClick={() => setStep(28)} style={{ background: 'none', border: 'none', fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}>Back</button>
+                    </div>
+                </div>
+            )}
+
+            {step === 33 && (
+                /* Step 33: Selfie Capture UI */
+                <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'rgba(0,0,0,0.8)', position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 10000 }}>
+                    <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+                        <div style={{ width: '100%', maxWidth: '850px', background: '#000', borderRadius: '32px', position: 'relative', overflow: 'hidden', height: '85vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+                            <div style={{ padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
+                                <button onClick={() => setStep(31)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.6rem', cursor: 'pointer' }}><i className="fa-solid fa-xmark"></i></button>
+                                <span style={{ color: '#fff', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer', fontSize: '1rem' }}>Tips</span>
+                            </div>
+                            
+                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                                {/* Camera Circle View */}
+                                <div style={{ 
+                                    width: '480px', 
+                                    height: '480px', 
+                                    borderRadius: '50%', 
+                                    border: '6px solid var(--brand-blue, #71b7e1)', 
+                                    position: 'relative',
+                                    zIndex: 5,
+                                    overflow: 'hidden',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: '4px',
+                                    boxSizing: 'border-box'
+                                }}>
+                                    <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                        {/* Camera Placeholder Simulation */}
+                                        <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <i className="fa-solid fa-user" style={{ fontSize: '12rem', color: '#444' }}></i>
+                                            {/* Flash/Overlay effect */}
+                                            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'radial-gradient(circle, transparent 40%, rgba(0,0,0,0.3) 100%)' }}></div>
+                                        </div>
+                                    </div>
+                                    {/* Progress track */}
+                                    <div style={{ position: 'absolute', top: '-6px', left: '-6px', width: 'calc(100% + 12px)', height: 'calc(100% + 12px)', borderRadius: '50%', border: '6px solid white', borderTopColor: 'transparent', borderRightColor: 'transparent', transform: 'rotate(45deg)', opacity: 0.8 }}></div>
+                                </div>
+                                
+                                <div style={{ marginTop: '48px', textAlign: 'center', zIndex: 10 }}>
+                                    <button 
+                                        onClick={() => {
+                                            setListingData({ ...listingData, verificationStatus: { ...listingData.verificationStatus, idVerified: true } })
+                                            setStep(26)
+                                        }}
+                                        style={{ 
+                                            padding: '18px 48px', 
+                                            background: 'rgba(255,255,255,0.1)', 
+                                            border: '2px solid rgba(255,255,255,0.6)', 
+                                            color: '#fff', 
+                                            borderRadius: '40px', 
+                                            fontSize: '1.25rem', 
+                                            fontWeight: 700, 
+                                            cursor: 'pointer',
+                                            backdropFilter: 'blur(10px)',
+                                            transition: 'all 0.3s'
+                                        }}
+                                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+                                        onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                                    >Perfect, stay right there</button>
+                                </div>
+                            </div>
+
+                            {/* Camera Info Text */}
+                            <div style={{ padding: '32px', textAlign: 'center', color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>
+                                Center your face in the circle. Make sure you're in a well-lit area.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2832,11 +3074,11 @@ const BecomeHost: React.FC = () => {
 
                         <div style={{ marginBottom: '40px' }}>
                             <p style={{ fontSize: '1rem', color: '#717171' }}>
-                                Resend OTP <span style={{ color: 'var(--brand-blue, #71b7e1)', fontWeight: 700 }}>{resendTimer > 0 ? `(${resendTimer} sec)` : ''}</span>
+                                Resend OTP <span style={{ color: '#71b7e1', fontWeight: 700 }}>{resendTimer > 0 ? `(${resendTimer} sec)` : ''}</span>
                                 {resendTimer === 0 && (
                                     <span 
                                         onClick={() => setResendTimer(60)} 
-                                        style={{ color: 'var(--brand-blue, #71b7e1)', cursor: 'pointer', marginLeft: '8px', textDecoration: 'underline' }}
+                                        style={{ color: '#71b7e1', cursor: 'pointer', marginLeft: '8px', textDecoration: 'underline' }}
                                     >
                                         Click here
                                     </span>
