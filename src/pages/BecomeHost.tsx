@@ -152,6 +152,24 @@ const placeTypes = [
     }
 ]
 
+const editorSections = [
+    { id: 'photos', label: 'Photo tour', icon: 'fa-images' },
+    { id: 'title', label: 'Title', icon: 'fa-heading' },
+    { id: 'property', label: 'Property type', icon: 'fa-house' },
+    { id: 'pricing', label: 'Pricing', icon: 'fa-tag' },
+    { id: 'availability', label: 'Availability', icon: 'fa-calendar' },
+    { id: 'guests', label: 'Number of guests', icon: 'fa-user-group' },
+    { id: 'description', label: 'Description', icon: 'fa-align-left' },
+    { id: 'amenities', label: 'Amenities', icon: 'fa-wifi' },
+    { id: 'accessibility', label: 'Accessibility features', icon: 'fa-universal-access' },
+    { id: 'location', label: 'Location', icon: 'fa-location-dot' },
+    { id: 'host', label: 'About the host', icon: 'fa-user' },
+    { id: 'cohost', label: 'Co-hosts', icon: 'fa-users' },
+    { id: 'booking', label: 'Booking settings', icon: 'fa-sliders' },
+    { id: 'rules', label: 'House rules', icon: 'fa-clipboard-list' },
+    { id: 'safety', label: 'Guest safety', icon: 'fa-shield-halved' },
+]
+
 const BecomeHost: React.FC = () => {
     const navigate = useNavigate()
     const { user } = useAuth()
@@ -164,6 +182,7 @@ const BecomeHost: React.FC = () => {
     const [showOtp, setShowOtp] = useState(false)
     const [otp, setOtp] = useState(['', '', '', '', '', ''])
     const [resendTimer, setResendTimer] = useState(60)
+    const [activeEditorSection, setActiveEditorSection] = useState('photos')
 
     // Form State
     const [formData, setFormData] = useState({
@@ -249,7 +268,22 @@ const BecomeHost: React.FC = () => {
         verificationStatus: {
             idVerified: false,
             phoneConfirmed: false
-        }
+        },
+        // Additional info for editor
+        guestCapacity: 4,
+        bedrooms: 1,
+        beds: 2,
+        bathrooms: 1,
+        amenities: ['Air conditioning', 'Dedicated workspace', 'Exercise equipment', 'Kitchen', 'Wifi', 'Washer'],
+        houseRules: {
+            checkInAfter: '03:00 PM',
+            checkOutBefore: '11:00 AM',
+            maxGuests: 4,
+            smokingAllowed: false,
+            petsAllowed: true,
+            partiesAllowed: false
+        },
+        safetyItems: ['Smoke alarm', 'First aid kit', 'Fire extinguisher']
     })
 
     const [showSpecificLocationState, setShowSpecificLocation] = useState(false)
@@ -2449,6 +2483,24 @@ const BecomeHost: React.FC = () => {
                             <p style={{ color: '#717171', fontSize: '0.85rem' }}>Diplomat, 2 Roxas Blvd Cor Russel St, San...</p>
                         </div>
                     </div>
+
+                    {/* Progress Footer for Step 26 */}
+                    <div style={{ padding: '24px 80px', background: '#fff', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end' }}>
+                        <button 
+                            disabled={!listingData.verificationStatus.idVerified || !listingData.verificationStatus.phoneConfirmed}
+                            onClick={() => setStep(34)}
+                            style={{ 
+                                padding: '16px 40px', 
+                                background: (listingData.verificationStatus.idVerified && listingData.verificationStatus.phoneConfirmed) ? 'var(--brand-blue, #71b7e1)' : '#eee', 
+                                color: (listingData.verificationStatus.idVerified && listingData.verificationStatus.phoneConfirmed) ? '#fff' : '#999', 
+                                border: 'none', 
+                                borderRadius: '12px', 
+                                fontSize: '1.2rem', 
+                                fontWeight: 800, 
+                                cursor: (listingData.verificationStatus.idVerified && listingData.verificationStatus.phoneConfirmed) ? 'pointer' : 'not-allowed' 
+                            }}
+                        >Publish listing</button>
+                    </div>
                 </div>
             )}
 
@@ -2740,7 +2792,549 @@ const BecomeHost: React.FC = () => {
 
                             {/* Camera Info Text */}
                             <div style={{ padding: '32px', textAlign: 'center', color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>
-                                Center your face in the circle. Make sure you're in a well-lit area.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {step === 34 && (
+                /* Step 34: Listing Editor */
+                <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff' }}>
+                    {/* Editor Header */}
+                    <div style={{ background: '#fff', padding: '16px 80px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'center', position: 'sticky', top: 0, zIndex: 1000, boxSizing: 'border-box' }}>
+                         <div style={{ maxWidth: '1400px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', gap: '32px' }}>
+                                <span style={{ fontWeight: 600, color: '#717171' }}>Today</span>
+                                <span style={{ fontWeight: 600, color: '#717171' }}>Calendar</span>
+                                <span style={{ fontWeight: 800, color: '#222', borderBottom: '2px solid #222', paddingBottom: '4px' }}>Listings</span>
+                                <span style={{ fontWeight: 600, color: '#717171' }}>Messages</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Switch to travelling</span>
+                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#222', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{user?.name?.[0] || 'N'}</div>
+                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid #ddd', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i className="fa-solid fa-bars"></i></div>
+                            </div>
+                         </div>
+                    </div>
+
+                    <div style={{ flex: 1, display: 'flex' }}>
+                        {/* Sidebar */}
+                        <div style={{ width: '450px', borderRight: '1px solid #eee', padding: '32px 40px', overflowY: 'auto', maxHeight: 'calc(100vh - 80px)', background: '#fff', boxSizing: 'border-box' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+                                <button onClick={() => setStep(26)} style={{ border: 'none', background: 'none', fontSize: '1.2rem', cursor: 'pointer' }}><i className="fa-solid fa-arrow-left"></i></button>
+                                <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Listing editor</h1>
+                            </div>
+
+                            {/* Tabs */}
+                            <div style={{ display: 'flex', background: '#f7f7f7', borderRadius: '12px', padding: '4px', marginBottom: '32px' }}>
+                                <button style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: '#fff', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>Your space</button>
+                                <button style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'transparent', fontWeight: 600, color: '#717171', cursor: 'pointer' }}>Arrival guide</button>
+                                <button style={{ width: '48px', padding: '12px', border: 'none', background: 'transparent', color: '#717171', cursor: 'pointer' }}><i className="fa-solid fa-gear"></i></button>
+                            </div>
+
+                            {/* Status Card */}
+                            <div style={{ border: '1px solid #eee', borderRadius: '16px', padding: '24px', marginBottom: '32px', textAlign: 'center' }}>
+                                <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>Your listing is ready to publish</h3>
+                                <button style={{ width: '100%', padding: '14px', background: '#ff385c', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer' }}>Review and publish</button>
+                            </div>
+
+                            {/* Sections */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {editorSections.map(section => {
+                                    const isComplete = () => {
+                                        switch(section.id) {
+                                            case 'photos': return uploadedPhotos.length >= 5;
+                                            case 'title': return listingData.title.length > 0;
+                                            case 'description': return listingData.description.length > 30;
+                                            case 'pricing': return listingData.basePrice > 0;
+                                            case 'guests': return listingData.guestCapacity > 0;
+                                            case 'amenities': return listingData.amenities.length > 5;
+                                            case 'location': return listingData.address.length > 10;
+                                            case 'property': return listingData.propertyType !== '';
+                                            default: return true;
+                                        }
+                                    };
+                                    const completed = isComplete();
+
+                                    return (
+                                        <div 
+                                            key={section.id}
+                                            onClick={() => setActiveEditorSection(section.id)}
+                                            style={{ 
+                                                padding: '24px', 
+                                                border: activeEditorSection === section.id ? '2px solid #222' : '1px solid #eee',
+                                                borderRadius: '16px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                background: activeEditorSection === section.id ? '#fff' : '#fff',
+                                                transition: 'all 0.2s',
+                                                boxShadow: activeEditorSection === section.id ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
+                                                position: 'relative'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                <span style={{ fontWeight: 800, fontSize: '1.1rem' }}>{section.label}</span>
+                                                {completed && <i className="fa-solid fa-circle-check" style={{ color: '#00af87', fontSize: '1.2rem' }}></i>}
+                                            </div>
+                                        
+                                        {/* Dynamic Content Preview in Sidebar Card */}
+                                        <div style={{ color: '#717171', fontSize: '0.95rem', lineHeight: 1.4 }}>
+                                            {section.id === 'photos' && (
+                                                <div style={{ position: 'relative', marginTop: '12px' }}>
+                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                        {uploadedPhotos.slice(0, 3).map((p, i) => (
+                                                            <div key={i} style={{ width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
+                                                                <img src={p} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                {i === 1 && uploadedPhotos.length > 3 && (
+                                                                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>
+                                                                        {uploadedPhotos.length} photos
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {section.id === 'title' && (
+                                                <div style={{ marginTop: '8px' }}>{listingData.title || 'bnbria'}</div>
+                                            )}
+                                            {section.id === 'property' && (
+                                                <div style={{ marginTop: '8px' }}>{listingData.placeType || 'Entire place'} • {listingData.propertyType || 'Apartment'}</div>
+                                            )}
+                                            {section.id === 'pricing' && (
+                                                <div style={{ marginTop: '8px' }}>
+                                                    <div>₱{listingData.basePrice} per night</div>
+                                                    <div>₱{listingData.weekendPrice} weekend price</div>
+                                                    <div>10% weekly discount</div>
+                                                </div>
+                                            )}
+                                            {section.id === 'availability' && (
+                                                <div style={{ marginTop: '8px' }}>
+                                                    <div>1 – 365 night stays</div>
+                                                    <div>Same day advance notice</div>
+                                                </div>
+                                            )}
+                                            {section.id === 'guests' && (
+                                                <div style={{ marginTop: '8px' }}>{listingData.guestCapacity} guests • {listingData.bedrooms} bedroom • {listingData.beds} beds • {listingData.bathrooms} bathroom</div>
+                                            )}
+                                            {section.id === 'description' && (
+                                                <div style={{ marginTop: '8px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                                                    {listingData.description || 'This special place is close to everything...'}
+                                                </div>
+                                            )}
+                                            {section.id === 'amenities' && (
+                                                <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                    {listingData.amenities.slice(0, 3).map((amt, idx) => (
+                                                        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                            <i className={amt.includes('Air') ? 'fa-solid fa-snowflake' : amt.includes('work') ? 'fa-solid fa-laptop' : amt.includes('Exercise') ? 'fa-solid fa-dumbbell' : 'fa-solid fa-check'} style={{ width: '20px' }}></i> {amt}
+                                                        </div>
+                                                    ))}
+                                                    {listingData.amenities.length > 3 && <div style={{ color: '#222', fontWeight: 600 }}>+ {listingData.amenities.length - 3} more</div>}
+                                                </div>
+                                            )}
+                                            {section.id === 'accessibility' && (
+                                                <div style={{ marginTop: '8px' }}>Add details</div>
+                                            )}
+                                            {section.id === 'location' && (
+                                                <div style={{ marginTop: '12px' }}>
+                                                    <div style={{ height: '120px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #eee', marginBottom: '8px', position: 'relative' }}>
+                                                        <img src={`https://maps.googleapis.com/maps/api/staticmap?center=${14.5333},${121.0333}&zoom=15&size=400x200&sensor=false&markers=color:red%7C14.5333,121.0333&key=`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '32px', height: '32px', background: '#222', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid white', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>
+                                                            <i className="fa-solid fa-house" style={{ color: 'white', fontSize: '0.8rem' }}></i>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ fontSize: '0.85rem', color: '#222', fontWeight: 600 }}>{listingData.address || "605 Roxas Boulevard, Pasay City"}</div>
+                                                </div>
+                                            )}
+                                            {section.id === 'host' && (
+                                                <div style={{ marginTop: '12px', textAlign: 'center' }}>
+                                                    <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 8px', border: '1px solid #eee' }}>
+                                                        <img src={user?.avatar || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    </div>
+                                                    <div style={{ fontWeight: 800, color: '#222', fontSize: '1rem' }}>{user?.name || "Jolina"}</div>
+                                                    <div style={{ fontSize: '0.85rem', color: '#717171' }}>Started hosting in {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2026'}</div>
+                                                </div>
+                                            )}
+                                            {section.id === 'booking' && (
+                                                <div style={{ marginTop: '8px' }}>{listingData.bookingSetting === 'approve' ? "You'll approve your first 5 bookings" : "Instant Book enabled"}</div>
+                                            )}
+                                            {section.id === 'rules' && (
+                                                <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><i className="fa-regular fa-clock"></i> Check-in after {listingData.houseRules.checkInAfter}</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><i className="fa-solid fa-user-group"></i> {listingData.houseRules.maxGuests} guests maximum</div>
+                                                </div>
+                                            )}
+                                            {section.id === 'safety' && (
+                                                <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                    {listingData.safetyItems.slice(0, 2).map((item, idx) => (
+                                                        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                            <i className="fa-solid fa-square-check" style={{ color: '#00af87' }}></i> {item}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Content Pane */}
+                        <div style={{ flex: 1, padding: '80px', overflowY: 'auto', maxHeight: 'calc(100vh - 80px)', background: '#fff', boxSizing: 'border-box' }}>
+                            <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+                                {activeEditorSection === 'photos' && (
+                                    <>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                                            <h2 style={{ fontSize: '2.4rem', fontWeight: 800 }}>Photo tour</h2>
+                                            <div style={{ display: 'flex', gap: '12px' }}>
+                                                <button style={{ padding: '10px 20px', border: '1px solid #ddd', background: '#fff', borderRadius: '8px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                                    <i className="fa-regular fa-clone"></i> All photos
+                                                </button>
+                                                <button style={{ padding: '10px 20px', border: '1px solid #ddd', background: '#fff', borderRadius: '8px', fontWeight: 800, cursor: 'pointer' }}>
+                                                    <i className="fa-solid fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <p style={{ color: '#717171', fontSize: '1.2rem', marginBottom: '60px', lineHeight: 1.5 }}>Manage photos and add details. Guests will only see your tour if every room has a photo.</p>
+                                        
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '40px' }}>
+                                            <div style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                                                <div style={{ height: '320px', background: '#f7f7f7', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', border: '1px dashed #ddd', position: 'relative' }}>
+                                                     <div style={{ textAlign: 'center' }}>
+                                                         <i className="fa-solid fa-bath" style={{ fontSize: '4rem', color: '#ccc', marginBottom: '16px', display: 'block' }}></i>
+                                                         <span style={{ fontWeight: 700, color: '#717171' }}>Room preview</span>
+                                                     </div>
+                                                </div>
+                                                <h4 style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '4px' }}>Full bathroom</h4>
+                                                <span style={{ color: '#717171', fontSize: '1rem', textDecoration: 'underline' }}>Add photos</span>
+                                            </div>
+                                            <div style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                                                <div style={{ height: '320px', borderRadius: '24px', overflow: 'hidden', marginBottom: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+                                                    <img src={uploadedPhotos[0] || hostelRoom1} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                </div>
+                                                <h4 style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '4px' }}>Additional photos</h4>
+                                                <span style={{ color: '#717171', fontSize: '1rem' }}>{uploadedPhotos.length} photos</span>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {activeEditorSection === 'title' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Title</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Your listing title should highlight what makes your place special.</p>
+                                        <div style={{ position: 'relative' }}>
+                                            <textarea 
+                                                value={listingData.title}
+                                                onChange={(e) => setListingData({ ...listingData, title: e.target.value })}
+                                                placeholder="e.g. Unique Hostel near Pasay City"
+                                                style={{ width: '100%', padding: '24px', borderRadius: '16px', border: '2px solid #222', fontSize: '1.4rem', fontWeight: 700, minHeight: '150px', outline: 'none', resize: 'none' }}
+                                            />
+                                            <div style={{ position: 'absolute', bottom: '16px', right: '16px', color: '#717171', fontSize: '0.9rem' }}>{listingData.title.length}/32</div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'description' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Description</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Share what makes your space unique and why guests will love staying there.</p>
+                                        <textarea 
+                                            value={listingData.description}
+                                            onChange={(e) => setListingData({ ...listingData, description: e.target.value })}
+                                            placeholder="Tell guests about your place..."
+                                            style={{ width: '100%', padding: '24px', borderRadius: '16px', border: '2px solid #222', fontSize: '1.2rem', minHeight: '300px', outline: 'none', lineHeight: 1.6 }}
+                                        />
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'pricing' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Pricing</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '48px' }}>You can change your price at any time. We recommend starting with a competitive rate.</p>
+                                        
+                                        <div style={{ background: '#f7f7f7', padding: '40px', borderRadius: '24px', border: '1px solid #eee' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px' }}>
+                                                <button onClick={() => setListingData({ ...listingData, basePrice: Math.max(0, listingData.basePrice - 10) })} style={{ width: '64px', height: '64px', borderRadius: '50%', border: '1px solid #ddd', background: '#fff', fontSize: '1.8rem', cursor: 'pointer' }}><i className="fa-solid fa-minus"></i></button>
+                                                <div style={{ textAlign: 'center' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+                                                        <span style={{ fontSize: '3rem', fontWeight: 800 }}>₱</span>
+                                                        <input 
+                                                            type="number"
+                                                            value={listingData.basePrice}
+                                                            onChange={(e) => setListingData({ ...listingData, basePrice: parseInt(e.target.value) || 0 })}
+                                                            style={{ width: '200px', fontSize: '4.5rem', fontWeight: 800, border: 'none', background: 'transparent', textAlign: 'center', outline: 'none' }}
+                                                        />
+                                                    </div>
+                                                    <p style={{ fontWeight: 700, color: '#717171', marginTop: '8px' }}>Guest price ₱{Math.round(listingData.basePrice * 1.15)}</p>
+                                                </div>
+                                                <button onClick={() => setListingData({ ...listingData, basePrice: listingData.basePrice + 10 })} style={{ width: '64px', height: '64px', borderRadius: '50%', border: '1px solid #ddd', background: '#fff', fontSize: '1.8rem', cursor: 'pointer' }}><i className="fa-solid fa-plus"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'guests' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Guests</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '48px' }}>Adjust your listing's capacity to fit your space.</p>
+                                        
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                                            {[
+                                                { label: 'Guests', key: 'guestCapacity' },
+                                                { label: 'Bedrooms', key: 'bedrooms' },
+                                                { label: 'Beds', key: 'beds' },
+                                                { label: 'Bathrooms', key: 'bathrooms' }
+                                            ].map(item => (
+                                                <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '32px', borderBottom: '1px solid #eee' }}>
+                                                    <span style={{ fontSize: '1.2rem', fontWeight: 600 }}>{item.label}</span>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                                        <button 
+                                                            onClick={() => setListingData({ ...listingData, [item.key]: Math.max(0, (listingData as any)[item.key] - 1) })}
+                                                            style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid #ddd', background: '#fff', cursor: 'pointer' }}
+                                                        ><i className="fa-solid fa-minus"></i></button>
+                                                        <span style={{ fontSize: '1.1rem', fontWeight: 700, width: '20px', textAlign: 'center' }}>{(listingData as any)[item.key]}</span>
+                                                        <button 
+                                                            onClick={() => setListingData({ ...listingData, [item.key]: (listingData as any)[item.key] + 1 })}
+                                                            style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid #ddd', background: '#fff', cursor: 'pointer' }}
+                                                        ><i className="fa-solid fa-plus"></i></button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'amenities' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Amenities</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Guests love listings that have everything they need.</p>
+                                        
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                                            {['Wifi', 'Kitchen', 'Washer', 'Dryer', 'Air conditioning', 'Dedicated workspace', 'Hair dryer', 'TV', 'Iron', 'Pool', 'Free parking', 'Exercise equipment'].map(amt => {
+                                                const isSelected = listingData.amenities.includes(amt);
+                                                return (
+                                                    <button 
+                                                        key={amt}
+                                                        onClick={() => {
+                                                            const newAmenities = isSelected 
+                                                                ? listingData.amenities.filter(a => a !== amt)
+                                                                : [...listingData.amenities, amt];
+                                                            setListingData({ ...listingData, amenities: newAmenities });
+                                                        }}
+                                                        style={{ 
+                                                            padding: '24px', 
+                                                            borderRadius: '12px', 
+                                                            border: isSelected ? '2px solid #222' : '1px solid #ddd',
+                                                            background: isSelected ? '#f7f7f7' : '#fff',
+                                                            textAlign: 'left',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '16px'
+                                                        }}
+                                                    >
+                                                        <i className={amt.includes('Wifi') ? 'fa-solid fa-wifi' : amt.includes('snowflake') || amt.includes('Air') ? 'fa-solid fa-snowflake' : 'fa-solid fa-plus'} style={{ fontSize: '1.2rem' }}></i>
+                                                        <span style={{ fontWeight: 600 }}>{amt}</span>
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'location' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Location</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Your address is only shared with guests after they've booked.</p>
+                                        
+                                        <div style={{ height: '400px', borderRadius: '24px', overflow: 'hidden', border: '1px solid #eee', marginBottom: '40px' }}>
+                                            <img src={`https://maps.googleapis.com/maps/api/staticmap?center=${14.5333},${121.0333}&zoom=15&size=800x400&sensor=false&markers=color:red%7C14.5333,121.0333&key=`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        </div>
+
+                                        <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid #ddd' }}>
+                                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, marginBottom: '8px', color: '#717171' }}>Address</label>
+                                            <input 
+                                                type="text"
+                                                value={listingData.address}
+                                                onChange={(e) => setListingData({ ...listingData, address: e.target.value })}
+                                                style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '1.1rem', fontWeight: 600 }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'rules' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>House rules</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '48px' }}>Guests must agree to your house rules before they book.</p>
+                                        
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '24px', borderBottom: '1px solid #eee' }}>
+                                                <div>
+                                                    <div style={{ fontSize: '1.2rem', fontWeight: 600 }}>Pets allowed</div>
+                                                    <div style={{ color: '#717171' }}>Small pets are welcome</div>
+                                                </div>
+                                                <button 
+                                                    onClick={() => setListingData({ ...listingData, houseRules: { ...listingData.houseRules, petsAllowed: !listingData.houseRules.petsAllowed } })}
+                                                    style={{ width: '50px', height: '30px', borderRadius: '15px', border: 'none', background: listingData.houseRules.petsAllowed ? '#222' : '#ddd', position: 'relative', cursor: 'pointer', transition: 'background 0.3s' }}
+                                                >
+                                                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '4px', left: listingData.houseRules.petsAllowed ? '24px' : '4px', transition: 'left 0.3s' }}></div>
+                                                </button>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '24px', borderBottom: '1px solid #eee' }}>
+                                                <div>
+                                                    <div style={{ fontSize: '1.2rem', fontWeight: 600 }}>Smoking allowed</div>
+                                                </div>
+                                                <button 
+                                                    onClick={() => setListingData({ ...listingData, houseRules: { ...listingData.houseRules, smokingAllowed: !listingData.houseRules.smokingAllowed } })}
+                                                    style={{ width: '50px', height: '30px', borderRadius: '15px', border: 'none', background: listingData.houseRules.smokingAllowed ? '#222' : '#ddd', position: 'relative', cursor: 'pointer', transition: 'background 0.3s' }}
+                                                >
+                                                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '4px', left: listingData.houseRules.smokingAllowed ? '24px' : '4px', transition: 'left 0.3s' }}></div>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'property' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Property type</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>What kind of place are you listing?</p>
+                                        
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                                            {['Apartment', 'House', 'Hostel', 'Hotel', 'Bed & Breakfast', 'Guest house'].map(pType => {
+                                                const isSelected = listingData.propertyType === pType;
+                                                return (
+                                                    <button 
+                                                        key={pType}
+                                                        onClick={() => setListingData({ ...listingData, propertyType: pType })}
+                                                        style={{ 
+                                                            padding: '24px', 
+                                                            borderRadius: '12px', 
+                                                            border: isSelected ? '2px solid #222' : '1px solid #ddd',
+                                                            background: isSelected ? '#f7f7f7' : '#fff',
+                                                            textAlign: 'left',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            fontWeight: 600
+                                                        }}
+                                                    >
+                                                        {pType}
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'booking' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Booking settings</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '48px' }}>Choose how guests book your place.</p>
+                                        
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                            <div 
+                                                onClick={() => setListingData({ ...listingData, bookingSetting: 'approve' })}
+                                                style={{ padding: '32px', borderRadius: '16px', border: listingData.bookingSetting === 'approve' ? '2px solid #222' : '1px solid #ddd', cursor: 'pointer', background: listingData.bookingSetting === 'approve' ? '#f7f7f7' : '#fff' }}
+                                            >
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                                    <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>For your first 5 bookings, you'll approve requests</div>
+                                                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', border: '2px solid #222', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        {listingData.bookingSetting === 'approve' && <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#222' }}></div>}
+                                                    </div>
+                                                </div>
+                                                <p style={{ color: '#717171' }}>This gives you time to get comfortable and verify your guests' identity.</p>
+                                            </div>
+                                            <div 
+                                                onClick={() => setListingData({ ...listingData, bookingSetting: 'instant' })}
+                                                style={{ padding: '32px', borderRadius: '16px', border: listingData.bookingSetting === 'instant' ? '2px solid #222' : '1px solid #ddd', cursor: 'pointer', background: listingData.bookingSetting === 'instant' ? '#f7f7f7' : '#fff' }}
+                                            >
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                                    <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>Instant Book</div>
+                                                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', border: '2px solid #222', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        {listingData.bookingSetting === 'instant' && <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#222' }}></div>}
+                                                    </div>
+                                                </div>
+                                                <p style={{ color: '#717171' }}>Guests who meet all your requirements can book instantly.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'safety' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Guest safety</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Keep your guests informed about safety equipment in your place.</p>
+                                        
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                                            {['Smoke alarm', 'Carbon monoxide alarm', 'Fire extinguisher', 'First aid kit', 'Emergency exit plan'].map(item => {
+                                                const isSelected = listingData.safetyItems.includes(item);
+                                                return (
+                                                    <button 
+                                                        key={item}
+                                                        onClick={() => {
+                                                            const newSafety = isSelected 
+                                                                ? listingData.safetyItems.filter(i => i !== item)
+                                                                : [...listingData.safetyItems, item];
+                                                            setListingData({ ...listingData, safetyItems: newSafety });
+                                                        }}
+                                                        style={{ 
+                                                            padding: '24px', 
+                                                            borderRadius: '12px', 
+                                                            border: isSelected ? '2px solid #222' : '1px solid #ddd',
+                                                            background: isSelected ? '#f7f7f7' : '#fff',
+                                                            textAlign: 'left',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '16px'
+                                                        }}
+                                                    >
+                                                        <i className={isSelected ? 'fa-solid fa-square-check' : 'fa-regular fa-square'} style={{ fontSize: '1.2rem', color: isSelected ? '#00af87' : '#ddd' }}></i>
+                                                        <span style={{ fontWeight: 600 }}>{item}</span>
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'host' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>About the host</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Your profile is where guests get to know you.</p>
+                                        
+                                        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                                            <div style={{ width: '120px', height: '120px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 16px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                                                <img src={user?.avatar || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=120&q=80"} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            </div>
+                                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{user?.name || "Jolina"}</h3>
+                                            <p style={{ color: '#717171' }}>Joined in {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2026'}</p>
+                                        </div>
+
+                                        <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid #ddd' }}>
+                                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, marginBottom: '12px', color: '#717171' }}>Your bio</label>
+                                            <textarea 
+                                                placeholder="Tell guests a little about yourself..."
+                                                style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #ddd', fontSize: '1.1rem', minHeight: '120px', outline: 'none', resize: 'none' }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {!['photos', 'title', 'description', 'pricing', 'guests', 'amenities', 'location', 'rules', 'property', 'booking', 'safety', 'host'].includes(activeEditorSection) && (
+                                    <div style={{ textAlign: 'center', paddingTop: '100px', animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>{editorSections.find(s => s.id === activeEditorSection)?.label}</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.2rem', marginBottom: '48px' }}>This section is ready for editing. You can modify all the details that will be shown to your guests.</p>
+                                        <button style={{ padding: '16px 48px', border: '2px solid #222', background: 'transparent', borderRadius: '12px', fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer' }}>Edit details</button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
