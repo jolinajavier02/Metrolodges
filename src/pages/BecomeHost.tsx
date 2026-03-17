@@ -168,6 +168,31 @@ const editorSections = [
     { id: 'booking', label: 'Booking settings', icon: 'fa-sliders' },
     { id: 'rules', label: 'House rules', icon: 'fa-clipboard-list' },
     { id: 'safety', label: 'Guest safety', icon: 'fa-shield-halved' },
+    { id: 'cancellation', label: 'Cancellation policy', icon: 'fa-ban' },
+    { id: 'customlink', label: 'Custom link', icon: 'fa-link' },
+]
+
+const arrivalGuideSections = [
+    { id: 'checkin', label: 'Check-in', sub: '3:00 PM', icon: 'fa-door-open' },
+    { id: 'checkout', label: 'Checkout', sub: 'Add details', icon: 'fa-right-from-bracket' },
+    { id: 'directions', label: 'Directions', sub: 'Add details', icon: 'fa-map' },
+    { id: 'checkinmethod', label: 'Check-in method', sub: 'Add details', icon: 'fa-key' },
+    { id: 'wifi', label: 'Wifi details', sub: 'Add details', icon: 'fa-wifi' },
+    { id: 'housemanual', label: 'House manual', sub: 'Add details', icon: 'fa-book-open' },
+    { id: 'houserules', label: 'House rules', sub: 'Check-in after 03:00 PM\n4 guests maximum', icon: 'fa-clipboard-list' },
+    { id: 'checkoutinstr', label: 'Checkout instructions', sub: 'Add details', icon: 'fa-list-check' },
+    { id: 'guidebooks', label: 'Guidebooks', sub: 'Create a guidebook to share your local tips with guests.', icon: 'fa-map-location-dot' },
+    { id: 'interaction', label: 'Interaction preferences', sub: 'Add details', icon: 'fa-handshake' },
+]
+
+const settingsSections = [
+    { id: 'listingstatus', label: 'Listing status', sub: 'In progress', icon: 'fa-circle-dot', badge: true },
+    { id: 'languages', label: 'Languages', sub: 'English', icon: 'fa-language' },
+    { id: 'guestreq', label: 'Guest requirements', sub: 'Profile photo not required', icon: 'fa-user-check' },
+    { id: 'locallaws', label: 'Local laws', sub: 'Review your local laws', icon: 'fa-gavel' },
+    { id: 'taxes', label: 'Taxes', sub: 'Learn how taxes work for Hosts', icon: 'fa-receipt' },
+    { id: 'metrolodgesstays', label: 'Metrolodges.org stays', sub: 'Learn how you can help', icon: 'fa-heart' },
+    { id: 'removelisting', label: 'Remove listing', sub: 'Permanently remove your listing', icon: 'fa-trash' },
 ]
 
 const BecomeHost: React.FC = () => {
@@ -183,6 +208,9 @@ const BecomeHost: React.FC = () => {
     const [otp, setOtp] = useState(['', '', '', '', '', ''])
     const [resendTimer, setResendTimer] = useState(60)
     const [activeEditorSection, setActiveEditorSection] = useState('photos')
+    const [editorTab, setEditorTab] = useState<'yourspace' | 'arrivalguide' | 'settings'>('yourspace')
+    const [activeArrivalSection, setActiveArrivalSection] = useState('checkin')
+    const [activeSettingsSection, setActiveSettingsSection] = useState('listingstatus')
 
     // Form State
     const [formData, setFormData] = useState({
@@ -2827,10 +2855,19 @@ const BecomeHost: React.FC = () => {
                             </div>
 
                             {/* Tabs */}
-                            <div style={{ display: 'flex', background: '#f7f7f7', borderRadius: '12px', padding: '4px', marginBottom: '32px' }}>
-                                <button style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: '#fff', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>Your space</button>
-                                <button style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: 'transparent', fontWeight: 600, color: '#717171', cursor: 'pointer' }}>Arrival guide</button>
-                                <button style={{ width: '48px', padding: '12px', border: 'none', background: 'transparent', color: '#717171', cursor: 'pointer' }}><i className="fa-solid fa-gear"></i></button>
+                            <div style={{ display: 'flex', alignItems: 'center', background: '#f7f7f7', borderRadius: '12px', padding: '4px', marginBottom: '32px', gap: '2px' }}>
+                                <button 
+                                    onClick={() => setEditorTab('yourspace')}
+                                    style={{ flex: 1, padding: '10px 12px', borderRadius: '8px', border: 'none', background: editorTab === 'yourspace' ? '#fff' : 'transparent', fontWeight: editorTab === 'yourspace' ? 700 : 600, color: editorTab === 'yourspace' ? '#222' : '#717171', cursor: 'pointer', boxShadow: editorTab === 'yourspace' ? '0 2px 4px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.2s', fontSize: '0.95rem' }}
+                                >Your space</button>
+                                <button 
+                                    onClick={() => setEditorTab('arrivalguide')}
+                                    style={{ flex: 1, padding: '10px 12px', borderRadius: '8px', border: 'none', background: editorTab === 'arrivalguide' ? '#fff' : 'transparent', fontWeight: editorTab === 'arrivalguide' ? 700 : 600, color: editorTab === 'arrivalguide' ? '#222' : '#717171', cursor: 'pointer', boxShadow: editorTab === 'arrivalguide' ? '0 2px 4px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.2s', fontSize: '0.95rem' }}
+                                >Arrival guide</button>
+                                <button 
+                                    onClick={() => setEditorTab('settings')}
+                                    style={{ width: '44px', padding: '10px', borderRadius: '8px', border: 'none', background: editorTab === 'settings' ? '#fff' : 'transparent', color: editorTab === 'settings' ? '#222' : '#717171', cursor: 'pointer', boxShadow: editorTab === 'settings' ? '0 2px 4px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.2s' }}
+                                ><i className="fa-solid fa-gear"></i></button>
                             </div>
 
                             {/* Status Card */}
@@ -2839,7 +2876,8 @@ const BecomeHost: React.FC = () => {
                                 <button style={{ width: '100%', padding: '14px', background: '#ff385c', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer' }}>Review and publish</button>
                             </div>
 
-                            {/* Sections */}
+                            {/* Your Space Tab */}
+                            {editorTab === 'yourspace' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 {editorSections.map(section => {
                                     const isComplete = () => {
@@ -2850,9 +2888,13 @@ const BecomeHost: React.FC = () => {
                                             case 'pricing': return listingData.basePrice > 0;
                                             case 'guests': return listingData.guestCapacity > 0;
                                             case 'amenities': return listingData.amenities.length > 5;
-                                            case 'location': return listingData.address.length > 10;
-                                            case 'property': return listingData.propertyType !== '';
-                                            default: return true;
+                                            case 'location': return !!listingData.address;
+                                            case 'property': return !!listingData.propertyType;
+                                            case 'booking': return !!listingData.bookingSetting;
+                                            case 'rules': return listingData.houseRules.maxGuests > 0;
+                                            case 'safety': return listingData.safetyItems.length > 0;
+                                            case 'cancellation': return !!listingData.cancellationPolicy;
+                                            default: return false;
                                         }
                                     };
                                     const completed = isComplete();
@@ -2980,6 +3022,52 @@ const BecomeHost: React.FC = () => {
                                     );
                                 })}
                             </div>
+                            )}
+
+                            {/* Arrival Guide Tab */}
+                            {editorTab === 'arrivalguide' && (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    {arrivalGuideSections.map(section => (
+                                        <div
+                                            key={section.id}
+                                            onClick={() => { setActiveArrivalSection(section.id); setActiveEditorSection(section.id); }}
+                                            style={{ padding: '20px 24px', border: activeArrivalSection === section.id ? '2px solid #222' : '1px solid #eee', borderRadius: '16px', cursor: 'pointer', background: '#fff', transition: 'all 0.2s', boxShadow: activeArrivalSection === section.id ? '0 4px 12px rgba(0,0,0,0.08)' : 'none' }}
+                                        >
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                <div>
+                                                    <div style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: '4px', color: '#222' }}>{section.label}</div>
+                                                    <div style={{ color: '#717171', fontSize: '0.9rem', whiteSpace: 'pre-line' }}>{section.sub}</div>
+                                                </div>
+                                                <i className="fa-solid fa-chevron-right" style={{ color: '#717171', marginTop: '4px', flexShrink: 0 }}></i>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Settings Tab */}
+                            {editorTab === 'settings' && (
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '24px' }}>Edit preferences</h2>
+                                    {settingsSections.map((section, idx) => (
+                                        <div
+                                            key={section.id}
+                                            onClick={() => setActiveSettingsSection(section.id)}
+                                            style={{ padding: '18px 0', borderBottom: '1px solid #eee', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: activeSettingsSection === section.id ? '#f7f7f7' : 'transparent', paddingLeft: activeSettingsSection === section.id ? '12px' : '0', paddingRight: '4px', borderRadius: activeSettingsSection === section.id ? '8px' : '0', transition: 'all 0.2s' }}
+                                        >
+                                            <div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '1rem', marginBottom: '2px', color: section.id === 'removelisting' ? '#c00' : '#222' }}>
+                                                    {section.id === 'listingstatus' && <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b', display: 'inline-block', flexShrink: 0 }}></span>}
+                                                    {section.label}
+                                                </div>
+                                                <div style={{ color: '#717171', fontSize: '0.88rem' }}>{section.sub}</div>
+                                            </div>
+                                            <i className="fa-solid fa-chevron-right" style={{ color: '#717171' }}></i>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
                         </div>
 
                         {/* Content Pane */}
@@ -3328,10 +3416,227 @@ const BecomeHost: React.FC = () => {
                                     </div>
                                 )}
 
-                                {!['photos', 'title', 'description', 'pricing', 'guests', 'amenities', 'location', 'rules', 'property', 'booking', 'safety', 'host'].includes(activeEditorSection) && (
+                                {activeEditorSection === 'cancellation' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Cancellation policy</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Choose a policy that works for you and your guests.</p>
+                                        
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                            {['Flexible', 'Firm', 'Strict'].map(policy => (
+                                                <button 
+                                                    key={policy}
+                                                    onClick={() => setListingData({ ...listingData, cancellationPolicy: policy as any })}
+                                                    style={{ padding: '24px', borderRadius: '16px', border: listingData.cancellationPolicy === policy ? '2px solid #222' : '1px solid #ddd', background: listingData.cancellationPolicy === policy ? '#f7f7f7' : '#fff', textAlign: 'left', cursor: 'pointer', transition: 'all 0.2s' }}
+                                                >
+                                                    <div style={{ fontWeight: 800, fontSize: '1.2rem', marginBottom: '4px' }}>{policy}</div>
+                                                    <p style={{ color: '#717171', margin: 0 }}>Full refund before check-in, minus fees.</p>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'customlink' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Custom link</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.2rem', marginBottom: '40px' }}>Create a custom link that's easy to share with guests.</p>
+                                        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '24px', background: '#f7f7f7' }}>
+                                             <div style={{ fontSize: '0.9rem', color: '#717171', marginBottom: '8px' }}>metrolodges.com/h/</div>
+                                             <input 
+                                                type="text" 
+                                                placeholder="your-custom-link"
+                                                style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '1.5rem', fontWeight: 600, outline: 'none' }}
+                                             />
+                                        </div>
+                                    </div>
+                                )}
+
+                                 {activeEditorSection === 'checkin' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '32px' }}>Check-in window</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Set a timeframe for guests to arrive.</p>
+                                        
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', border: '1px solid #ddd', borderRadius: '12px', overflow: 'hidden' }}>
+                                            <div style={{ padding: '16px 20px', borderBottom: '1px solid #eee' }}>
+                                                <div style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#717171', marginBottom: '4px' }}>Start time</div>
+                                                <select style={{ width: '100%', border: 'none', fontSize: '1.1rem', background: 'transparent', outline: 'none', cursor: 'pointer' }}>
+                                                    <option>3:00 PM</option>
+                                                    <option>4:00 PM</option>
+                                                    <option>5:00 PM</option>
+                                                </select>
+                                            </div>
+                                            <div style={{ padding: '16px 20px' }}>
+                                                <div style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#717171', marginBottom: '4px' }}>End time</div>
+                                                <select style={{ width: '100%', border: 'none', fontSize: '1.1rem', background: 'transparent', outline: 'none', cursor: 'pointer' }}>
+                                                    <option>Select time</option>
+                                                    <option>10:00 PM</option>
+                                                    <option>11:00 PM</option>
+                                                    <option>Midnight</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'checkout' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '32px' }}>Checkout time</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Guests need to know when to leave so you can prepare for the next arrival.</p>
+                                        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '16px 20px' }}>
+                                            <div style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#717171', marginBottom: '4px' }}>Time</div>
+                                            <select style={{ width: '100%', border: 'none', fontSize: '1.1rem', background: 'transparent', outline: 'none', cursor: 'pointer' }}>
+                                                <option>10:00 AM</option>
+                                                <option>11:00 AM</option>
+                                                <option>12:00 PM</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'directions' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Directions</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Help guests find your place with specific instructions.</p>
+                                        <textarea 
+                                            placeholder="Example: Take a left at the big blue house..."
+                                            style={{ width: '100%', padding: '24px', borderRadius: '16px', border: '1px solid #ddd', fontSize: '1.1rem', minHeight: '200px', outline: 'none', lineHeight: 1.6 }}
+                                        />
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'checkinmethod' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Check-in method</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>How will guests get into your place?</p>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            {['Smart lock', 'Keypad', 'Lockbox', 'Building staff', 'Host greets you'].map(method => (
+                                                <button key={method} style={{ padding: '24px', borderRadius: '16px', border: '1px solid #ddd', background: '#fff', textAlign: 'left', fontWeight: 600, fontSize: '1.1rem', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    {method}
+                                                    <i className="fa-solid fa-chevron-right" style={{ color: '#717171' }}></i>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'wifi' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Wifi details</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Make it easy for guests to get online.</p>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                            <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '16px 20px' }}>
+                                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#717171', marginBottom: '4px' }}>Network name</label>
+                                                <input type="text" placeholder="Wifi name" style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '1.1rem', outline: 'none' }} />
+                                            </div>
+                                            <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '16px 20px' }}>
+                                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#717171', marginBottom: '4px' }}>Password</label>
+                                                <input type="text" placeholder="Wifi password" style={{ width: '100%', border: 'none', background: 'transparent', fontSize: '1.1rem', outline: 'none' }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'housemanual' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>House manual</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Share details like how to use the TV or where the trash goes.</p>
+                                        <textarea 
+                                            placeholder="Example: The AC remote is in the drawer..."
+                                            style={{ width: '100%', padding: '24px', borderRadius: '16px', border: '1px solid #ddd', fontSize: '1.1rem', minHeight: '300px', outline: 'none', lineHeight: 1.6 }}
+                                        />
+                                    </div>
+                                )}
+
+                                 {activeEditorSection === 'checkoutinstr' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Checkout instructions</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>What should guests do before they leave?</p>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
+                                            {['Throw away trash', 'Turn off lights', 'Lock the door', 'Return keys', 'Put used towels in the bathtub'].map(instr => (
+                                                <div key={instr} style={{ padding: '24px', borderRadius: '16px', border: '1px solid #ddd', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }}>
+                                                    <i className="fa-regular fa-square" style={{ fontSize: '1.4rem', color: '#ddd' }}></i>
+                                                    <span style={{ fontWeight: 600, fontSize: '1.1rem' }}>{instr}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'guidebooks' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Guidebooks</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Create a guidebook to share your local tips with guests.</p>
+                                        <div style={{ padding: '60px', border: '1px dashed #ddd', borderRadius: '24px', textAlign: 'center' }}>
+                                            <i className="fa-solid fa-map-location-dot" style={{ fontSize: '4rem', color: '#ddd', marginBottom: '24px' }}></i>
+                                            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '12px' }}>Recommend your favorite spots</h3>
+                                            <p style={{ color: '#717171', marginBottom: '32px' }}>Guests love reading local tips from their host.</p>
+                                            <button style={{ padding: '14px 32px', border: '2px solid #222', background: 'transparent', borderRadius: '8px', fontWeight: 800, cursor: 'pointer' }}>Create guidebook</button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'interaction' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Interaction preferences</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Let guests know how much interaction you'll have.</p>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            {['I love socializing', 'I give guests their space', 'I prefer interacting through the app'].map(pref => (
+                                                <button key={pref} style={{ padding: '24px', borderRadius: '16px', border: '1px solid #ddd', background: '#fff', textAlign: 'left', fontWeight: 600, fontSize: '1.1rem', cursor: 'pointer' }}>
+                                                    {pref}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeSettingsSection === 'languages' && editorTab === 'settings' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Languages</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Which languages do you speak? Guests feel more comfortable when they know you can communicate in their preferred language.</p>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                                            {['English', 'Hindi', 'Spanish', 'French', 'German', 'Chinese', 'Japanese'].map(lang => (
+                                                <div key={lang} style={{ padding: '20px', borderRadius: '12px', border: '1px solid #ddd', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                                                    <i className="fa-regular fa-square" style={{ color: '#ddd' }}></i>
+                                                    <span style={{ fontWeight: 600 }}>{lang}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeSettingsSection === 'guestreq' && editorTab === 'settings' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Guest requirements</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Metrolodges has some basic requirements for every guest. You can add more.</p>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                            <div style={{ display: 'flex', gap: '16px', padding: '24px', border: '1px solid #eee', borderRadius: '16px' }}>
+                                                <i className="fa-solid fa-id-card" style={{ fontSize: '1.4rem', marginTop: '4px' }}></i>
+                                                <div>
+                                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '4px' }}>Identity verification</h3>
+                                                    <p style={{ color: '#717171', margin: 0 }}>Require guests to provide identification before they can book.</p>
+                                                </div>
+                                                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                                                    <div style={{ width: '48px', height: '24px', background: '#ddd', borderRadius: '24px', position: 'relative', cursor: 'pointer' }}>
+                                                        <div style={{ width: '20px', height: '200px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: '2px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {!['photos', 'title', 'description', 'pricing', 'guests', 'amenities', 'location', 'rules', 'property', 'booking', 'safety', 'host', 'cancellation', 'customlink', 'checkin', 'checkout', 'directions', 'checkinmethod', 'wifi', 'housemanual', 'checkoutinstr', 'guidebooks', 'interaction'].includes(activeEditorSection) && editorTab !== 'settings' && (
                                     <div style={{ textAlign: 'center', paddingTop: '100px', animation: 'fadeIn 0.3s ease-out' }}>
-                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>{editorSections.find(s => s.id === activeEditorSection)?.label}</h2>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>{editorSections.find(s => s.id === activeEditorSection)?.label || arrivalGuideSections.find(s => s.id === activeEditorSection)?.label}</h2>
                                         <p style={{ color: '#717171', fontSize: '1.2rem', marginBottom: '48px' }}>This section is ready for editing. You can modify all the details that will be shown to your guests.</p>
+                                        <button style={{ padding: '16px 48px', border: '2px solid #222', background: 'transparent', borderRadius: '12px', fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer' }}>Edit details</button>
+                                    </div>
+                                )}
+
+                                {editorTab === 'settings' && !['listingstatus', 'languages', 'guestreq', 'locallaws', 'taxes', 'metrolodgesstays', 'removelisting'].includes(activeSettingsSection) && (
+                                    <div style={{ textAlign: 'center', paddingTop: '100px', animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>{settingsSections.find(s => s.id === activeSettingsSection)?.label}</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.2rem', marginBottom: '48px' }}>Manage your {settingsSections.find(s => s.id === activeSettingsSection)?.label.toLowerCase()} settings here.</p>
                                         <button style={{ padding: '16px 48px', border: '2px solid #222', background: 'transparent', borderRadius: '12px', fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer' }}>Edit details</button>
                                     </div>
                                 )}
