@@ -311,7 +311,10 @@ const BecomeHost: React.FC = () => {
             petsAllowed: true,
             partiesAllowed: false
         },
-        safetyItems: ['Smoke alarm', 'First aid kit', 'Fire extinguisher']
+        safetyItems: ['Smoke alarm', 'First aid kit', 'Fire extinguisher'],
+        cancellationPolicy: 'Flexible',
+        customLink: '',
+        wifiDetails: { name: '', password: '' }
     })
 
     const [showSpecificLocationState, setShowSpecificLocation] = useState(false)
@@ -3256,7 +3259,7 @@ const BecomeHost: React.FC = () => {
                                     </div>
                                 )}
 
-                                {activeEditorSection === 'rules' && (
+                                {(activeEditorSection === 'rules' || activeEditorSection === 'houserules') && (
                                     <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
                                         <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>House rules</h2>
                                         <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '48px' }}>Guests must agree to your house rules before they book.</p>
@@ -3412,6 +3415,34 @@ const BecomeHost: React.FC = () => {
                                                 placeholder="Tell guests a little about yourself..."
                                                 style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #ddd', fontSize: '1.1rem', minHeight: '120px', outline: 'none', resize: 'none' }}
                                             />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'accessibility' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Accessibility features</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.2rem', marginBottom: '40px' }}>Make your place easier to stay in for people with disabilities.</p>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                                            {['Step-free guest entrance', 'Wide entrance for guests', 'Step-free path to entrance', 'Well-lit path to entrance'].map(item => (
+                                                <div key={item} style={{ padding: '24px', borderRadius: '16px', border: '1px solid #eee', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }}>
+                                                    <i className="fa-regular fa-square" style={{ fontSize: '1.2rem', color: '#ddd' }}></i>
+                                                    <span style={{ fontWeight: 600 }}>{item}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeEditorSection === 'cohost' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Co-hosts</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.2rem', marginBottom: '40px' }}>Add someone you trust to help you manage your listing.</p>
+                                        <div style={{ padding: '40px', border: '1px dashed #ddd', borderRadius: '24px', textAlign: 'center' }}>
+                                            <i className="fa-solid fa-users" style={{ fontSize: '3rem', color: '#ddd', marginBottom: '20px' }}></i>
+                                            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '12px' }}>Hosting is better with help</h3>
+                                            <p style={{ color: '#717171', marginBottom: '32px' }}>Co-hosts can help with everything from responding to guests to managing cleanings.</p>
+                                            <button style={{ padding: '14px 32px', background: '#222', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 800, cursor: 'pointer' }}>Invite a co-host</button>
                                         </div>
                                     </div>
                                 )}
@@ -3624,8 +3655,76 @@ const BecomeHost: React.FC = () => {
                                         </div>
                                     </div>
                                 )}
+                                {activeSettingsSection === 'listingstatus' && editorTab === 'settings' && (
+                                    <div style={{ textAlign: 'center', paddingTop: '40px', animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '32px' }}>Listing status</h2>
+                                        
+                                        <div style={{ maxWidth: '400px', margin: '0 auto 60px' }}>
+                                            <div style={{ width: '280px', height: '200px', margin: '0 auto 32px', position: 'relative' }}>
+                                                <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/c77d54101438343.5f1f0e491e8e8.png" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                            </div>
+                                            <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '16px' }}>Finish up some final tasks</h3>
+                                            <p style={{ color: '#717171', fontSize: '1.1rem', lineHeight: 1.5 }}>Before you can publish your listing, you'll need to complete a few required steps.</p>
+                                        </div>
+                                        
+                                        <button style={{ padding: '16px 60px', background: '#222', color: '#fff', borderRadius: '12px', fontWeight: 800, fontSize: '1.1rem', border: 'none', cursor: 'pointer' }}>Let's go</button>
+                                    </div>
+                                )}
 
-                                {!['photos', 'title', 'description', 'pricing', 'guests', 'amenities', 'location', 'rules', 'property', 'booking', 'safety', 'host', 'cancellation', 'customlink', 'checkin', 'checkout', 'directions', 'checkinmethod', 'wifi', 'housemanual', 'checkoutinstr', 'guidebooks', 'interaction'].includes(activeEditorSection) && editorTab !== 'settings' && (
+                                {activeSettingsSection === 'locallaws' && editorTab === 'settings' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Local laws</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Property owners are responsible for complying with the laws in their location. Learn more about hosting responsibly.</p>
+                                        <div style={{ padding: '32px', border: '1px solid #eee', borderRadius: '16px', background: '#f9f9f9' }}>
+                                            <div style={{ display: 'flex', gap: '16px' }}>
+                                                <i className="fa-solid fa-gavel" style={{ fontSize: '1.5rem', color: '#222', marginTop: '4px' }}></i>
+                                                <div>
+                                                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px' }}>Your hosting obligations</h3>
+                                                    <p style={{ color: '#717171', lineHeight: 1.6 }}>Review local laws for regulations, taxes, and other considerations for hosting a property in your city.</p>
+                                                    <button style={{ marginTop: '16px', fontWeight: 800, textDecoration: 'underline', border: 'none', background: 'none', cursor: 'pointer' }}>Learn more</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeSettingsSection === 'taxes' && editorTab === 'settings' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Taxes</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Metrolodges collects and remits taxes in many jurisdictions. Check if your listing is covered.</p>
+                                        <div style={{ padding: '24px', border: '1px solid #eee', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ fontWeight: 600 }}>Occupancy taxes</div>
+                                            <i className="fa-solid fa-chevron-right" style={{ color: '#717171' }}></i>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeSettingsSection === 'metrolodgesstays' && editorTab === 'settings' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>Metrolodges.org stays</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Make a difference by offering your place at a discount or for free to people in need.</p>
+                                        <div style={{ padding: '40px', border: '2px solid var(--brand-blue, #71b7e1)', borderRadius: '24px', textAlign: 'center', background: 'rgba(113, 183, 225, 0.05)' }}>
+                                            <i className="fa-solid fa-heart" style={{ fontSize: '3rem', color: 'var(--brand-blue, #71b7e1)', marginBottom: '20px' }}></i>
+                                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '12px' }}>Hosting for good</h3>
+                                            <p style={{ color: '#717171', marginBottom: '24px', maxWidth: '500px', margin: '0 auto 32px' }}>Join a community of hosts who offer free, temporary housing to people in times of crisis.</p>
+                                            <button style={{ padding: '14px 32px', background: 'var(--brand-blue, #71b7e1)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 800, cursor: 'pointer' }}>Learn more</button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {activeSettingsSection === 'removelisting' && editorTab === 'settings' && (
+                                    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px', color: '#ff385c' }}>Remove listing</h2>
+                                        <p style={{ color: '#717171', fontSize: '1.1rem', marginBottom: '40px' }}>Permanently remove your listing profile and all of its history from Metrolodges.</p>
+                                        <div style={{ padding: '32px', border: '1px solid #ff385c', borderRadius: '16px', background: 'rgba(255, 56, 92, 0.05)' }}>
+                                            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '12px', color: '#ff385c' }}>This action cannot be undone</h3>
+                                            <p style={{ color: '#717171', marginBottom: '24px' }}>If you just need a break, you can snooze your listing instead from the listing status section.</p>
+                                            <button style={{ padding: '16px 32px', background: '#ff385c', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer' }}>Delete listing forever</button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {!['photos', 'title', 'description', 'pricing', 'guests', 'amenities', 'location', 'rules', 'property', 'booking', 'safety', 'host', 'cancellation', 'customlink', 'checkin', 'checkout', 'directions', 'checkinmethod', 'wifi', 'housemanual', 'checkoutinstr', 'guidebooks', 'interaction', 'accessibility', 'cohost', 'houserules'].includes(activeEditorSection) && editorTab !== 'settings' && (
                                     <div style={{ textAlign: 'center', paddingTop: '100px', animation: 'fadeIn 0.3s ease-out' }}>
                                         <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px' }}>{editorSections.find(s => s.id === activeEditorSection)?.label || arrivalGuideSections.find(s => s.id === activeEditorSection)?.label}</h2>
                                         <p style={{ color: '#717171', fontSize: '1.2rem', marginBottom: '48px' }}>This section is ready for editing. You can modify all the details that will be shown to your guests.</p>
